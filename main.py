@@ -73,6 +73,25 @@ class UE:
         
         return self.model.state_dict()
 
+    def evaluate_model_loss(self, model_state):
+        """Calculates the loss of a given model on the client's local data."""
+        eval_model = Net()
+        eval_model.load_state_dict(copy.deepcopy(model_state))
+        eval_model.eval()
+        total_loss = 0
+        total_samples = 0
+        with torch.no_grad():
+            for data, target in self.data_loader:
+                if len(data) == 0: continue
+                output = eval_model(data)
+                loss = F.nll_loss(output, target, reduction='sum').item()
+                total_loss += loss
+                total_samples += len(data)
+        
+        if total_samples == 0:
+            return float('inf')
+        return total_loss / total_samples
+
 class UAV:
     """Represents a UAV (Zone Server)"""
     def __init__(self, id, num_clusters):
@@ -92,15 +111,28 @@ class UAV:
 
     def assign_clients_to_clusters(self):
         """
-        Assign clients to clusters.
+        Assign clients to clusters based on the minimum loss.
         Blueprint Section 5.G: IFCA/CFL-style cluster assignment.
-        (STUB) Currently, this is a simple modulo assignment.
-        This will be replaced with loss-based assignment.
         """
         assignments = {c: [] for c in range(self.num_clusters)}
-        for i, client in enumerate(self.clients):
-            cluster_id = i % self.num_clusters
-            assignments[cluster_id].append(client)
+        if not self.clients:
+            return assignments
+
+        print(f"  Zone {self.id}: Assigning {len(self.clients)} clients to {self.num_clusters} clusters...")
+        for client in self.clients:
+            losses = []
+            for cluster_id in range(self.num_clusters):
+                cluster_model_state = self.cluster_models[cluster_id].state_dict()
+                loss = client.evaluate_model_loss(cluster_model_state)
+                losses.append(loss)
+            
+            best_cluster_id = np.argmin(losses)
+            assignments[best_cluster_id].append(client)
+        
+        # Log cluster distribution
+        dist_str = ", ".join([f"C{c}: {len(clients)} clients" for c, clients in assignments.items()])
+        print(f"  Zone {self.id}: Cluster distribution: {dist_str}")
+
         return assignments
 
     def train_zone(self, local_epochs, lr, momentum):
@@ -111,6 +143,8 @@ class UAV:
 
         for cluster_id, assigned_clients in client_assignments.items():
             if not assigned_clients:
+                # If a cluster has no clients, its model does not change
+                updated_cluster_weights[cluster_id] = self.cluster_models[cluster_id].state_dict()
                 continue
 
             cluster_model_state = self.cluster_models[cluster_id].state_dict()
@@ -133,6 +167,7 @@ class UAV:
         Create a summary of the zone's models for the satellite.
         (Simplification) Averages all cluster models in the zone.
         """
+        # In case a zone has no clients and thus no cluster models were trained
         if not self.cluster_models:
             return None
         
