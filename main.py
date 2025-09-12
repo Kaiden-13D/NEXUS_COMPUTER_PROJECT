@@ -50,14 +50,18 @@ class Net(nn.Module):
 # --- 3. Entity Classes (UE, UAV, Satellite) ---
 
 class UE:
-    """Represents a User Equipment (Client)"""
+    """Represents a User Equipment (Client) in the hierarchy.
+    This is the lowest level, responsible for training on its own private data.
+    """
     def __init__(self, id, data_loader):
         self.id = id
         self.data_loader = data_loader
         self.model = Net()
 
     def train(self, cluster_model_state, local_epochs, lr, momentum):
-        """Train the client's model locally."""
+        """Train the client's model locally for a few epochs.
+        It starts from the state of the cluster model it was assigned to.
+        """
         self.model.load_state_dict(copy.deepcopy(cluster_model_state))
         self.model.train()
         optimizer = optim.SGD(self.model.parameters(), lr=lr, momentum=momentum)
@@ -74,7 +78,10 @@ class UE:
         return self.model.state_dict()
 
     def evaluate_model_loss(self, model_state):
-        """Calculates the loss of a given model on the client's local data."""
+        """Calculates the loss of a given model on the client's local data.
+        This is the core of the 'interview' process for dynamic clustering,
+        allowing the client to determine which cluster is its best fit.
+        """
         eval_model = Net()
         eval_model.load_state_dict(copy.deepcopy(model_state))
         eval_model.eval()
@@ -93,26 +100,33 @@ class UE:
         return total_loss / total_samples
 
 class UAV:
-    """Represents a UAV (Zone Server)"""
+    """Represents a UAV (Zone Server), the middle tier of the hierarchy.
+    It orchestrates training for all clients within its zone and, crucially,
+    is responsible for performing the local clustering.
+    """
     def __init__(self, id, num_clusters):
         self.id = id
         self.clients = []
         self.num_clusters = num_clusters
-        # Initialize cluster models for this zone
+        # Each UAV maintains a set of local cluster models.
         self.cluster_models = {c: Net() for c in range(num_clusters)}
 
     def add_client(self, client):
         self.clients.append(client)
 
     def update_cluster_models_from_global(self, global_model_state):
-        """Copy the global model state to all cluster models."""
+        """Receives the new global model from the satellite and uses it to reset
+        all its local cluster models. This is the vital 'synchronization' step.
+        """
         for c_model in self.cluster_models.values():
             c_model.load_state_dict(copy.deepcopy(global_model_state))
 
     def assign_clients_to_clusters(self):
         """
-        Assign clients to clusters based on the minimum loss.
-        Blueprint Section 5.G: IFCA/CFL-style cluster assignment.
+        This is the core of the dynamic local clustering.
+        Each client is assigned to a cluster based on which of the UAV's current
+        cluster models yields the minimum loss on the client's private data.
+        This grouping is temporary and re-evaluated each round to adapt to changes.
         """
         assignments = {c: [] for c in range(self.num_clusters)}
         if not self.clients:
@@ -121,29 +135,32 @@ class UAV:
         print(f"  Zone {self.id}: Assigning {len(self.clients)} clients to {self.num_clusters} clusters...")
         for client in self.clients:
             losses = []
+            # Each client 'interviews' all candidate cluster models.
             for cluster_id in range(self.num_clusters):
                 cluster_model_state = self.cluster_models[cluster_id].state_dict()
                 loss = client.evaluate_model_loss(cluster_model_state)
                 losses.append(loss)
             
+            # The client is assigned to the cluster that 'understands' its data the best.
             best_cluster_id = np.argmin(losses)
             assignments[best_cluster_id].append(client)
         
-        # Log cluster distribution
         dist_str = ", ".join([f"C{c}: {len(clients)} clients" for c, clients in assignments.items()])
         print(f"  Zone {self.id}: Cluster distribution: {dist_str}")
 
         return assignments
 
     def train_zone(self, local_epochs, lr, momentum):
-        """Orchestrate training within the zone for one round."""
+        """Orchestrate one full round of training within the zone."""
+        # 1. Assign clients to clusters for this round.
         client_assignments = self.assign_clients_to_clusters()
         
         updated_cluster_weights = {}
 
+        # 2. For each cluster, trigger training on its assigned clients.
         for cluster_id, assigned_clients in client_assignments.items():
             if not assigned_clients:
-                # If a cluster has no clients, its model does not change
+                # If a cluster has no clients, its model does not change.
                 updated_cluster_weights[cluster_id] = self.cluster_models[cluster_id].state_dict()
                 continue
 
@@ -154,8 +171,9 @@ class UAV:
                 updated_weights = client.train(cluster_model_state, local_epochs, lr, momentum)
                 local_client_updates.append(updated_weights)
             
+            # 3. Aggregate the results for this cluster.
+            # This aggregation is more stable because clients were grouped by similarity.
             if local_client_updates:
-                # Aggregate updates for this cluster
                 aggregated_weights = self._aggregate_weights(local_client_updates)
                 self.cluster_models[cluster_id].load_state_dict(aggregated_weights)
                 updated_cluster_weights[cluster_id] = aggregated_weights
@@ -164,10 +182,11 @@ class UAV:
 
     def get_zone_summary_model(self):
         """
-        Create a summary of the zone's models for the satellite.
-        (Simplification) Averages all cluster models in the zone.
+        This method performs the "zone summarization."
+        It distills the knowledge from all specialized local cluster models into a
+        single, averaged model. This summary is what gets sent to the satellite;
+        the satellite never sees the individual cluster models directly.
         """
-        # In case a zone has no clients and thus no cluster models were trained
         if not self.cluster_models:
             return None
         
@@ -189,7 +208,10 @@ class UAV:
         return agg_weights
 
 class Satellite:
-    """Represents the Global Server"""
+    """Represents the central global server, the top of the hierarchy.
+    It manages the overall training process, aggregates summaries from all zones,
+    and maintains the single global model.
+    """
     def __init__(self, num_zones, num_clusters_per_zone):
         self.global_model = Net()
         self.zones = [UAV(i, num_clusters_per_zone) for i in range(num_zones)]
@@ -202,21 +224,24 @@ class Satellite:
         """Execute one full round of hierarchical training."""
         print(f"--- Round {epoch+1}/{args.epochs} ---")
         
-        # 1. Broadcast global model to all UAVs (which then update their cluster models)
+        # Step 1: Synchronization. Broadcast the single global model to all UAVs.
+        # The UAVs will use this to reset their local cluster models.
         global_model_state = self.global_model.state_dict()
         for zone in self.zones:
             zone.update_cluster_models_from_global(global_model_state)
 
-        # 2. Trigger parallel training in all zones
+        # Step 2: Local Training & Clustering.
+        # Trigger all zones to perform their client assignment and training phases.
         zone_summary_models = []
         for zone in self.zones:
             zone.train_zone(args.local_epochs, args.lr, args.momentum)
-            # 3. Collect zone summaries for global aggregation
+            # Step 3: Collection. Gather the "zone summaries" from all UAVs.
             summary_model = zone.get_zone_summary_model()
             if summary_model:
                 zone_summary_models.append(summary_model.state_dict())
         
-        # 4. Aggregate zone summaries to update the global model
+        # Step 4: Global Aggregation.
+        # Average the collected zone summaries to update the single global model.
         if zone_summary_models:
             self._aggregate_global_model(zone_summary_models)
 
@@ -228,7 +253,7 @@ class Satellite:
         self.global_model.load_state_dict(global_dict)
 
     def test(self, test_loader):
-        """Evaluate the global model."""
+        """Evaluate the global model's performance on the test dataset."""
         self.global_model.eval()
         test_loss = 0
         correct = 0
@@ -254,7 +279,7 @@ def get_data_and_entities(args):
     
     client_zone_mapping = {i: random.randint(0, args.num_zones - 1) for i in range(args.num_clients)}
     
-    # Non-IID data distribution
+    # Create a highly non-IID data distribution: each client gets only 2 digits.
     num_labels_per_client = 2
     labels = train_dataset.targets
     client_data_indices = {i: np.empty(0, dtype=np.int64) for i in range(args.num_clients)}
