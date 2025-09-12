@@ -1,220 +1,225 @@
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
-from torchvision import datasets, transforms
+# fedavg_mnist_label_clusters.py
+import numpy as np, random, torch, torch.nn as nn, torch.nn.functional as F
 from torch.utils.data import DataLoader, Subset
-import numpy as np
-from matplotlib import pyplot as plt
-import copy
-import random
+from torchvision import datasets, transforms
 
-# --- 1. 하이퍼파라미터 및 설정 ---
-class Args:
+# ===== Config =====
+SEED = 42
+K = 6                            # 총 클라이언트(=드론) 수
+CLIENTS_PER_CLUSTER = [2, 2, 2]  # 각 클러스터에 몇 개의 클라이언트?
+N_CLUSTERS = len(CLIENTS_PER_CLUSTER)
+E = 1                            # 로컬 에폭
+ROUNDS = 20                      # 통신 라운드 수
+PARTICIPANTS_PER_ROUND = K       # 라운드당 참여 클라이언트 수 (여기선 전원 참여)
+BATCH = 64
+LR = 0.05
+MOMENTUM = 0.9
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+
+# 라벨 기반 클러스터 정의
+CLUSTER_LABEL_MAP = {
+    0: [0, 1, 2, 3],
+    1: [4, 5, 6],
+    2: [7, 8, 9],
+}
+
+# ===== Reproducibility =====
+random.seed(SEED); np.random.seed(SEED); torch.manual_seed(SEED)
+
+# ===== Model =====
+class SmallCNN(nn.Module):
     def __init__(self):
-        self.epochs = 30  # 전체 통신 라운드
-        self.local_epochs = 2 # 각 클라이언트가 로컬에서 학습할 에폭 수
-        self.num_clients = 100 # <--- 변경: 100명의 클라이언트
-        self.num_zones = 6   # <--- 추가: 6개의 존
-        self.batch_size = 64
-        self.lr = 0.01
-        self.momentum = 0.5
-        self.seed = 42
-
-args = Args()
-torch.manual_seed(args.seed)
-np.random.seed(args.seed)
-random.seed(args.seed)
-
-# --- 2. 모델 정의 ---
-class Net(nn.Module):
-    def __init__(self):
-        super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(1, 20, 5, 1)
-        self.conv2 = nn.Conv2d(20, 50, 5, 1)
-        self.fc1 = nn.Linear(4*4*50, 500)
-        self.fc2 = nn.Linear(500, 10)
-
+        super().__init__()
+        self.conv1 = nn.Conv2d(1, 16, 3, padding=1)
+        self.conv2 = nn.Conv2d(16, 32, 3, padding=1)
+        self.fc1 = nn.Linear(32*7*7, 64)
+        self.fc2 = nn.Linear(64, 10)
     def forward(self, x):
-        x = F.relu(self.conv1(x))
-        x = F.max_pool2d(x, 2, 2)
-        x = F.relu(self.conv2(x))
-        x = F.max_pool2d(x, 2, 2)
-        x = x.view(-1, 4*4*50)
+        x = F.relu(F.max_pool2d(self.conv1(x), 2))  # 28->14
+        x = F.relu(F.max_pool2d(self.conv2(x), 2))  # 14->7
+        x = x.view(x.size(0), -1)
         x = F.relu(self.fc1(x))
-        x = self.fc2(x)
-        return F.log_softmax(x, dim=1)
+        return self.fc2(x)
 
-# --- 3. 데이터 준비 및 Non-IID 분배 ---
-def get_data_loaders():
-    transform = transforms.Compose([
+def init_model():
+    return SmallCNN().to(DEVICE)
+
+def get_state(model):
+    return {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
+
+def set_state(model, state):
+    model.load_state_dict(state, strict=True)
+
+def average_states(weighted_states):
+    # weighted_states: list of (n_k, state_dict)
+    total = sum(n for n, _ in weighted_states)
+    keys = weighted_states[0][1].keys()
+    out = {}
+    for k in keys:
+        out[k] = sum(n * s[k] for n, s in weighted_states) / total
+    return out
+
+# ===== Data =====
+def load_mnist():
+    tfm = transforms.Compose([
         transforms.ToTensor(),
         transforms.Normalize((0.1307,), (0.3081,))
     ])
-    train_dataset = datasets.MNIST('./data', train=True, download=True, transform=transform)
-    test_dataset = datasets.MNIST('./data', train=False, download=True, transform=transform)
-    test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False)
-    
-    # --- 추가: 100명의 클라이언트를 6개의 Zone에 할당 ---
-    client_zone_mapping = {i: random.randint(0, args.num_zones - 1) for i in range(args.num_clients)}
+    train_set = datasets.MNIST(root="./data", train=True, download=True, transform=tmf)  # typo 보호
+    test_set  = datasets.MNIST(root="./data", train=False, download=True, transform=tmf)
+    return train_set, test_set
 
-    # Non-IID 데이터 분배: 각 클라이언트가 2개의 숫자 라벨만 갖도록 설정
-    num_labels_per_client = 2
-    labels = train_dataset.targets
-    client_data_indices = {i: np.empty(0, dtype=np.int64) for i in range(args.num_clients)}
-    
-    # 각 라벨별 데이터 인덱스
-    label_indices = [np.where(labels == i)[0] for i in range(10)]
+# 위 오타 수정 버전
+def load_mnist():
+    tfm = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize((0.1307,), (0.3081,))
+    ])
+    train_set = datasets.MNIST(root="./data", train=True, download=True, transform=tfm)
+    test_set  = datasets.MNIST(root="./data", train=False, download=True, transform=tfm)
+    return train_set, test_set
 
-    # 각 클라이언트에게 라벨 할당
-    client_labels = {}
-    for client_id in range(args.num_clients):
-        client_labels[client_id] = np.random.choice(10, num_labels_per_client, replace=False)
+# ===== Partitioning: label-based clusters -> per-client splits =====
+def build_clients_by_label_clusters(train_set, clients_per_cluster, cluster_label_map):
+    """
+    각 클러스터의 라벨 집합에 해당하는 train 인덱스를 모은 뒤,
+    클러스터 내부에서 clients_per_cluster[c] 개수만큼 균등 분할하여
+    client_idx(길이 K의 리스트)와 각 클라의 클러스터 번호 cluster_of(길이 K 배열)를 만든다.
+    """
+    targets = np.array(train_set.targets)
+    client_idx = []
+    cluster_of = []
+    for c, n_clients in enumerate(clients_per_cluster):
+        labels = cluster_label_map[c]
+        idxs = np.where(np.isin(targets, labels))[0]
+        np.random.shuffle(idxs)
+        splits = np.array_split(idxs, n_clients)
+        for s in splits:
+            client_idx.append(np.array(s, dtype=int))
+            cluster_of.append(c)
+    cluster_of = np.array(cluster_of)
+    return client_idx, cluster_of
 
-    # 라벨에 따라 데이터 분배
-    for client_id, labels_for_client in client_labels.items():
-        for label in labels_for_client:
-            # 해당 라벨을 가진 클라이언트 수를 기반으로 데이터 분할
-            num_clients_with_label = sum(1 for cid in range(args.num_clients) if label in client_labels[cid])
-            num_samples = len(label_indices[label]) // num_clients_with_label
-            
-            # 클라이언트에게 샘플 할당 (중복 방지를 위해 간단한 방식으로 처리)
-            # 이 방식은 완벽히 균등하진 않지만 Non-IID를 효과적으로 시뮬레이션
-            rand_idx = np.random.choice(len(label_indices[label]), num_samples, replace=False)
-            client_data_indices[client_id] = np.concatenate((client_data_indices[client_id], label_indices[label][rand_idx]))
-    
-    client_loaders = []
-    for i in range(args.num_clients):
-        subset = Subset(train_dataset, client_data_indices[i])
-        loader = DataLoader(subset, batch_size=args.batch_size, shuffle=True)
-        client_loaders.append(loader)
-
-    print("--- Client & Zone & Data Distribution (Sample) ---")
-    zone_counts = {z:0 for z in range(args.num_zones)}
-    for cid, zid in client_zone_mapping.items():
-        zone_counts[zid] += 1
-
-    print(f"Zone별 클라이언트 수: {zone_counts}")
-
-    for i in range(3):
-        labels_in_loader = set()
-        if len(client_loaders[i].dataset) > 0:
-            for _, targets in client_loaders[i]:
-                labels_in_loader.update(targets.numpy())
-        print(f"Client {i} (Zone {client_zone_mapping[i]}) has labels: {sorted(list(labels_in_loader))}, data size: {len(client_loaders[i].dataset)}")
-
-    return client_loaders, test_loader, client_zone_mapping
-
-# --- 4. 클라이언트 및 서버 로직 ---
-def client_update(client_model, optimizer, train_loader, local_epochs):
-    """클라이언트 측 학습 로직"""
-    client_model.train()
-    for epoch in range(local_epochs):
-        for data, target in train_loader:
-            if len(data) == 0: continue
-            optimizer.zero_grad()
-            output = client_model(data)
-            loss = F.nll_loss(output, target)
+# ===== Local Train / Evaluate =====
+def local_train(state, subset, epochs=E):
+    model = init_model()
+    set_state(model, state)
+    dl = DataLoader(subset, batch_size=BATCH, shuffle=True, num_workers=0)
+    opt = torch.optim.SGD(model.parameters(), lr=LR, momentum=MOMENTUM)
+    loss_fn = nn.CrossEntropyLoss()
+    model.train()
+    for _ in range(epochs):
+        for xb, yb in dl:
+            xb, yb = xb.to(DEVICE), yb.to(DEVICE)
+            opt.zero_grad()
+            logits = model(xb)
+            loss = loss_fn(logits, yb)
             loss.backward()
-            optimizer.step()
-    return client_model.state_dict()
+            opt.step()
+    return get_state(model)
 
-def server_aggregate(global_model, client_models):
-    """서버 측 모델 병합 로직 (FedAvg)"""
-    if not client_models: # 모델이 없는 경우
-        return global_model # 기존 모델 그대로 반환
-    
-    global_dict = global_model.state_dict()
-    for k in global_dict.keys():
-        global_dict[k] = torch.stack([client_models[i][k].float() for i in range(len(client_models))], 0).mean(0)
-    global_model.load_state_dict(global_dict)
-    return global_model
-
-def test(model, test_loader):
-    """글로벌 모델 성능 평가"""
+@torch.no_grad()
+def evaluate(state, test_set):
+    """Global test acc (전체 MNIST 테스트셋 기준)"""
+    model = init_model()
+    set_state(model, state)
     model.eval()
-    test_loss = 0
-    correct = 0
-    with torch.no_grad():
-        for data, target in test_loader:
-            output = model(data)
-            test_loss += F.nll_loss(output, target, reduction='sum').item()
-            pred = output.argmax(dim=1, keepdim=True)
-            correct += pred.eq(target.view_as(pred)).sum().item()
-    test_loss /= len(test_loader.dataset)
-    accuracy = 100. * correct / len(test_loader.dataset)
-    return test_loss, accuracy
+    dl = DataLoader(test_set, batch_size=256, shuffle=False, num_workers=0)
+    correct, total, loss_sum = 0, 0, 0.0
+    loss_fn = nn.CrossEntropyLoss(reduction="sum")
+    for xb, yb in dl:
+        xb, yb = xb.to(DEVICE), yb.to(DEVICE)
+        logits = model(xb)
+        loss_sum += loss_fn(logits, yb).item()
+        pred = logits.argmax(dim=1)
+        correct += (pred == yb).sum().item()
+        total += yb.size(0)
+    acc = correct / total
+    loss = loss_sum / total
+    return acc, loss
 
-# --- 5. 메인 실행 루프 ---
-if __name__ == '__main__':
-    print("Initializing Hierarchical Federated Learning Simulation...")
-    
-    # 데이터 로더 및 존 매핑 정보 준비
-    client_loaders, test_loader, client_zone_mapping = get_data_loaders()
+@torch.no_grad()
+def evaluate_on_labels(state, test_set, labels):
+    """In-Cluster acc: 특정 라벨만 필터링한 테스트셋 기준 정확도"""
+    targets = np.array(test_set.targets)
+    mask = np.isin(targets, labels)
+    idx = np.where(mask)[0]
+    if len(idx) == 0:
+        return float("nan"), float("nan")
+    subset = Subset(test_set, idx)
+    return evaluate(state, subset)
 
-    # 글로벌 모델 초기화
-    global_model = Net()
-    
-    test_losses = []
-    accuracies = []
+# ===== Main FL Loop =====
+def main():
+    # 1) 데이터 로드
+    train_set, test_set = load_mnist()
 
-    print("\nStarting Training...\n")
-    # 연합 학습 라운드 시작
-    for epoch in range(args.epochs):
-        
-        # --- 1. 1차 집계: Zone별로 모델 학습 및 병합 ---
-        zone_models = []
-        for z_id in range(args.num_zones):
-            # 현재 존에 속한 클라이언트들 찾기
-            clients_in_zone = [c_id for c_id, z in client_zone_mapping.items() if z == z_id]
-            
-            if not clients_in_zone: # 존에 클라이언트가 없으면 건너뛰기
+    # 2) 클러스터 라벨 기준으로 클라이언트 분할
+    client_idx, cluster_of = build_clients_by_label_clusters(
+        train_set,
+        CLIENTS_PER_CLUSTER,
+        CLUSTER_LABEL_MAP
+    )
+    assert len(client_idx) == K, f"Expected K={K}, got {len(client_idx)}"
+    assert len(cluster_of) == K
+
+    client_subsets = [Subset(train_set, idx) for idx in client_idx]
+
+    # 3) 클러스터별 전역 모델 초기화
+    global_states = [get_state(init_model()) for _ in range(N_CLUSTERS)]
+
+    # 4) 라운드 루프
+    print(f"[INFO] Device={DEVICE} | K={K}, ROUNDS={ROUNDS}, E={E}, clusters={N_CLUSTERS}")
+    print(f"[INFO] Cluster label map: {CLUSTER_LABEL_MAP}")
+
+    for t in range(1, ROUNDS + 1):
+        # 이번 라운드 참여자 선택 (전원 참여 또는 일부 참여)
+        if PARTICIPANTS_PER_ROUND >= K:
+            selected = np.arange(K)
+        else:
+            selected = np.random.choice(K, size=PARTICIPANTS_PER_ROUND, replace=False)
+
+        # 클러스터별 업데이트 모으기
+        weighted_states_by_cluster = [[] for _ in range(N_CLUSTERS)]
+
+        for k in selected:
+            c = cluster_of[k]
+            subset = client_subsets[k]
+            n_k = len(subset)
+            if n_k == 0:
                 continue
+            new_state = local_train(global_states[c], subset, epochs=E)
+            weighted_states_by_cluster[c].append((n_k, new_state))
 
-            local_client_models = []
-            for c_id in clients_in_zone:
-                # 중요: 매번 글로벌 모델을 복사해서 클라이언트에 전달
-                local_model = copy.deepcopy(global_model)
-                optimizer = optim.SGD(local_model.parameters(), lr=args.lr, momentum=args.momentum)
-                
-                # 클라이언트가 로컬 데이터로 모델 학습
-                updated_weights = client_update(local_model, optimizer, client_loaders[c_id], args.local_epochs)
-                local_client_models.append(updated_weights)
-            
-            # Zone 대표 모델 생성 (1차 병합)
-            zone_model_agg = copy.deepcopy(global_model) # 병합을 위한 틀
-            zone_model_agg = server_aggregate(zone_model_agg, local_client_models)
-            zone_models.append(zone_model_agg.state_dict())
+        # 클러스터별 집계(FedAvg)
+        for c in range(N_CLUSTERS):
+            if len(weighted_states_by_cluster[c]) > 0:
+                global_states[c] = average_states(weighted_states_by_cluster[c])
 
-        # --- 2. 2차 집계: Zone 모델들을 병합하여 글로벌 모델 업데이트 ---
-        global_model = server_aggregate(global_model, zone_models)
+        # ===== 평가: 클러스터별 Global Acc, In-Cluster Acc 모두 출력 =====
+        global_accs = []
+        in_cluster_accs = []
+        for c in range(N_CLUSTERS):
+            acc_g, _ = evaluate(global_states[c], test_set)
+            global_accs.append(acc_g)
 
-        # --- 3. 글로벌 모델 성능 평가 ---
-        test_loss, accuracy = test(global_model, test_loader)
-        test_losses.append(test_loss)
-        accuracies.append(accuracy)
-        
-        print(f"Round {epoch+1}/{args.epochs} -> Test Loss: {test_loss:.4f}, Accuracy: {accuracy:.2f}%")
+            labels = CLUSTER_LABEL_MAP[c]
+            acc_ic, _ = evaluate_on_labels(global_states[c], test_set, labels)
+            in_cluster_accs.append(acc_ic)
 
-    # --- 6. 결과 시각화 ---
-    plt.figure(figsize=(10, 5))
-    plt.subplot(1, 2, 1)
-    plt.plot(range(args.epochs), test_losses, marker='o')
-    plt.title("Test Loss vs. Communication Rounds")
-    plt.xlabel("Communication Rounds")
-    plt.ylabel("Test Loss")
-    
-    plt.subplot(1, 2, 2)
-    plt.plot(range(args.epochs), accuracies, marker='o', color='r')
-    plt.title("Accuracy vs. Communication Rounds")
-    plt.xlabel("Communication Rounds")
-    plt.ylabel("Accuracy (%)")
-    
-    plt.tight_layout()
-    plt.show()
+        g_line = " | ".join([f"C{c}:{global_accs[c]*100:5.2f}%" for c in range(N_CLUSTERS)])
+        ic_line = " | ".join([f"C{c}:{in_cluster_accs[c]*100:5.2f}%" for c in range(N_CLUSTERS)])
+        print(f"Round {t:02d} | Global Acc    | {g_line}")
+        print(f"          | In-Cluster Acc | {ic_line}")
 
-    print("\nHierarchical Federated Learning Simulation Finished.")
-    # 최종 모델 저장
-    torch.save(global_model.state_dict(), "hierarchical_federated_model.pt")
-    print("Final global model saved as 'hierarchical_federated_model.pt'")
+    # 5) 최종 결과
+    print("\n[DONE] Final accuracies:")
+    for c in range(N_CLUSTERS):
+        acc_g, loss_g = evaluate(global_states[c], test_set)
+        acc_ic, loss_ic = evaluate_on_labels(global_states[c], test_set, CLUSTER_LABEL_MAP[c])
+        print(f"  - Cluster {c} (labels {CLUSTER_LABEL_MAP[c]}): "
+              f"Global Acc={acc_g*100:.2f}%  (loss={loss_g:.4f}) | "
+              f"In-Cluster Acc={acc_ic*100:.2f}%  (loss={loss_ic:.4f})")
 
+if __name__ == "__main__":
+    main()
