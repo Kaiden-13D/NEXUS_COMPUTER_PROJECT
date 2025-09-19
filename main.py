@@ -107,114 +107,16 @@ class UE:
         return total_loss / total_samples # 평균 손실을 계산하여 반환합니다.
 
 class UAV:
-    # UAV 클래스는 계층 구조의 중간 계층인 UAV(존 서버)를 나타냅니다.
-    # 자신의 존 내 모든 클라이언트의 훈련을 조율하고, 로컬 클러스터링을 수행하는 중요한 역할을 합니다.
-    def __init__(self, id, num_clusters):
+    # UAV 클래스는 이제 위성과 클라이언트 간의 단순 중계기 역할을 합니다.
+    # 클러스터링이나 모델 집계는 더 이상 수행하지 않습니다.
+    def __init__(self, id):
         # __init__ 메소드는 UAV 객체를 초기화합니다.
         self.id = id # UAV의 고유 ID입니다.
-        self.clients = [] # 이 UAV에 속한 클라이언트 목록입니다.
-        self.num_clusters = num_clusters # 이 UAV가 관리할 클러스터의 수입니다.
-        self.cluster_models = {c: Net() for c in range(num_clusters)} # 각 클러스터를 위한 로컬 모델들을 딕셔너리 형태로 유지합니다.
+        self.clients = [] # 이 UAV(존)에 속한 클라이언트 목록입니다.
 
     def add_client(self, client):
         # add_client 메소드는 UAV에 클라이언트를 추가합니다.
         self.clients.append(client)
-
-    def update_cluster_models_from_global(self, global_model_state):
-        # update_cluster_models_from_global 메소드는 위성으로부터 새로운 글로벌 모델을 받아 모든 로컬 클러스터 모델을 재설정합니다.
-        # 이는 중요한 '동기화' 단계입니다.
-        for c_model in self.cluster_models.values():
-            # 모든 클러스터 모델에 대해 반복합니다.
-            c_model.load_state_dict(copy.deepcopy(global_model_state)) # 글로벌 모델의 가중치를 복사하여 클러스터 모델을 초기화합니다.
-
-    def assign_clients_to_clusters(self):
-        # assign_clients_to_clusters 메소드는 동적 로컬 클러스터링의 핵심입니다.
-        # 각 클라이언트는 UAV의 현재 클러스터 모델 중 자신의 개인 데이터에 대해 최소 손실을 내는 클러스터에 할당됩니다.
-        # 이 그룹화는 일시적이며, 변화에 적응하기 위해 매 라운드마다 재평가됩니다.
-        assignments = {c: [] for c in range(self.num_clusters)} # 클러스터 할당 결과를 저장할 딕셔너리를 초기화합니다.
-        if not self.clients:
-            # 클라이언트가 없으면 빈 할당을 반환합니다.
-            return assignments
-
-        print(f"  Zone {self.id}: Assigning {len(self.clients)} clients to {self.num_clusters} clusters...") # 클라이언트 할당 시작을 알립니다.
-        for client in self.clients:
-            # 각 클라이언트에 대해 반복합니다.
-            losses = [] # 각 클러스터 모델에 대한 손실을 저장할 리스트입니다.
-            # 각 클라이언트는 모든 후보 클러스터 모델을 '인터뷰'합니다.
-            for cluster_id in range(self.num_clusters):
-                # 각 클러스터 ID에 대해 반복합니다.
-                cluster_model_state = self.cluster_models[cluster_id].state_dict() # 해당 클러스터 모델의 가중치를 가져옵니다.
-                loss = client.evaluate_model_loss(cluster_model_state) # 클라이언트의 데이터로 손실을 평가합니다.
-                losses.append(loss) # 계산된 손실을 리스트에 추가합니다.
-            
-            # 클라이언트는 자신의 데이터를 가장 잘 '이해하는' 클러스터에 할당됩니다.
-            best_cluster_id = np.argmin(losses) # 손실이 가장 작은 클러스터의 인덱스를 찾습니다.
-            assignments[best_cluster_id].append(client) # 해당 클러스터에 클라이언트를 할당합니다.
-        
-        dist_str = ", ".join([f"C{c}: {len(clients)} clients" for c, clients in assignments.items()]) # 클러스터별 클라이언트 수 분포를 문자열로 만듭니다.
-        print(f"  Zone {self.id}: Cluster distribution: {dist_str}") # 클러스터 분포를 출력합니다.
-
-        return assignments # 최종 클라이언트 할당 결과를 반환합니다.
-
-    def train_zone(self, local_epochs, lr, momentum):
-        # train_zone 메소드는 존 내에서 한 라운드의 전체 훈련을 조율합니다.
-        # 1. 이 라운드를 위해 클라이언트를 클러스터에 할당합니다.
-        client_assignments = self.assign_clients_to_clusters()
-        
-        updated_cluster_weights = {} # 업데이트된 클러스터 가중치를 저장할 딕셔너리입니다.
-
-        # 2. 각 클러스터에 대해, 할당된 클라이언트들로 훈련을 시작합니다.
-        for cluster_id, assigned_clients in client_assignments.items():
-            # 클러스터 할당 결과에 대해 반복합니다.
-            if not assigned_clients:
-                # 클러스터에 할당된 클라이언트가 없으면, 모델은 변경되지 않습니다.
-                updated_cluster_weights[cluster_id] = self.cluster_models[cluster_id].state_dict() # 현재 모델 가중치를 그대로 저장합니다.
-                continue # 다음 클러스터로 넘어갑니다.
-
-            cluster_model_state = self.cluster_models[cluster_id].state_dict() # 현재 클러스터 모델의 가중치를 가져옵니다.
-            local_client_updates = [] # 로컬 클라이언트들의 업데이트된 가중치를 저장할 리스트입니다.
-            
-            for client in assigned_clients:
-                # 할당된 각 클라이언트에 대해 훈련을 수행합니다.
-                updated_weights = client.train(cluster_model_state, local_epochs, lr, momentum) # 클라이언트 훈련을 호출합니다.
-                local_client_updates.append(updated_weights) # 업데이트된 가중치를 리스트에 추가합니다.
-            
-            # 3. 이 클러스터의 결과를 집계합니다.
-            # 이 집계는 클라이언트들이 유사성에 따라 그룹화되었기 때문에 더 안정적입니다.
-            if local_client_updates:
-                # 로컬 업데이트가 있는 경우에만 집계합니다.
-                aggregated_weights = self._aggregate_weights(local_client_updates) # 가중치를 평균내어 집계합니다.
-                self.cluster_models[cluster_id].load_state_dict(aggregated_weights) # 집계된 가중치로 클러스터 모델을 업데이트합니다.
-                updated_cluster_weights[cluster_id] = aggregated_weights # 업데이트된 가중치를 저장합니다.
-        
-        return updated_cluster_weights # 모든 클러스터의 업데이트된 가중치를 반환합니다.
-
-    def get_zone_summary_model(self):
-        # get_zone_summary_model 메소드는 "존 요약"을 수행합니다.
-        # 모든 전문화된 로컬 클러스터 모델들의 지식을 단일 평균 모델로 정제합니다.
-        # 이 요약본이 위성으로 전송됩니다; 위성은 개별 클러스터 모델을 직접 보지 않습니다.
-        if not self.cluster_models:
-            # 클러스터 모델이 없으면 None을 반환합니다.
-            return None
-        
-        cluster_model_states = [model.state_dict() for model in self.cluster_models.values()] # 모든 클러스터 모델의 가중치를 리스트로 가져옵니다.
-        zone_summary_state = self._aggregate_weights(cluster_model_states) # 클러스터 모델들의 가중치를 평균내어 존 요약 가중치를 만듭니다.
-        
-        zone_summary_model = Net() # 존 요약 모델을 위한 새로운 Net 객체를 생성합니다.
-        zone_summary_model.load_state_dict(zone_summary_state) # 요약 가중치를 모델에 로드합니다.
-        return zone_summary_model # 존 요약 모델을 반환합니다.
-
-    def _aggregate_weights(self, client_weights):
-        # _aggregate_weights는 FedAvg(Federated Averaging)를 위한 헬퍼 함수입니다.
-        if not client_weights:
-            # 가중치 리스트가 비어있으면 None을 반환합니다.
-            return None
-        
-        agg_weights = copy.deepcopy(client_weights[0]) # 첫 번째 클라이언트의 가중치를 기준으로 집계할 가중치를 초기화합니다.
-        for k in agg_weights.keys():
-            # 가중치 딕셔너리의 모든 키(계층)에 대해 반복합니다.
-            agg_weights[k] = torch.stack([cw[k].float() for cw in client_weights], 0).mean(0) # 모든 클라이언트의 해당 계층 가중치를 쌓아서 평균을 계산합니다.
-        return agg_weights # 집계된 가중치를 반환합니다.
 
 class Satellite:
     # Satellite 클래스는 이제 K개의 글로벌 모델을 관리하고, 전역 클라이언트 클러스터링을 담당합니다.
