@@ -217,72 +217,101 @@ class UAV:
         return agg_weights # 집계된 가중치를 반환합니다.
 
 class Satellite:
-    # Satellite 클래스는 계층 구조의 최상위에 있는 중앙 글로벌 서버를 나타냅니다.
-    # 전체 훈련 과정을 관리하고, 모든 존으로부터 요약본을 집계하며, 단일 글로벌 모델을 유지합니다.
-    def __init__(self, num_zones, num_clusters_per_zone):
+    # Satellite 클래스는 이제 K개의 글로벌 모델을 관리하고, 전역 클라이언트 클러스터링을 담당합니다.
+    def __init__(self, num_zones, num_global_clusters):
         # __init__ 메소드는 Satellite 객체를 초기화합니다.
-        self.global_model = Net() # 중앙 글로벌 모델입니다.
-        self.zones = [UAV(i, num_clusters_per_zone) for i in range(num_zones)] # 지정된 수만큼 UAV(존) 객체를 생성하여 리스트에 저장합니다.
+        self.global_models = {k: Net() for k in range(num_global_clusters)} # K개의 글로벌 모델을 딕셔너리 형태로 관리합니다.
+        self.zones = [UAV(i) for i in range(num_zones)] # UAV는 이제 클러스터 정보를 갖지 않습니다.
+        self.all_clients = [] # 시뮬레이션의 모든 클라이언트를 저장하는 리스트입니다.
 
     def distribute_clients(self, clients, client_zone_mapping):
-        # distribute_clients 메소드는 클라이언트들을 해당 존에 분배합니다.
+        # distribute_clients 메소드는 클라이언트들을 해당 존에 분배하고, 모든 클라이언트 목록을 저장합니다.
+        self.all_clients = clients
         for client_id, zone_id in client_zone_mapping.items():
-            # 클라이언트-존 매핑에 따라 반복합니다.
-            self.zones[zone_id].add_client(clients[client_id]) # 해당 존에 클라이언트를 추가합니다.
+            self.zones[zone_id].add_client(clients[client_id])
+
+    def assign_clients_to_global_clusters(self, args):
+        # assign_clients_to_global_clusters는 모든 클라이언트를 K개의 글로벌 클러스터 중 하나에 할당합니다.
+        assignments = {k: [] for k in range(args.num_global_clusters)}
+        print(f"Assigning {len(self.all_clients)} clients to {args.num_global_clusters} global clusters...")
+        for client in self.all_clients:
+            losses = []
+            # 각 클라이언트는 K개의 글로벌 모델 각각에 대해 손실을 계산하여 '인터뷰'합니다.
+            for k in range(args.num_global_clusters):
+                model_state = self.global_models[k].state_dict()
+                loss = client.evaluate_model_loss(model_state)
+                losses.append(loss)
+            # 가장 낮은 손실을 보인 클러스터에 클라이언트를 할당합니다.
+            best_cluster_id = np.argmin(losses)
+            assignments[best_cluster_id].append(client)
+        
+        dist_str = ", ".join([f"GC{k}: {len(clients)} clients" for k, clients in assignments.items()])
+        print(f"Global cluster distribution: {dist_str}")
+        return assignments
+
+    def _aggregate_weights(self, client_weights):
+        # _aggregate_weights는 FedAvg를 위한 헬퍼 함수입니다.
+        if not client_weights:
+            return None
+        agg_weights = copy.deepcopy(client_weights[0])
+        for key in agg_weights.keys():
+            agg_weights[key] = torch.stack([cw[key].float() for cw in client_weights], 0).mean(0)
+        return agg_weights
 
     def train_round(self, epoch, args):
-        # train_round 메소드는 한 번의 전체 계층적 훈련 라운드를 실행합니다.
-        print(f"--- Round {epoch+1}/{args.epochs} ---") # 현재 라운드 번호를 출력합니다.
+        # train_round는 이제 글로벌 클러스터링 기반의 훈련을 수행합니다.
+        print(f"--- Round {epoch+1}/{args.epochs} ---")
         
-        # 1단계: 동기화. 단일 글로벌 모델을 모든 UAV에 방송합니다.
-        # UAV들은 이를 사용하여 로컬 클러스터 모델을 재설정합니다.
-        global_model_state = self.global_model.state_dict() # 현재 글로벌 모델의 가중치를 가져옵니다.
-        for zone in self.zones:
-            # 모든 존에 대해 반복합니다.
-            zone.update_cluster_models_from_global(global_model_state) # 각 존의 클러스터 모델들을 글로벌 모델로 업데이트합니다.
+        # 1단계: 모든 클라이언트를 K개의 글로벌 클러스터 중 하나에 동적으로 할당합니다.
+        client_assignments = self.assign_clients_to_global_clusters(args)
 
-        # 2단계: 로컬 훈련 및 클러스터링.
-        # 모든 존이 클라이언트 할당 및 훈련 단계를 수행하도록 합니다.
-        zone_summary_models = [] # 각 존의 요약 모델을 저장할 리스트입니다.
-        for zone in self.zones:
-            # 모든 존에 대해 반복합니다.
-            zone.train_zone(args.local_epochs, args.lr, args.momentum) # 존 내 훈련을 시작합니다.
-            # 3단계: 수집. 모든 UAV로부터 "존 요약"을 수집합니다.
-            summary_model = zone.get_zone_summary_model() # 존 요약 모델을 가져옵니다.
-            if summary_model:
-                # 요약 모델이 있는 경우에만 추가합니다.
-                zone_summary_models.append(summary_model.state_dict()) # 요약 모델의 가중치를 리스트에 추가합니다.
-        
-        # 4단계: 글로벌 집계.
-        # 수집된 존 요약들을 평균내어 단일 글로벌 모델을 업데이트합니다.
-        if zone_summary_models:
-            # 존 요약 모델이 있는 경우에만 집계합니다.
-            self._aggregate_global_model(zone_summary_models) # 글로벌 모델을 집계합니다.
+        # 2단계 & 3단계: 각 글로벌 클러스터별로 훈련을 진행하고 결과를 집계합니다.
+        for k, assigned_clients in client_assignments.items():
+            if not assigned_clients:
+                print(f"  Global Cluster {k} has no clients, skipping.")
+                continue
 
-    def _aggregate_global_model(self, zone_model_weights):
-        # _aggregate_global_model 메소드는 존 모델들을 집계하여 글로벌 모델을 업데이트합니다 (FedAvg).
-        global_dict = self.global_model.state_dict() # 현재 글로벌 모델의 가중치 딕셔너리를 가져옵니다.
-        for k in global_dict.keys():
-            # 가중치 딕셔너리의 모든 키(계층)에 대해 반복합니다.
-            global_dict[k] = torch.stack([zone_weights[k].float() for zone_weights in zone_model_weights], 0).mean(0) # 모든 존의 해당 계층 가중치를 쌓아서 평균을 계산합니다.
-        self.global_model.load_state_dict(global_dict) # 집계된 가중치로 글로벌 모델을 업데이트합니다.
+            print(f"  Training Global Cluster {k} with {len(assigned_clients)} clients...")
+            cluster_model_state = self.global_models[k].state_dict()
+            local_client_updates = []
+            
+            for client in assigned_clients:
+                # 각 클라이언트는 자신이 속한 글로벌 클러스터의 모델로 훈련을 시작합니다.
+                updated_weights = client.train(cluster_model_state, args.local_epochs, args.lr, args.momentum)
+                local_client_updates.append(updated_weights)
+            
+            # 4단계: 해당 클러스터의 클라이언트 모델들을 집계하여 특정 글로벌 모델을 업데이트합니다.
+            if local_client_updates:
+                aggregated_weights = self._aggregate_weights(local_client_updates)
+                self.global_models[k].load_state_dict(aggregated_weights)
 
     def test(self, test_loader):
-        # test 메소드는 테스트 데이터셋에서 글로벌 모델의 성능을 평가합니다.
-        self.global_model.eval() # 모델을 평가 모드로 설정합니다.
-        test_loss = 0 # 테스트 손실을 저장할 변수입니다.
-        correct = 0 # 정확하게 예측된 샘플 수를 저장할 변수입니다.
+        # test 메소드는 K개의 모델을 사용하여 앙상블 예측을 수행하고 성능을 평가합니다.
+        for model in self.global_models.values():
+            model.eval() # 모든 모델을 평가 모드로 설정합니다.
+
+        test_loss = 0
+        correct = 0
         with torch.no_grad():
-            # 그래디언트 계산을 비활성화합니다.
             for data, target in test_loader:
-                # 테스트 데이터 로더에서 배치 단위로 데이터를 가져옵니다.
-                output = self.global_model(data) # 모델 예측을 수행합니다.
-                test_loss += F.nll_loss(output, target, reduction='sum').item() # 배치 손실을 합산하여 누적합니다.
-                pred = output.argmax(dim=1, keepdim=True) # 가장 높은 확률을 가진 클래스를 예측값으로 선택합니다.
-                correct += pred.eq(target.view_as(pred)).sum().item() # 예측이 정답과 일치하는 경우 카운트를 증가시킵니다.
-        test_loss /= len(test_loader.dataset) # 전체 테스트 데이터셋에 대한 평균 손실을 계산합니다.
-        accuracy = 100. * correct / len(test_loader.dataset) # 정확도를 백분율로 계산합니다.
-        return test_loss, accuracy # 테스트 손실과 정확도를 반환합니다.
+                # 각 데이터 포인트에 대해 K개의 모델로부터 예측을 모두 얻습니다.
+                outputs = [model(data) for model in self.global_models.values()]
+                
+                # 각 데이터 포인트에 대해 가장 낮은 손실(가장 확실한 예측)을 보이는 모델을 선택합니다.
+                losses = [F.nll_loss(output, target, reduction='none') for output in outputs]
+                stacked_losses = torch.stack(losses, dim=1)
+                best_model_indices = torch.argmin(stacked_losses, dim=1)
+                
+                # 최종 예측과 손실을 계산합니다.
+                final_output = torch.stack([outputs[i][j] for j, i in enumerate(best_model_indices)])
+                test_loss += F.nll_loss(final_output, target, reduction='sum').item()
+                
+                pred = final_output.argmax(dim=1, keepdim=True)
+                correct += pred.eq(target.view_as(pred)).sum().item()
+
+        test_loss /= len(test_loader.dataset)
+        accuracy = 100. * correct / len(test_loader.dataset)
+        return test_loss, accuracy
 
 # --- 4. Data Preparation ---
 def get_data_and_entities(args):
