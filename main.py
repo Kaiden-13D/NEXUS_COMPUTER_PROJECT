@@ -267,7 +267,7 @@ if __name__ == '__main__':
     
     clients, test_loader, client_zone_mapping = get_data_and_entities(args) # 데이터와 엔티티(클라이언트)를 준비합니다.
 
-    satellite = Satellite(args.num_zones, args.num_clusters_per_zone) # Satellite 객체를 생성합니다.
+    satellite = Satellite(args.num_zones, args.num_global_clusters) # Satellite 객체를 생성합니다.
     satellite.distribute_clients(clients, client_zone_mapping) # 클라이언트들을 각 존에 분배합니다.
     
     test_losses = [] # 각 라운드 후의 테스트 손실을 저장할 리스트입니다.
@@ -302,5 +302,7 @@ if __name__ == '__main__':
     plt.show() # 그래프를 화면에 표시합니다.
 
     print("\nHierarchical Federated Learning Simulation Finished.") # 시뮬레이션 종료를 알립니다.
-    torch.save(satellite.global_model.state_dict(), "hierarchical_federated_model.pt") # 최종 글로벌 모델의 가중치를 파일에 저장합니다.
-    print("Final global model saved as 'hierarchical_federated_model.pt'") # 모델이 저장되었음을 알립니다.
+    # K개의 글로벌 모델을 state_dict 딕셔너리로 저장합니다.
+    model_states = {k: model.state_dict() for k, model in satellite.global_models.items()}
+    torch.save(model_states, "hierarchical_federated_models.pt")
+    print("Final global models saved as 'hierarchical_federated_models.pt'") # 모델이 저장되었음을 알립니다.
