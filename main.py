@@ -18,7 +18,7 @@ class Args:
         self.local_epochs = 2 # 각 클라이언트가 로컬에서 모델을 훈련하는 에포크 수입니다.
         self.num_clients = 100 # 시뮬레이션에 참여하는 총 클라이언트(UE)의 수입니다.
         self.num_zones = 6 # UAV가 관리하는 총 존(zone)의 수입니다.
-        self.num_clusters_per_zone = 3 # 각 존 내에 형성될 클러스터의 수입니다.
+        self.num_global_clusters = 3 # 전체 시스템에 걸쳐 생성할 글로벌 클러스터(K)의 수입니다.
         self.batch_size = 64 # 훈련 및 테스트 시 사용되는 데이터의 배치 크기입니다.
         self.lr = 0.01 # 학습률(learning rate)입니다.
         self.momentum = 0.5 # SGD 옵티마이저에 사용될 모멘텀 값입니다.
