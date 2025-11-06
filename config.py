@@ -7,7 +7,7 @@ Centralizing configuration simplifies experimentation and parameter sweeps.
 
 config = {
     # Data and model configuration
-    "dataset": "MNIST",  # "MNIST" or "FEMNIST"
+    "dataset": "FEMNIST",  # "MNIST" or "FEMNIST"
     "scenario": "strong",  # "weak", "medium", or "strong" Non-IID
 
     # Federated learning parameters
