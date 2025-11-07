@@ -1,87 +1,92 @@
-"""
-Data loading and partitioning module.
 
-This module provides functions to load datasets (e.g., MNIST, FEMNIST) and partition them
-to simulate Non-IID data distributions among clients.
-"""
+from collections import defaultdict
 
+from datasets import load_dataset
+from torch.utils.data import Dataset
+from torchvision.transforms import Compose, ToTensor, Normalize
 import torch
-import torchvision
-import torchvision.transforms as transforms
-from torch.utils.data import TensorDataset, DataLoader
-import numpy as np
 
-def load_dataset(root, dataset_name, train=True):
-    """Loads the specified dataset.
+class FEMNISTDataset(Dataset):
+    def __init__(self, dataset, transform=None):
+        self.dataset = dataset
+        self.transform = transform
 
-    Args:
-        root (str): The root directory where the dataset is stored.
-        dataset_name (str): The name of the dataset to load (e.g., "MNIST").
-        train (bool): Whether to load the training or test set.
+    def __len__(self):
+        return len(self.dataset)
 
-    Returns:
-        A PyTorch Dataset.
-    """
-    transform = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Normalize((0.5,), (0.5,))
-    ])
-
-    if dataset_name == "MNIST":
-        dataset = torchvision.datasets.MNIST(
-            root=root,
-            train=train,
-            download=True,
-            transform=transform
-        )
-    else:
-        raise ValueError(f"Dataset {dataset_name} not supported.")
-
-    return dataset
-
-def partition_data(dataset, num_clients, scenario="strong"):
-    """Partitions the dataset for a number of clients to simulate Non-IID data.
-
-    Args:
-        dataset: The dataset to partition.
-        num_clients (int): The number of clients.
-        scenario (str): The Non-IID scenario ("strong", "medium", "weak").
-
-    Returns:
-        A list of DataLoaders, one for each client.
-    """
-    if scenario == "strong":
-        # Strong Non-IID: Each client gets data from only a few classes.
-        # Simple implementation: Sort data by label and distribute chunks.
-        labels = dataset.targets.numpy()
-        sorted_indices = np.argsort(labels)
+    def __getitem__(self, idx):
+        sample = self.dataset[idx]
+        image = sample['image']
+        label = sample['character']
         
-        # Shuffle within sorted chunks to add some randomness
-        # This is a simple way to create shards.
-        shards = np.array_split(sorted_indices, num_clients * 2) # Create more shards than clients
-        np.random.shuffle(shards)
-        
-        client_data_indices = [np.concatenate(shards[i*2:(i+1)*2]) for i in range(num_clients)]
-
-    else:
-        # For now, only strong Non-IID is implemented
-        raise NotImplementedError(f"Scenario '{scenario}' is not implemented yet.")
-
-    client_dataloaders = []
-    for indices in client_data_indices:
-        client_images = dataset.data[indices]
-        client_labels = dataset.targets[indices]
-        
-        # Add a channel dimension for grayscale images
-        if len(client_images.shape) == 3:
-            client_images = client_images.unsqueeze(1)
+        if self.transform:
+            image = self.transform(image)
             
-        # Normalize manually as transform is not applied on subset
-        client_images = client_images.float() / 255.0
-        client_images = (client_images - 0.5) / 0.5
+        return image, torch.tensor(label, dtype=torch.long)
 
-        tensor_dataset = TensorDataset(client_images, client_labels)
-        dataloader = DataLoader(tensor_dataset, batch_size=32, shuffle=True)
-        client_dataloaders.append(dataloader)
+def load_femnist_dataset(split='train'):
+    """
+    Loads the FEMNIST dataset from Hugging Face.
+    """
+    return load_dataset("flwrlabs/femnist", split=split)
 
-    return client_dataloaders
+
+
+def partition_data(dataset, num_clients, scenario='non-iid-label'):
+    """
+    Partitions the dataset for a number of clients more efficiently.
+    This version avoids multiple .filter() calls.
+    """
+    # 1. Group indices by writer_id in a single pass
+    print("   - Grouping data by writer...")
+    writer_to_indices = defaultdict(list) # 이거 그냥 key 없으면 자동으로 에러 안내고 key 만들어주는 딕셔너리임. 
+    # This assumes the dataset is a Hugging Face Dataset object
+    for i, writer_id in enumerate(dataset['writer_id']):
+        writer_to_indices[writer_id].append(i)
+    
+    writer_ids = sorted(list(writer_to_indices.keys()))
+    print("writer_ids sample: ", writer_ids[:10])
+    
+    # 2. Distribute writer_ids to clients
+    writers_per_client = len(writer_ids) // num_clients
+    print("총 writer 수: ", len(writer_ids))
+    print("writer per client: ", writers_per_client)
+    client_datasets = []
+    
+    print(f"   - Assigning writers to {num_clients} clients...")
+    for i in range(num_clients):
+        client_indices = []
+        start_writer_idx = i * writers_per_client
+        end_writer_idx = (i + 1) * writers_per_client if i < num_clients - 1 else len(writer_ids)
+        
+        client_writer_ids = writer_ids[start_writer_idx:end_writer_idx]
+        
+        # 3. Gather indices for the client's assigned writers
+        for writer_id in client_writer_ids:
+            client_indices.extend(writer_to_indices[writer_id])
+        
+        # 4. Create a Subset of the original HF dataset
+        client_subset = dataset.select(client_indices)
+        
+        transform = Compose([
+            ToTensor(),
+            Normalize((0.5,), (0.5,))
+        ])
+        
+        client_datasets.append(FEMNISTDataset(client_subset, transform=transform))
+        
+    return client_datasets
+
+if __name__ == '__main__':
+    # Example usage
+    full_dataset = load_femnist_dataset()
+    print(f"Total samples: {len(full_dataset)}")
+    print(f"Features: {full_dataset.features}")
+
+    num_clients = 120
+    client_datasets = partition_data(full_dataset, num_clients)
+
+    print(f"\nPartitioned data for {num_clients} clients.")
+    for i, client_ds in enumerate(client_datasets):
+        print(f"Client {i+1} has {len(client_ds)} samples.")
+
