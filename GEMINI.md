@@ -39,7 +39,7 @@ Sequential simulation – the initial implementation can simulate delays and com
 The simulator is organized into distinct Python modules. The table below summarises each module and its responsibility (keywords only). Long prose descriptions are provided in the subsections that follow.
 
 Module	Responsibility	Key Types/Functions
-data.py	Load FEMNIST/MNIST, create Non‑IID partitions	load_dataset(), partition_data()
+data.py	Load FEMNIST, create Non‑IID partitions	load_dataset(), partition_data()
 models.py	Define shared CNN backbone and personalized head	SimpleCNN, PersonalizedModel
 client.py	Represent a ground client: local dataset, compute/network attributes, local training, scoring	Client class, local_train(), compute_score()
 uav.py	Represent a UAV aggregator: hold clients, perform DCS, aggregate updates	UAV class, select_clients(), aggregate_updates()
@@ -51,7 +51,65 @@ metrics.py	Evaluation utilities: compute accuracies, loss, communication and tim
 config.py	Central configuration for experiments	Config dictionaries
 Data Loading and Partitioning (data.py)
 
-Load dataset: Provide a function load_dataset(root, dataset_name) that downloads and returns the desired dataset (e.g., MNIST initially; later FEMNIST). Use PyTorch’s torchvision.datasets.
+Load dataset: Provide a function that loads dataset. use FEMNIST dataset
+
+example code for FEMNIST is as follows: "Here’s a guide to the FEMNIST dataset and how you can load it into PyTorch for your simulations.
+
+What is the FEMNIST Dataset?
+FEMNIST (Federated Extended MNIST) is a dataset specifically designed for federated learning (FL) simulations. It's a key component of the LEAF benchmark, a suite of datasets for evaluating FL algorithms.
+
+
+Here’s what makes it different from the standard MNIST or EMNIST datasets:
+
+Source: It's built from the NIST Special Database 19, which contains a much larger set of handwritten characters.
+
+Classes: It has 62 classes:
+
+10 digits (0-9)
+
+26 lowercase letters (a-z)
+
+26 uppercase letters (A-Z)
+
+Key Feature (Non-IID): This is the most important part. The dataset is partitioned by writer. There are 3,550 unique writers (users). This "naturally" creates a non-IID (Not Independently and Identically Distributed) data distribution.
+
+
+Why is this important for FL? In a real-world FL simulation (like on mobile phones), each user's local data is not a balanced sample of all data. One user might only write digits "1", "7", and "8", while another might only write letters "A", "b", and "c". FEMNIST simulates this perfectly, making it a realistic and challenging benchmark for federated averaging (FedAvg) and other FL algorithms.
+
+How to Load FEMNIST in PyTorch
+Loading FEMNIST isn't as simple as torchvision.datasets.MNIST() because torchvision doesn't include it. You typically need to preprocess the data from the LEAF repository or use a library that has already done this for you.
+
+Here are a few methods, from easiest to most fundamental.
+
+Method 1: The Easiest Way (Using Hugging Face datasets)
+The Hugging Face datasets library now hosts a version of FEMNIST, which is by far the simplest way to get started.
+
+Install the library:
+
+Bash
+
+pip install datasets
+Load the dataset:
+
+Python
+
+from datasets import load_dataset
+
+# This loads the FEMNIST dataset, partitioned by writer
+# 'main' split contains all data, you'll need to handle train/test splits
+dataset = load_dataset("flwrlabs/femnist", split="train")
+
+# The dataset is now a Hugging Face Dataset object.
+# You can access data by writer_id
+print(f"Total samples: {len(dataset)}")
+print(f"Features: {dataset.features}")
+
+# To get data for a specific writer:
+client_1_data = dataset.filter(lambda example: example["writer_id"] == "f0002_42")
+
+print(f"Client 1 has {len(client_1_data)} samples")
+print(client_1_data[0]['image'])
+From here, you can convert the Dataset object for use with PyTorch."
 
 Partition Non‑IID: partition_data(dataset, num_clients, scenario) generates a list of datasets for clients. For strong Non‑IID, assign few labels per client; for moderate Non‑IID, use a Dirichlet distribution to sample label proportions. Keep a consistent test set for global evaluation.
 
@@ -265,7 +323,11 @@ Encapsulate state in plain classes with minimal methods. For example, the Client
 
 Parameterise everything: store all hyper‑parameters in a config object; do not hard‑code constants inside functions.
 
-Document functions with brief docstrings describing inputs, outputs and side effects.
+include a configurable code so that we can run this in GPU, using google colab.
+
+Document functions with brief docstrings describing inputs, outputs and side effects. maintain "requirements.txt" file for dependencies. 
+
+do not run scripts by yourself.
 
 7. Future Extensions
 

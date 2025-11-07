@@ -1,147 +1,185 @@
-"""
-Training loop for the HPFL simulator.
 
-This module orchestrates the federated training rounds for HPFL and baseline experiments.
-It manages the simulation setup, runs the training rounds, and executes experiments.
-"""
-
+import os
+import random
+import numpy as np
 import torch
-from config import config
-from data import load_dataset, partition_data
-from models import SimpleCNN, PersonalizedHead, get_model_parameters, set_model_parameters
+from tqdm import tqdm
+from collections import OrderedDict
+
+from config import CONFIG
+from data import load_femnist_dataset, partition_data
 from client import Client
 from uav import UAV
 from satellite import Satellite
-from metrics import compute_personalized_accuracy, log_round_metrics
+from dcs import compute_scores
+from metrics import MetricsLogger, compute_personalized_accuracy, compute_global_accuracy
+from models import CNNBackbone # Import the backbone model
+
+def set_seed(seed):
+    """Sets the seed for reproducibility."""
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
 
 def initialize_simulation(config):
-    """Sets up the simulation environment.
+    """Initializes the entire simulation environment."""
+    print("1. Initializing simulation...")
+    set_seed(config['seed'])
 
-    Args:
-        config (dict): The experiment configuration.
+    # Load and partition dataset
+    print("   - Loading and partitioning dataset...")
+    full_hf_dataset = load_femnist_dataset()
+    
+    # Split the Hugging Face dataset into training and testing sets
+    hf_dataset_split = full_hf_dataset.train_test_split(test_size=0.1, seed=config['seed'])
+    train_hf_dataset = hf_dataset_split['train']
+    test_hf_dataset = hf_dataset_split['test']
 
-    Returns:
-        A tuple containing the list of clients, UAVs, the satellite, and the global test loader.
-    """
-    print("Initializing simulation...")
-    # Load data
-    train_dataset = load_dataset("./data", config["dataset"], train=True)
-    test_dataset = load_dataset("./data", config["dataset"], train=False)
-    client_dataloaders = partition_data(train_dataset, config["num_clients"], config["scenario"])
-    global_test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=128)
-
-    # Create models
-    shared_backbone = SimpleCNN()
-    initial_shared_state = get_model_parameters(shared_backbone)
-
+    # Partition the training data for clients
+    client_datasets = partition_data(train_hf_dataset, config['num_clients'])
+    
+    # Create a single global test set (PyTorch Dataset)
+    from data import FEMNISTDataset
+    from torchvision.transforms import Compose, ToTensor, Normalize
+    
+    transform = Compose([ToTensor(), Normalize((0.5,), (0.5,))])
+    global_test_dataset = FEMNISTDataset(test_hf_dataset, transform=transform)
+    
     # Create clients
+    print("   - Creating clients...")
     clients = []
-    for i in range(config["num_clients"]):
-        personal_head = PersonalizedHead()
-        client = Client(f"client_{i}", client_dataloaders[i], shared_backbone, personal_head)
+    for i in range(config['num_clients']):
+        # Assign random compute and communication quality for simulation purposes
+        compute_power = np.random.uniform(0.5, 1.5)
+        comm_quality = np.random.uniform(0.5, 1.5)
+        client = Client(client_id=i, dataset=client_datasets[i], compute_power=compute_power, comm_quality=comm_quality)
         clients.append(client)
 
     # Create UAVs and assign clients
+    print("   - Creating UAVs and assigning clients...")
     uavs = []
-    clients_per_uav = config["num_clients"] // config["num_uavs"]
-    for i in range(config["num_uavs"]):
+    clients_per_uav = config['clients_per_uav']
+    for i in range(config['num_uavs']):
         start_idx = i * clients_per_uav
         end_idx = (i + 1) * clients_per_uav
         uav_clients = clients[start_idx:end_idx]
-        uav = UAV(f"uav_{i}", uav_clients)
-        uav.shared_model_state = initial_shared_state
+        uav = UAV(uav_id=i, clients=uav_clients)
         uavs.append(uav)
 
-    # Create satellite
-    satellite = Satellite(config["initial_clusters_k"])
-    
+    # Create Satellite
+    print("   - Creating Satellite...")
+    satellite = Satellite(num_clusters_k=config['initial_clusters_k'])
+
+    # Initialize a global model on the satellite to start with
+    initial_global_model = CNNBackbone().state_dict()
+    satellite.cluster_models = {0: initial_global_model} # Start with one cluster
+
     print("Initialization complete.")
-    return clients, uavs, satellite, global_test_loader
-
-def run_round(round_idx, uavs, satellite, config):
-    """Runs a single round of federated learning.
-
-    Args:
-        round_idx (int): The current round index.
-        uavs (list): The list of UAVs.
-        satellite (Satellite): The satellite object.
-        config (dict): The experiment configuration.
-    """
-    print(f"--- Round {round_idx+1} ---")
-    uav_aggregated_models = []
-    total_comm_cost = 0
-    total_time_cost = 0
-
-    for uav in uavs:
-        # 1. Client Selection (DCS)
-        selected_clients = uav.select_clients(m=config["max_clients_per_uav"], weights=config["dcs_weights"])
-        
-        # 2. Local Training
-        client_updates = []
-        round_training_times = []
-        for client in selected_clients:
-            deltas, _, training_time, num_samples = client.local_train(
-                uav.shared_model_state, config["local_epochs"], config["learning_rate"]
-            )
-            client_updates.append((deltas, num_samples))
-            round_training_times.append(training_time)
-        
-        if not client_updates:
-            continue
-
-        # 3. UAV Aggregation
-        aggregated_deltas = uav.aggregate_updates(client_updates)
-        
-        # Apply aggregated deltas to the UAV's model
-        current_uav_model = uav.shared_model_state.copy()
-        for key in aggregated_deltas:
-            current_uav_model[key] += aggregated_deltas[key]
-        uav_aggregated_models.append(current_uav_model)
-        
-        # Update time cost (max training time in the round)
-        total_time_cost += max(round_training_times) if round_training_times else 0
-
-    # 4. Satellite Clustering and Aggregation
-    if config["baseline_mode"] in ["Clustering_only", "HPFL"]:
-        clusters = satellite.cluster_models(uav_aggregated_models)
-        cluster_models = satellite.aggregate_clusters(clusters)
-    else: # FedAvg or DCS_only (simple aggregation)
-        clusters = {"global": uav_aggregated_models}
-        cluster_models = satellite.aggregate_clusters(clusters)
-
-    # 5. Model Update
-    # In a real scenario, UAVs would be assigned to a cluster.
-    # Here, we simplify and give all UAVs the first cluster's model (or the global one).
-    global_model_state = list(cluster_models.values())[0]
-    for uav in uavs:
-        uav.shared_model_state = global_model_state
-
-    # Update clients with the new shared state for the next round
-    for uav in uavs:
-        for client in uav.clients:
-            set_model_parameters(client.model.backbone, uav.shared_model_state)
-
+    return clients, uavs, satellite, global_test_dataset
 
 def run_experiment(config):
-    """Runs the full HPFL simulation experiment."""
-    clients, uavs, satellite, global_test_loader = initialize_simulation(config)
-    
-    for r in range(config["rounds"]):
-        run_round(r, uavs, satellite, config)
+    """Runs the full HPFL experiment."""
+    clients, uavs, satellite, global_test_dataset = initialize_simulation(config)
+    logger = MetricsLogger()
+
+    # Get baseline mode from config
+    mode = config['baseline_mode']
+    print(f"\n2. Starting experiment in mode: {mode}\n")
+
+    for round_idx in range(1, config['num_rounds'] + 1):
+        round_losses = []
+        round_comm_costs = []
+        round_time_costs = []
+        uav_aggregated_models = {}
+
+        # --- UAV and Client Level --- #
+        for uav in tqdm(uavs, desc=f"Round {round_idx} - UAVs"):
+            # Get the appropriate model for this UAV (based on previous round's clustering)
+            # For simplicity, we can have a default model or more complex logic here.
+            # In this version, we assume a single global model is broadcast to all.
+            # A more advanced version would map UAVs to clusters.
+            global_model_state = list(satellite.cluster_models.values())[0]
+
+            # Client Selection
+            if mode == 'Hierarchical_FedAvg' or mode == 'Clustering_Only':
+                # Random selection
+                selected_clients = random.sample(uav.clients, config['clients_to_select'])
+            else: # 'DCS_Only' or 'HPFL'
+                # DCS-based selection
+                client_scores = compute_scores(uav.clients, config['dcs_weights'])
+                selected_clients = [cs[0] for cs in sorted(client_scores, key=lambda x: x[1], reverse=True)[:config['clients_to_select']]]
+
+            # Local Training
+            client_updates = []
+            max_train_time = 0
+            for client in selected_clients:
+                updated_params, train_time, comm_cost = client.local_train(
+                    global_model_state, config['local_epochs'], config['learning_rate']
+                )
+                client_updates.append((updated_params, len(client.dataset)))
+                round_losses.append(client.last_loss)
+                round_comm_costs.append(comm_cost)
+                if train_time > max_train_time:
+                    max_train_time = train_time
+            
+            round_time_costs.append(max_train_time)
+
+            # UAV Aggregation
+            if client_updates:
+                aggregated_params = uav.aggregate_updates(client_updates)
+                
+                # Convert list of numpy arrays back to a state_dict
+                new_state_dict = uav.model.state_dict()
+                for i, key in enumerate(new_state_dict.keys()):
+                    new_state_dict[key] = torch.from_numpy(aggregated_params[i])
+
+                uav.model.load_state_dict(new_state_dict)
+
+            uav_aggregated_models[uav.uav_id] = uav.model.state_dict()
+
+        # --- Satellite Level --- #
+        if mode == 'Clustering_Only' or mode == 'HPFL':
+            # Clustering and Global Aggregation
+            cluster_models, _ = satellite.cluster_and_aggregate(uav_aggregated_models)
+        else: # 'Hierarchical_FedAvg' or 'DCS_Only'
+            # Simple global aggregation without clustering
+            all_uav_states = list(uav_aggregated_models.values())
+            global_model = satellite._federated_averaging(all_uav_states)
+            cluster_models = {0: global_model}
         
-        # Evaluate metrics
-        all_accuracies = []
-        for client in clients:
-            # Use a subset of test data for quick personalized eval
-            # In a real scenario, each client has its own test set.
-            acc = compute_personalized_accuracy(client, global_test_loader)
-            all_accuracies.append(acc)
-        
-        avg_personalized_acc = sum(all_accuracies) / len(all_accuracies)
-        
-        metrics = {"Personalized Accuracy": avg_personalized_acc}
-        log_round_metrics(r, metrics)
+        satellite.cluster_models = cluster_models
+
+        # --- Evaluation --- #
+        if round_idx % config['eval_every'] == 0:
+            # Personalized Accuracy
+            pers_accs = [compute_personalized_accuracy(c) for c in clients]
+            avg_pers_acc = np.mean(pers_accs)
+
+            # Global Accuracy (evaluate each cluster model and average)
+            global_accs = [compute_global_accuracy(cm, clients, global_test_dataset) for cm in cluster_models.values()]
+            avg_global_acc = np.mean(global_accs)
+
+            # Log metrics
+            logger.log_round(
+                round_idx=round_idx,
+                personalized_acc=avg_pers_acc,
+                global_acc=avg_global_acc,
+                avg_loss=np.mean(round_losses),
+                comm_cost=np.sum(round_comm_costs),
+                time_cost=np.sum(round_time_costs) # Simplified: sum of max times per UAV zone
+            )
+
+    print("\n3. Experiment finished.")
+    # Save results
+    results_dir = config['results_dir']
+    if not os.path.exists(results_dir):
+        os.makedirs(results_dir)
+    results_file = os.path.join(results_dir, f"{mode}_metrics.csv")
+    logger.save_to_file(results_file)
+    print(f"Results saved to {results_file}")
 
 if __name__ == '__main__':
-    # This allows running the simulation directly
-    run_experiment(config)
+    # Run the main experiment with the settings from config.py
+    run_experiment(CONFIG)
