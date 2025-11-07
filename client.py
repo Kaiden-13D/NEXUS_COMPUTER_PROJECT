@@ -1,27 +1,30 @@
 
 import torch
 import torch.optim as optim
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, random_split
 import time
 import numpy as np
 
-from models import CNNBackbone, PersonalizedHead, get_model_parameters, set_model_parameters
+from models import CNNBackbone, PersonalizedHead
 
 class Client:
     """Represents a ground client in the HPFL simulation."""
-    def __init__(self, client_id, dataset, compute_power=1.0, comm_quality=1.0, device='cpu'):
+    def __init__(self, client_id, train_dataset, test_dataset, compute_power=1.0, comm_quality=1.0, device='cpu'):
         self.client_id = client_id
-        self.dataset = dataset
-        self.dataloader = DataLoader(dataset, batch_size=32, shuffle=True, num_workers=2, pin_memory=True) # 배치로 학습.. client.local_train()에서 사용됨.
+        self.train_dataset = train_dataset
+        self.test_dataset = test_dataset
+        
+        self.train_dataloader = DataLoader(train_dataset, batch_size=32, shuffle=True, num_workers=2, pin_memory=True)
+        self.test_dataloader = DataLoader(test_dataset, batch_size=128, num_workers=2, pin_memory=True)
         
         self.device = device
 
         # Hardware and network attributes
-        self.compute_power = compute_power # e.g., 1.0 for baseline, <1.0 for slower
-        self.comm_quality = comm_quality   # e.g., 1.0 for baseline, <1.0 for worse
+        self.compute_power = compute_power
+        self.comm_quality = comm_quality
         
         # Data attributes
-        self.data_significance = len(dataset)
+        self.data_significance = len(train_dataset)
         
         # Model components
         self.backbone = CNNBackbone().to(self.device)
@@ -33,23 +36,8 @@ class Client:
         self.criterion = torch.nn.CrossEntropyLoss().to(self.device)
 
     def local_train(self, shared_state_dict, epochs, lr):
-        """Performs local training on the client's data.
-
-        Args:
-            shared_state_dict (OrderedDict): The state dict of the shared backbone from the UAV.
-            epochs (int): The number of local training epochs.
-            lr (float): The learning rate for the local optimizer.
-
-        Returns:
-            tuple: A tuple containing:
-                - list: The updated backbone parameters (numpy arrays).
-                - float: The training time in seconds.
-                - int: The number of bytes transmitted (approximated).
-        """
-        # Update local backbone with the shared state
         self.backbone.load_state_dict(shared_state_dict)
         
-        # Set optimizer learning rate
         for param_group in self.optimizer.param_groups:
             param_group['lr'] = lr
 
@@ -63,7 +51,7 @@ class Client:
         printed_batch_info = False # for debugging
 
         for epoch in range(epochs):
-            for images, labels in self.dataloader:
+            for images, labels in self.train_dataloader:
                 # --- Debug TEST CODE ---
                 if not printed_batch_info and self.client_id == 0: #only print for client 0 once
                     print(f"\n[TEST] Client {self.client_id} (Epoch {epoch+1})")
@@ -92,13 +80,10 @@ class Client:
         if num_batches > 0:
             self.last_loss = total_loss / num_batches
 
-        # Get updated backbone parameters
-        updated_backbone_params = get_model_parameters(self.backbone)
-        
-        # Estimate communication cost (size of backbone parameters)
-        comm_cost_bytes = sum(p.nbytes for p in updated_backbone_params)
+        updated_backbone_state = self.backbone.state_dict()
+        comm_cost_bytes = sum(p.numel() * p.element_size() for p in updated_backbone_state.values())
 
-        return updated_backbone_params, training_time, comm_cost_bytes
+        return updated_backbone_state, training_time, comm_cost_bytes
 
     def compute_score(self, weights):
         """Computes the client's selection score based on multiple factors.
@@ -119,18 +104,14 @@ class Client:
         return score
 
     def get_head_params(self):
-        """Returns the parameters of the personalized head."""
-        return get_model_parameters(self.head)
+        return self.head.state_dict()
 
 if __name__ == '__main__':
-    # This is a placeholder for example usage and basic testing.
-    # To run this, we would need a dummy dataset from data.py
     from data import FEMNISTDataset
     from torchvision.transforms import Compose, ToTensor, Normalize
     from datasets import Dataset as HFDataset
     import random
 
-    # 1. Create a dummy dataset for a single client
     def generate_dummy_data(num_samples):
         data = {
             'writer_id': ['f0000_00'] * num_samples,
@@ -139,31 +120,27 @@ if __name__ == '__main__':
         }
         return HFDataset.from_dict(data)
 
-    dummy_hf_dataset = generate_dummy_data(100)
+    dummy_hf_dataset = generate_dummy_data(120)
     transform = Compose([ToTensor(), Normalize((0.5,), (0.5,))])
-    client_dataset = FEMNISTDataset(dummy_hf_dataset, transform=transform)
+    full_dataset = FEMNISTDataset(dummy_hf_dataset, transform=transform)
 
-    # 2. Initialize a client
-    client = Client(client_id=1, dataset=client_dataset, compute_power=0.8, comm_quality=0.9)
-    print(f"Initialized client 1 with {client.data_significance} samples.")
+    train_size = int(0.9 * len(full_dataset))
+    test_size = len(full_dataset) - train_size
+    train_dataset, test_dataset = random_split(full_dataset, [train_size, test_size])
 
-    # 3. Simulate a training round
-    # Get initial backbone state (usually from a server/UAV)
+    client = Client(client_id=1, train_dataset=train_dataset, test_dataset=test_dataset)
+    print(f"Initialized client 1 with {len(train_dataset)} train samples and {len(test_dataset)} test samples.")
+
     initial_backbone_state = client.backbone.state_dict()
     
     print("\nStarting local training...")
-    updated_params, train_time, comm_bytes = client.local_train(initial_backbone_state, epochs=1, lr=0.01)
+    updated_state_dict, train_time, comm_bytes = client.local_train(initial_backbone_state, epochs=1, lr=0.01)
     
-    print(f"Local training finished in {train_time:.4f} seconds (simulated). ")
-    print(f"Last training loss: {client.last_loss:.4f}")
-    print(f"Estimated communication cost: {comm_bytes} bytes.")
+    print(f"Local training finished in {train_time:.4f}s. Last loss: {client.last_loss:.4f}. Comm cost: {comm_bytes} bytes.")
 
-    # 4. Compute selection score
-    # These weights would typically come from the config
     dcs_weights = {'alpha': 0.25, 'beta': 0.25, 'gamma': 0.25, 'delta': 0.25}
     score = client.compute_score(dcs_weights)
     print(f"\nClient selection score: {score:.4f}")
 
-    # 5. Get head parameters (for personalization)
-    head_params = client.get_head_params()
-    print(f"Extracted {len(head_params)} parameter tensors from the personalized head.")
+    head_state_dict = client.get_head_params()
+    print(f"Extracted {len(head_state_dict.keys())} parameter tensors from head.")

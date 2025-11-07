@@ -6,18 +6,19 @@ CONFIG = {
     'dataset': 'FEMNIST',
     'non_iid_scenario': 'non-iid-label', # or 'iid'
     'model_name': 'SimpleCNN',
+    'max_samples_per_client': 500, # Max samples per client, or None for all
 
     # 2. Federated Learning Parameters
     'num_rounds': 50,          # Total number of global training rounds
-    'local_epochs': 5,           # Number of local training epochs on each client
+    'local_epochs': 1,           # Number of local training epochs on each client
     'learning_rate': 0.01,
-    'batch_size': 32,
+    'batch_size': 64,
 
     # 3. System Architecture
     'num_clients': 100,
-    'num_uavs': 10,
-    'clients_per_uav': 10, # num_clients / num_uavs
-    'clients_to_select': 5, # Number of clients selected by each UAV per round (m)
+    'num_uavs': 6,
+    'clients_per_uav': 16, # num_clients / num_uavs
+    'clients_to_select': 10, # Number of clients selected by each UAV per round (m)
 
     # 4. HPFL Specific Parameters
     # 4.1. Dynamic Client Selection (DCS) weights
@@ -30,7 +31,7 @@ CONFIG = {
     
     # 4.2. Similarity-based Clustering
     'initial_clusters_k': 3, # Initial number of clusters
-    'cluster_threshold': 0.95, # Similarity threshold for merging/splitting (future use)
+    'cluster_threshold': 0.90, # Similarity threshold for merging/splitting (future use)
 
     # 5. Simulation Mode
     # 'baseline_mode': None, # Options: 'Hierarchical_FedAvg', 'DCS_Only', 'Clustering_Only', 'HPFL'

@@ -5,7 +5,7 @@ import torch
 
 # We will need clustering utilities, which we assume will be in clustering.py
 from clustering import model_to_vector, cluster_assignment
-from models import CNNBackbone, get_model_parameters
+from models import CNNBackbone
 
 class Satellite:
     """Represents the satellite responsible for global clustering and aggregation."""

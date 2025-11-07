@@ -4,7 +4,7 @@ from collections import OrderedDict
 import torch
 
 from client import Client # Assuming client.py is in the same directory
-from models import CNNBackbone, get_model_parameters, set_model_parameters
+from models import CNNBackbone
 
 class UAV:
     """Represents a UAV that aggregates updates from a group of clients."""
@@ -33,25 +33,32 @@ class UAV:
         """Aggregates model updates from selected clients using Federated Averaging (FedAvg).
 
         Args:
-            client_updates (list of tuples): Each tuple contains (client_params, num_samples).
+            client_updates (list of tuples): Each tuple contains (client_state_dict, num_samples).
 
         Returns:
-            list: The aggregated model parameters (numpy arrays).
+            OrderedDict: The aggregated model state_dict.
         """
         if not client_updates:
-            return get_model_parameters(self.model)
+            return self.model.state_dict() # Return current state
 
         total_samples = sum(num_samples for _, num_samples in client_updates)
         
-        # Initialize aggregated parameters with zeros
-        aggregated_params = [np.zeros_like(p) for p in client_updates[0][0]]
-
-        for client_params, num_samples in client_updates:
-            weight = num_samples / total_samples
-            for i, p in enumerate(client_params):
-                aggregated_params[i] += p * weight
+        # Get the keys from the first model
+        state_dicts = [sd for sd, _ in client_updates]
+        keys = state_dicts[0].keys()
         
-        return aggregated_params
+        avg_state_dict = OrderedDict()
+
+        for key in keys:
+            # Sum weighted tensors for the current key
+            summed_tensor = torch.zeros_like(state_dicts[0][key]) # Init on CPU
+            for sd, num_samples in client_updates:
+                weight = num_samples / total_samples
+                summed_tensor += sd[key] * weight
+            
+            avg_state_dict[key] = summed_tensor
+            
+        return avg_state_dict
 
     def get_model_state(self):
         """Returns the state dictionary of the UAV's model."""
@@ -109,25 +116,19 @@ if __name__ == '__main__':
 
     for client in selected_clients:
         print(f"\nTraining client {client.client_id}...")
-        updated_params, _, _ = client.local_train(uav_model_state, epochs=1, lr=0.01)
-        client_updates.append((updated_params, len(client.dataset)))
+        updated_state_dict, _, _ = client.local_train(uav_model_state, epochs=1, lr=0.01)
+        client_updates.append((updated_state_dict, len(client.dataset)))
         print(f"Client {client.client_id} finished training.")
 
     print(f"\nAggregating updates from {len(client_updates)} clients...")
-    aggregated_params = uav.aggregate_updates(client_updates)
+    aggregated_state_dict = uav.aggregate_updates(client_updates)
     print("Aggregation complete.")
 
     # 5. Update UAV model with aggregated parameters
-    # First, convert list of numpy arrays to a state_dict
-    current_state_dict = uav.get_model_state()
-    new_state_dict = OrderedDict()
-    for i, key in enumerate(current_state_dict.keys()):
-        new_state_dict[key] = torch.from_numpy(aggregated_params[i])
-
-    uav.set_model_state(new_state_dict)
+    uav.set_model_state(aggregated_state_dict)
     print("UAV model state has been updated.")
 
     # Verify the update
-    updated_uav_params = get_model_parameters(uav.model)
-    assert np.allclose(updated_uav_params[0], aggregated_params[0]), "UAV model update failed!"
+    updated_uav_params = uav.model.state_dict()
+    assert torch.allclose(updated_uav_params['fc.weight'], aggregated_state_dict['fc.weight']), "UAV model update failed!"
     print("UAV model update verified.")

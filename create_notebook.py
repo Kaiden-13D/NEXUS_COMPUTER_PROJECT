@@ -58,7 +58,7 @@ from config import CONFIG
 run_experiment(CONFIG)
 '''
 
-runner_cell_content = f"""%%writefile run_simulation.py
+runner_cell_content = f"""
 {simulation_script_content}
 """
 nb['cells'].append(nbf.v4.new_code_cell(runner_cell_content))

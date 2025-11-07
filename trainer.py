@@ -40,10 +40,12 @@ def initialize_simulation(config):
     train_hf_dataset = hf_dataset_split['train']
     test_hf_dataset = hf_dataset_split['test']
 
-    # Partition the training data for clients
-    client_datasets = partition_data(train_hf_dataset, config['num_clients'])
+    client_datasets = partition_data(
+        train_hf_dataset, 
+        config['num_clients'], 
+        max_samples_per_client=config.get('max_samples_per_client')
+    ) # split train dataset and test dataset for client.
     
-    # Create a single global test set (PyTorch Dataset)
     from data import FEMNISTDataset
     from torchvision.transforms import Compose, ToTensor, Normalize
     
@@ -54,10 +56,10 @@ def initialize_simulation(config):
     print("   - Creating clients...")
     clients = []
     for i in range(config['num_clients']):
-        # Assign random compute and communication quality for simulation purposes
+        train_d, test_d = client_datasets[i]
         compute_power = np.random.uniform(0.5, 1.5)
         comm_quality = np.random.uniform(0.5, 1.5)
-        client = Client(client_id=i, dataset=client_datasets[i], compute_power=compute_power, comm_quality=comm_quality , device=device)
+        client = Client(client_id=i, train_dataset=train_d, test_dataset=test_d, compute_power=compute_power, comm_quality=comm_quality, device=device)
         clients.append(client)
 
     # Create UAVs and assign clients
@@ -118,10 +120,10 @@ def run_experiment(config):
             client_updates = []
             max_train_time = 0
             for client in selected_clients:
-                updated_params, train_time, comm_cost = client.local_train(
+                updated_state_dict, train_time, comm_cost = client.local_train(
                     global_model_state, config['local_epochs'], config['learning_rate']
                 )
-                client_updates.append((updated_params, len(client.dataset)))
+                client_updates.append((updated_state_dict, len(client.train_dataset)))
                 round_losses.append(client.last_loss)
                 round_comm_costs.append(comm_cost)
                 if train_time > max_train_time:
@@ -131,14 +133,8 @@ def run_experiment(config):
 
             # UAV Aggregation
             if client_updates:
-                aggregated_params = uav.aggregate_updates(client_updates)
-                
-                # Convert list of numpy arrays back to a state_dict
-                new_state_dict = uav.model.state_dict()
-                for i, key in enumerate(new_state_dict.keys()):
-                    new_state_dict[key] = torch.from_numpy(aggregated_params[i])
-
-                uav.model.load_state_dict(new_state_dict)
+                aggregated_state_dict = uav.aggregate_updates(client_updates)
+                uav.model.load_state_dict(aggregated_state_dict)
 
             uav_aggregated_models[uav.uav_id] = uav.model.state_dict()
 
@@ -158,7 +154,7 @@ def run_experiment(config):
         # no need to use gpu in uav, satellite . use in eval
         if round_idx % config['eval_every'] == 0:
             # Personalized Accuracy
-            pers_accs = [compute_personalized_accuracy(c, device) for c in clients]
+            pers_accs = [compute_personalized_accuracy(c, device, c.test_dataloader) for c in clients]
             avg_pers_acc = np.mean(pers_accs)
 
             # Global Accuracy (evaluate each cluster model and average)
@@ -185,5 +181,4 @@ def run_experiment(config):
     print(f"Results saved to {results_file}")
 
 if __name__ == '__main__':
-    # Run the main experiment with the settings from config.py
     run_experiment(CONFIG)
