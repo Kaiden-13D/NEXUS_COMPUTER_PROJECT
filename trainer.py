@@ -28,6 +28,9 @@ def initialize_simulation(config):
     print("1. Initializing simulation...")
     set_seed(config['seed'])
 
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"   - Using device: {device}")
+
     # Load and partition dataset
     print("   - Loading and partitioning dataset...")
     full_hf_dataset = load_femnist_dataset()
@@ -54,7 +57,7 @@ def initialize_simulation(config):
         # Assign random compute and communication quality for simulation purposes
         compute_power = np.random.uniform(0.5, 1.5)
         comm_quality = np.random.uniform(0.5, 1.5)
-        client = Client(client_id=i, dataset=client_datasets[i], compute_power=compute_power, comm_quality=comm_quality)
+        client = Client(client_id=i, dataset=client_datasets[i], compute_power=compute_power, comm_quality=comm_quality , device=device)
         clients.append(client)
 
     # Create UAVs and assign clients
@@ -77,11 +80,11 @@ def initialize_simulation(config):
     satellite.cluster_models = {0: initial_global_model} # Start with one cluster
 
     print("Initialization complete.")
-    return clients, uavs, satellite, global_test_dataset
+    return clients, uavs, satellite, global_test_dataset, device 
 
 def run_experiment(config):
     """Runs the full HPFL experiment."""
-    clients, uavs, satellite, global_test_dataset = initialize_simulation(config)
+    clients, uavs, satellite, global_test_dataset, device= initialize_simulation(config) # add device (gpu/cpu)
     logger = MetricsLogger()
 
     # Get baseline mode from config
@@ -152,13 +155,14 @@ def run_experiment(config):
         satellite.cluster_models = cluster_models
 
         # --- Evaluation --- #
+        # no need to use gpu in uav, satellite . use in eval
         if round_idx % config['eval_every'] == 0:
             # Personalized Accuracy
-            pers_accs = [compute_personalized_accuracy(c) for c in clients]
+            pers_accs = [compute_personalized_accuracy(c, device) for c in clients]
             avg_pers_acc = np.mean(pers_accs)
 
             # Global Accuracy (evaluate each cluster model and average)
-            global_accs = [compute_global_accuracy(cm, clients, global_test_dataset) for cm in cluster_models.values()]
+            global_accs = [compute_global_accuracy(cm, clients, global_test_dataset, device) for cm in cluster_models.values()]
             avg_global_acc = np.mean(global_accs)
 
             # Log metrics

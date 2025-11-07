@@ -63,7 +63,7 @@ def partition_data(dataset, num_clients, scenario='non-iid-label'):
         
         # 3. Gather indices for the client's assigned writers
         for writer_id in client_writer_ids:
-            client_indices.extend(writer_to_indices[writer_id])
+            client_indices.extend(writer_to_indices[writer_id]) # extend 리스트 뒤에 붙이기.
         
         # 4. Create a Subset of the original HF dataset
         client_subset = dataset.select(client_indices)
@@ -72,6 +72,33 @@ def partition_data(dataset, num_clients, scenario='non-iid-label'):
             ToTensor(),
             Normalize((0.5,), (0.5,))
         ])
+        """1. The Transformation Pipeline (transform)
+        
+        transform = Compose([...]) 
+        creates a single pipeline that chains several transformation steps together.
+         When an image is passed to transform, it goes through these steps in order:
+
+         ToTensor(): This is the first step.
+         It converts the input image (which is likely a PIL Image or NumPy array) into a PyTorch Tensor.
+         It scales the image's pixel values. Image pixels are typically in the range [0, 255]. 
+         ToTensor() converts them into a floating-point tensor with values in the range [0.0, 1.0].
+         It changes the tensor's dimension order from $H \times W \times C$ (Height, Width, Channel) 
+         to $C \times H \times W$ (Channel, Height, Width), which is the format PyTorch models expect
+         
+         .Normalize((0.5,), (0.5,)): This is the second step, applied after ToTensor.
+         It normalizes the tensor's values using a given mean and standard deviation. 
+         The formula is: $output = (input - mean) / std$.
+         
+         In your code, the $mean$ is $0.5$ and the $std$ (standard deviation) is $0.5$.
+         This step effectively shifts the [0.0, 1.0] range to [-1.0, 1.0].
+         
+         Min value: $(0.0 - 0.5) / 0.5 = -1.0
+         $Max value: $(1.0 - 0.5) / 0.5 = 1.0
+         
+         $Why do this? Normalizing input data to be centered around 0 
+         (like in the [-1, 1] range) helps the neural network train more efficiently and stably. 
+
+        The (0.5,) tuple format implies the images are single-channel (grayscale), which is correct for the FEMNIST dataset."""
         
         client_datasets.append(FEMNISTDataset(client_subset, transform=transform))
         

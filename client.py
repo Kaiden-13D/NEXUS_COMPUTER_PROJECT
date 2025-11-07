@@ -9,11 +9,13 @@ from models import CNNBackbone, PersonalizedHead, get_model_parameters, set_mode
 
 class Client:
     """Represents a ground client in the HPFL simulation."""
-    def __init__(self, client_id, dataset, compute_power=1.0, comm_quality=1.0):
+    def __init__(self, client_id, dataset, compute_power=1.0, comm_quality=1.0, device='cpu'):
         self.client_id = client_id
         self.dataset = dataset
-        self.dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
+        self.dataloader = DataLoader(dataset, batch_size=32, shuffle=True) # 배치로 학습.. client.local_train()에서 사용됨.
         
+        self.device = device
+
         # Hardware and network attributes
         self.compute_power = compute_power # e.g., 1.0 for baseline, <1.0 for slower
         self.comm_quality = comm_quality   # e.g., 1.0 for baseline, <1.0 for worse
@@ -22,13 +24,13 @@ class Client:
         self.data_significance = len(dataset)
         
         # Model components
-        self.backbone = CNNBackbone()
-        self.head = PersonalizedHead()
+        self.backbone = CNNBackbone().to(self.device)
+        self.head = PersonalizedHead().to(self.device)
         
         # Training state
         self.last_loss = -1
         self.optimizer = optim.SGD(list(self.backbone.parameters()) + list(self.head.parameters()), lr=0.01)
-        self.criterion = torch.nn.CrossEntropyLoss()
+        self.criterion = torch.nn.CrossEntropyLoss().to(self.device)
 
     def local_train(self, shared_state_dict, epochs, lr):
         """Performs local training on the client's data.
@@ -58,8 +60,18 @@ class Client:
         total_loss = 0.0
         num_batches = 0
 
+        printed_batch_info = False # for debugging
+
         for epoch in range(epochs):
             for images, labels in self.dataloader:
+                # --- Debug TEST CODE ---
+                if not printed_batch_info and self.client_id == 0: #only print for client 0 once
+                    print(f"\n[TEST] Client {self.client_id} (Epoch {epoch+1})")
+                    print(f"  - DataLoader provided a batch of images with shape: {images.shape}")
+                    print(f"  - DataLoader provided a batch of labels with shape: {labels.shape}")
+                    printed_batch_info = True
+                # --- END OF TEST CODE ---
+                images, labels = images.to(self.device), labels.to(self.device)
                 self.optimizer.zero_grad()
                 
                 # Forward pass

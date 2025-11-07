@@ -3,7 +3,7 @@ import torch
 from torch.utils.data import DataLoader, ConcatDataset
 import numpy as np
 
-def compute_personalized_accuracy(client, test_loader=None):
+def compute_personalized_accuracy(client, device, test_loader=None):
     """Evaluates the accuracy of a client's personalized model on their local test set."""
     client.backbone.eval()
     client.head.eval()
@@ -12,12 +12,16 @@ def compute_personalized_accuracy(client, test_loader=None):
         # Create a DataLoader for the client's dataset if not provided
         # Note: In a real scenario, clients should have separate train/test splits.
         # For this simulation, we can evaluate on their training data as a proxy.
+        print("using client's own dataset for evaluation. consider providing a separate test_loader.")
         test_loader = DataLoader(client.dataset, batch_size=128)
 
     correct = 0
     total = 0
     with torch.no_grad():
         for images, labels in test_loader:
+            # Move the data batch to the device
+            images, labels = images.to(device), labels.to(device)    
+
             features = client.backbone(images)
             outputs = client.head(features)
             _, predicted = torch.max(outputs.data, 1)
@@ -27,12 +31,12 @@ def compute_personalized_accuracy(client, test_loader=None):
     accuracy = 100 * correct / total if total > 0 else 0
     return accuracy
 
-def compute_global_accuracy(cluster_model_state, clients, global_test_dataset):
+def compute_global_accuracy(cluster_model_state, clients, global_test_dataset, device):
     """Evaluates the accuracy of a global (cluster) model on a global test set."""
     # Create a temporary model to load the state
     from models import CNNBackbone, PersonalizedHead
-    backbone = CNNBackbone()
-    head = PersonalizedHead() # A generic head for evaluation
+    backbone = CNNBackbone().to(device)
+    head = PersonalizedHead().to(device) # A generic head for evaluation
     
     # The global model only has a backbone
     backbone.load_state_dict(cluster_model_state)
@@ -45,6 +49,8 @@ def compute_global_accuracy(cluster_model_state, clients, global_test_dataset):
     total = 0
     with torch.no_grad():
         for images, labels in test_loader:
+            images, labels = images.to(device), labels.to(device)
+            
             features = backbone(images)
             outputs = head(features) # Use the generic head
             _, predicted = torch.max(outputs.data, 1)
