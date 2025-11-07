@@ -1,0 +1,153 @@
+
+
+### 3\. Fix the Data Transfer Bottleneck (Most Impactful Refactor)
+
+This is your **biggest hidden bottleneck**.
+
+Your current logic is:
+`Client (GPU)` -\> `.cpu()` -\> `.numpy()` -\> `UAV (CPU)` -\> `Numpy list` -\> `Trainer (CPU)` -\> `Tensor` -\> `state_dict` -\> `Satellite (CPU)`
+
+That `.cpu().numpy()` conversion is slow and blocks the main thread. You should **pass `state_dict` objects around directly** (which are just CPU-based dictionaries). This requires a refactor but is the "correct" PyTorch way.
+
+#### Step 3.1: Change `client.py`
+
+Have `local_train` return the `state_dict` directly. This avoids `get_model_parameters`.
+
+```python
+# In client.py -> local_train
+    
+    # ... (end of training loop) ...
+
+    # Update last_loss
+    if num_batches > 0:
+        self.last_loss = total_loss / num_batches
+
+    # --- CHANGE THIS ---
+    # Return the state_dict directly. 
+    # .state_dict() is already on the CPU by default.
+    updated_backbone_state = self.backbone.state_dict()
+    
+    # Estimate communication cost
+    comm_cost_bytes = sum(p.numel() * p.element_size() for p in updated_backbone_state.values())
+
+    # --- RETURN THE STATE_DICT ---
+    return updated_backbone_state, training_time, comm_cost_bytes
+```
+
+#### Step 3.2: Change `uav.py`
+
+Modify `aggregate_updates` to take and return `state_dict`s. You can borrow the logic from your `satellite.py` file.
+
+```python
+# In uav.py
+
+# ... (imports) ...
+
+class UAV:
+    # ... (__init__) ...
+
+    def aggregate_updates(self, client_updates):
+        """Aggregates model updates from selected clients using Federated Averaging (FedAvg).
+
+        Args:
+            client_updates (list of tuples): Each tuple contains (client_state_dict, num_samples).
+
+        Returns:
+            OrderedDict: The aggregated model state_dict.
+        """
+        if not client_updates:
+            return self.model.state_dict() # Return current state
+
+        total_samples = sum(num_samples for _, num_samples in client_updates)
+        
+        # Get the keys from the first model
+        state_dicts = [sd for sd, _ in client_updates]
+        keys = state_dicts[0].keys()
+        
+        avg_state_dict = OrderedDict()
+
+        for key in keys:
+            # Sum weighted tensors for the current key
+            summed_tensor = torch.zeros_like(state_dicts[0][key]) # Init on CPU
+            for sd, num_samples in client_updates:
+                weight = num_samples / total_samples
+                summed_tensor += sd[key] * weight
+            
+            avg_state_dict[key] = summed_tensor
+            
+        return avg_state_dict
+```
+
+#### Step 3.3: Change `trainer.py`
+
+Your main loop becomes much simpler, as no conversion is needed.
+
+```python
+# In trainer.py -> run_experiment -> UAV and Client Level loop
+
+            # Local Training
+            client_updates = []
+            max_train_time = 0
+            for client in selected_clients:
+                # --- THIS NOW RETURNS A STATE_DICT ---
+                updated_state_dict, train_time, comm_cost = client.local_train(
+                    global_model_state, config['local_epochs'], config['learning_rate']
+                )
+                client_updates.append((updated_state_dict, len(client.dataset)))
+                # ... (rest of metric logging) ...
+            
+            round_time_costs.append(max_train_time)
+
+            # UAV Aggregation
+            if client_updates:
+                # --- THIS NOW RETURNS A STATE_DICT ---
+                aggregated_state_dict = uav.aggregate_updates(client_updates)
+                
+                # --- THIS IS NOW SIMPLE ---
+                uav.model.load_state_dict(aggregated_state_dict)
+
+            uav_aggregated_models[uav.uav_id] = uav.model.state_dict()
+```
+
+This change **removes the entire `get_model_parameters` and `set_model_parameters` logic** from `models.py`, which was the source of the `numpy` bottleneck.
+
+-----
+
+### 4\. Optimize Evaluation (Easy Win)
+
+Your evaluation functions in `metrics.py` are creating `DataLoader`s but are not using `num_workers`. This is an easy fix.
+
+  * **File:** `metrics.py`
+  * **Changes:**
+
+<!-- end list -->
+
+```python
+# In metrics.py -> compute_personalized_accuracy
+    if test_loader is None:
+        # --- ADD num_workers and pin_memory ---
+        test_loader = DataLoader(
+            client.dataset, 
+            batch_size=128, 
+            num_workers=2, 
+            pin_memory=True
+        )
+    # ...
+```
+
+```python
+# In metrics.py -> compute_global_accuracy
+    # ...
+    backbone.load_state_dict(cluster_model_state)
+    backbone.eval()
+    head.eval()
+
+    # --- ADD num_workers and pin_memory ---
+    test_loader = DataLoader(
+        global_test_dataset, 
+        batch_size=128, 
+        num_workers=2, 
+        pin_memory=True
+    )
+    # ...
+```
