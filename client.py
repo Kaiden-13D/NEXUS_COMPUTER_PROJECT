@@ -12,7 +12,7 @@ class Client:
     def __init__(self, client_id, dataset, compute_power=1.0, comm_quality=1.0, device='cpu'):
         self.client_id = client_id
         self.dataset = dataset
-        self.dataloader = DataLoader(dataset, batch_size=32, shuffle=True) # 배치로 학습.. client.local_train()에서 사용됨.
+        self.dataloader = DataLoader(dataset, batch_size=32, shuffle=True, num_workers=2, pin_memory=True) # 배치로 학습.. client.local_train()에서 사용됨.
         
         self.device = device
 
