@@ -32,14 +32,12 @@ class Client:
         
         # Training state
         self.last_loss = -1
-        self.optimizer = optim.SGD(list(self.backbone.parameters()) + list(self.head.parameters()), lr=0.01)
         self.criterion = torch.nn.CrossEntropyLoss().to(self.device)
 
     def local_train(self, shared_state_dict, epochs, lr):
         self.backbone.load_state_dict(shared_state_dict)
         
-        for param_group in self.optimizer.param_groups:
-            param_group['lr'] = lr
+        optimizer = optim.SGD(list(self.backbone.parameters()) + list(self.head.parameters()), lr=0.01)
 
         self.backbone.train()
         self.head.train()
@@ -60,7 +58,7 @@ class Client:
                     printed_batch_info = True
                 # --- END OF TEST CODE ---
                 images, labels = images.to(self.device), labels.to(self.device)
-                self.optimizer.zero_grad()
+                optimizer.zero_grad()
                 
                 # Forward pass
                 features = self.backbone(images)
@@ -68,7 +66,7 @@ class Client:
                 
                 loss = self.criterion(outputs, labels)
                 loss.backward()
-                self.optimizer.step()
+                optimizer.step()
                 
                 total_loss += loss.item()
                 num_batches += 1
