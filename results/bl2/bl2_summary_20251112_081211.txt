@@ -1,0 +1,13 @@
+=== BL2 Experiment Summary ===
+Timestamp: 2025-11-12 08:12:11
+Total Rounds: 50
+
+--- Final Performance Metrics ---
+Global Accuracy: 80.37%
+Global Loss: 0.6397
+
+--- Efficiency Metrics ---
+Total Communication Cost: 486.09 MB
+Total Time Cost: 2567.27 seconds
+Average Round Cost: 9.72 MB
+Average Round Time: 51.35 seconds

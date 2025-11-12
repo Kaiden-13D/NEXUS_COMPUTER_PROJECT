@@ -1,0 +1,15 @@
+=== BL3 Experiment Summary ===
+Timestamp: 2025-11-12 09:13:44
+Total Rounds: 50
+
+--- Final Performance Metrics ---
+Global Accuracy: 85.18%
+Global Loss: 0.4264
+Personalized Accuracy: 83.81%
+Personalized Loss: 0.4731
+
+--- Efficiency Metrics ---
+Total Communication Cost: 803.60 MB
+Total Time Cost: 2239.52 seconds
+Average Round Cost: 16.07 MB
+Average Round Time: 44.79 seconds
