@@ -38,20 +38,24 @@ async def main():
     # 데이터 준비
     print("Loading FEMNIST from Hugging Face (flwrlabs/femnist)...", flush=True)
     logger.log("Loading FEMNIST...", print_to_console=False)
-    clients_ds, global_test = setup_femnist_by_writer(
-        num_clients=Config.NUM_CLIENTS, seed=Config.SEED, logger=logger
+    clients_ds, client_test_ds, num_classes = setup_femnist_by_writer(
+        num_clients=Config.NUM_CLIENTS
     )
-    global_test_loader = DataLoader(global_test, batch_size=Config.BATCH_SIZE, shuffle=False)
-    num_classes = 62
+    global_test_loader = DataLoader(
+        ConcatDataset(client_test_ds), batch_size=Config.BATCH_SIZE, shuffle=False
+    )
     
     # 노드/링크 초기화
-    uav_links = [Link(bandwidth_bps=Config.CLIENT_UPLINK_BW) for _ in range(Config.NUM_UAV)]
-    sat_link = Link(bandwidth_bps=Config.UAV_SAT_BW)
+    uav_links = [
+        Link(f"UAV{i}-SAT", 30+i*5, 10, Config.UAV_SAT_BW, 0.01)
+        for i in range(Config.NUM_UAV)
+    ]
+    sat_link = Link("SAT", 30, 10, Config.UAV_SAT_BW, 0.01)
     
     uav_in_qs = [asyncio.Queue() for _ in range(Config.NUM_UAV)]
     uav_out_q = asyncio.Queue()
     uavs = [
-        UAV(id=f"uav_{i}", link=sat_link, in_q=uav_in_qs[i], out_q=uav_out_q)
+        UAV(id=f"uav_{i}", link=uav_links[i], in_q=uav_in_qs[i], out_q=uav_out_q)
         for i in range(Config.NUM_UAV)
     ]
     sat = SatAgg(in_q=uav_out_q)
@@ -64,7 +68,7 @@ async def main():
         client_train_ds.append(ds)
         loader = DataLoader(ds, batch_size=Config.BATCH_SIZE, shuffle=True)
         uav_id = f"uav_{i % Config.NUM_UAV}"
-        link = Link(bandwidth_bps=Config.CLIENT_UPLINK_BW)
+        link = Link(f"C{i}->UAV{i % Config.NUM_UAV}", 50, 25, Config.CLIENT_UPLINK_BW, 0.02)
         c = FLClient(id=f"client_{i}", uav_id=uav_id, link=link, train_loader=loader)
         clients.append(c)
     
@@ -139,29 +143,14 @@ async def main():
                 else:
                     client_weights.append(1.0)
             
-            # 재클러스터링 주기
-            should_recluster = (r == 0) or ((r + 1) % Config.CLUSTER_REASSIGN_INTERVAL == 0)
-            if should_recluster:
-                print("  Computing model similarity and clustering...", flush=True)
-                logger.log(f"Round {r+1}: Computing model similarity and clustering...", print_to_console=False)
-                similarity_matrix = compute_similarity_matrix(buffer_state_dicts)
-                cluster_labels = cluster_models(
-                    buffer_state_dicts,
-                    num_clusters=None,
-                    similarity_matrix=similarity_matrix,
-                    min_cluster_size=Config.MIN_CLUSTER_SIZE,
-                    use_silhouette=True
-                )
-            else:
-                cluster_labels = []
-                for client_id in buffer_client_ids:
-                    if client_id and client_id in client_to_cluster:
-                        cluster_labels.append(client_to_cluster[client_id])
-                    else:
-                        if cluster_models_dict:
-                            cluster_labels.append(list(cluster_models_dict.keys())[0])
-                        else:
-                            cluster_labels.append(0)
+            # 모델 유사도 기반 클러스터링
+            print("  Computing model similarity and clustering...", flush=True)
+            logger.log(f"Round {r+1}: Computing model similarity and clustering...", print_to_console=False)
+            similarity_matrix = compute_similarity_matrix(buffer_state_dicts)
+            
+            # 클러스터 수 자동 결정 (간단한 휴리스틱)
+            num_clusters = max(2, min(5, len(buffer_state_dicts) // 3))
+            cluster_labels = cluster_models(buffer_state_dicts, num_clusters=num_clusters)
             
             print(f"  Clustered into {len(set(cluster_labels))} clusters: {dict(zip(range(len(cluster_labels)), cluster_labels))}", flush=True)
             
@@ -177,18 +166,19 @@ async def main():
                 if client_id and idx < len(cluster_labels):
                     client_to_cluster[client_id] = cluster_labels[idx]
             
-            # 클러스터 모델 업데이트 (감쇠+데이터량 가중)
+            # 클러스터 모델 업데이트 (클러스터 크기 기반 가중치 사용)
             for cluster_id, cluster_model_state in new_cluster_models.items():
                 if cluster_id in cluster_models_dict:
-                    current_cluster_indices = [idx for idx, label in enumerate(cluster_labels) if label == cluster_id]
-                    cluster_data_size = sum(client_weights[idx] for idx in current_cluster_indices if idx < len(client_weights))
-                    old_weight = Config.CLUSTER_UPDATE_DECAY * cluster_data_size
-                    new_weight = cluster_data_size
+                    # 현재 라운드의 클러스터 크기 계산
+                    current_cluster_size = sum(1 for label in cluster_labels if label == cluster_id)
+                    # 기존 클러스터 모델의 가중치 (이전 라운드들의 누적 효과를 고려)
+                    # 간단히 현재 라운드 크기와 1:1로 가중 평균
                     cluster_models_dict[cluster_id] = fedavg(
                         [cluster_models_dict[cluster_id], cluster_model_state],
-                        weights=[old_weight, new_weight]
+                        weights=[1.0, float(current_cluster_size)]
                     )
                 else:
+                    # 새 클러스터 모델 추가
                     cluster_models_dict[cluster_id] = cluster_model_state
             
             print(f"  Updated {len(cluster_models_dict)} cluster models.", flush=True)
@@ -280,10 +270,13 @@ async def main():
         pa_avg = sum(personalized_accs) / len(personalized_accs) if personalized_accs else 0.0
         pl_avg = sum(personalized_losses) / len(personalized_losses) if personalized_losses else 0.0
         
+        # 효율성 측정
+        r_bytes, r_delay = COST.end_round()
+        
         # 라운드/누적 비용
         print(f"  [Perf] Global GA: {ga:.2f}% | Global Loss: {gl:.4f}", flush=True)
         print(f"  [Perf] Personalized PA: {pa_avg:.2f}% | Personalized Loss: {pl_avg:.4f} ({len(personalized_accs)} clients)", flush=True)
-        print(f"  [Effi] Round Cost: {COST.last_round_bytes/1024:.0f} KB, +{COST.last_round_time:.2f}s simulated time", flush=True)
+        print(f"  [Effi] Round Cost: {r_bytes/1024:.0f} KB, +{r_delay:.2f}s simulated time", flush=True)
         print(f"  [Cumul] Total Data: {COST.total_cum_bytes/1024/1024:.2f} MB | Total Time: {COST.total_cum_time:.2f}s", flush=True)
         
         # 종료 조건 (클러스터링 타겟은 Personalized 기준)
