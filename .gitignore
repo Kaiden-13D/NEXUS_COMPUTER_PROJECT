@@ -40,7 +40,6 @@ ENV/
 
 # 실험 결과 및 로그
 # logs/ - removed: logs should be tracked in jaebaek branch
-# results/ - removed: results should be tracked in jaebaek branch
 *.log
 *.csv
 *.json
