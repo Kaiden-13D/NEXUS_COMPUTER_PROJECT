@@ -45,7 +45,7 @@ if [ ! -f "requirements.txt" ]; then
 fi
 
 echo -e "${YELLOW}Installing packages from requirements.txt...${NC}"
-$PIP_CMD install -r requirements.txt
+$PIP_CMD install --root-user-action=ignore -r requirements.txt
 
 echo -e "\n${GREEN}=== Verifying Installation ===${NC}"
 
