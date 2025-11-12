@@ -39,14 +39,14 @@ ENV/
 *.ipynb
 
 # 실험 결과 및 로그
-logs/
-results/
+# logs/ - removed: logs should be tracked in jaebaek branch
 *.log
 *.csv
 *.json
 !**/config/*.json
 logs/progress/
 logs/timestamp/
+
 
 # 데이터셋 캐시
 data/
