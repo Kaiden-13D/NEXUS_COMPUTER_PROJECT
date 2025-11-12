@@ -1,15 +1,17 @@
 """
-BL3: Clustering Only (모델 유사도 기반 클러스터링만 적용)
-- 랜덤 클라이언트 선택
-- 모델 유사도 기반 클러스터링 적용
-- 클러스터별 모델 집계
-- DCS 미적용
-- 데이터 이질성 완화 효과 측정 (정확도 향상)
+BL3: Clustering Only
+- Random client selection
+- Model similarity-based clustering applied
+- Cluster-based model aggregation
+- No DCS applied
+- Measure data heterogeneity mitigation effect (accuracy improvement)
 """
 import asyncio
 import random
 import time
 from collections import defaultdict
+from datetime import datetime
+from pathlib import Path
 
 import torch
 import torch.nn.functional as F
@@ -320,6 +322,29 @@ async def main():
                   f"Comm Cost: {COST.total_cum_bytes/1024/1024:.2f} MB | "
                   f"Time Cost: {COST.total_cum_time:.2f}s", flush=True)
             break
+    
+    # Save experiment results summary
+    results_dir = Path("results/bl3")
+    results_dir.mkdir(parents=True, exist_ok=True)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    result_file = results_dir / f"bl3_summary_{timestamp}.txt"
+    
+    with open(result_file, 'w') as f:
+        f.write(f"=== BL3 Experiment Summary ===\n")
+        f.write(f"Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+        f.write(f"Total Rounds: {r+1}\n")
+        f.write(f"\n--- Final Performance Metrics ---\n")
+        f.write(f"Global Accuracy: {ga:.2f}%\n")
+        f.write(f"Global Loss: {gl:.4f}\n")
+        f.write(f"Personalized Accuracy: {pa_avg:.2f}%\n")
+        f.write(f"Personalized Loss: {pl_avg:.4f}\n")
+        f.write(f"\n--- Efficiency Metrics ---\n")
+        f.write(f"Total Communication Cost: {COST.total_cum_bytes/1024/1024:.2f} MB\n")
+        f.write(f"Total Time Cost: {COST.total_cum_time:.2f} seconds\n")
+        f.write(f"Average Round Cost: {COST.total_cum_bytes/1024/1024/(r+1):.2f} MB\n")
+        f.write(f"Average Round Time: {COST.total_cum_time/(r+1):.2f} seconds\n")
+    
+    print(f"\nResults saved to: {result_file}", flush=True)
     
     # Cleanup
     for t in bg_tasks:

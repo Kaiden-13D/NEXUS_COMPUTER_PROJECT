@@ -8,6 +8,8 @@ import asyncio
 import random
 import time
 from collections import defaultdict
+from datetime import datetime
+from pathlib import Path
 
 import torch
 import torch.nn.functional as F
@@ -287,6 +289,29 @@ async def main():
                   f"Comm Cost: {COST.total_cum_bytes/1024/1024:.2f} MB | "
                   f"Time Cost: {COST.total_cum_time:.2f}s", flush=True)
             break
+    
+    # Save experiment results summary
+    results_dir = Path("results/abl1")
+    results_dir.mkdir(parents=True, exist_ok=True)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    result_file = results_dir / f"abl1_summary_{timestamp}.txt"
+    
+    with open(result_file, 'w') as f:
+        f.write(f"=== ABL-1 Experiment Summary ===\n")
+        f.write(f"Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+        f.write(f"Total Rounds: {r+1}\n")
+        f.write(f"\n--- Final Performance Metrics ---\n")
+        f.write(f"Global Accuracy: {ga:.2f}%\n")
+        f.write(f"Global Loss: {gl:.4f}\n")
+        f.write(f"Personalized Accuracy: {pa_avg:.2f}%\n")
+        f.write(f"Personalized Loss: {pl_avg:.4f}\n")
+        f.write(f"\n--- Efficiency Metrics ---\n")
+        f.write(f"Total Communication Cost: {COST.total_cum_bytes/1024/1024:.2f} MB\n")
+        f.write(f"Total Time Cost: {COST.total_cum_time:.2f} seconds\n")
+        f.write(f"Average Round Cost: {COST.total_cum_bytes/1024/1024/(r+1):.2f} MB\n")
+        f.write(f"Average Round Time: {COST.total_cum_time/(r+1):.2f} seconds\n")
+    
+    print(f"\nResults saved to: {result_file}", flush=True)
     
     # Cleanup
     for t in uav_tasks:
