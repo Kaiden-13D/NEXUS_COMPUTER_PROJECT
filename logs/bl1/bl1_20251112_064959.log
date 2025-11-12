@@ -1,0 +1,313 @@
+Progress log: logs/progress/latest.log
+Timestamp log: logs/timestamp/latest.log
+Loading FEMNIST from Hugging Face (flwrlabs/femnist)...
+Grouping data by writer_id... (this may take a while)
+Total writers: 3597
+Assigning approx 35 writers per client for 100 clients...
+Done. Created 100 client datasets.
+✓ Completed: Data loading
+Total global test samples: 81473
+
+=== Starting BL1 Simulation (Goal: GA 90.0%) ===
+
+=== Round 1 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 35.21% | Global Loss: 2.6966
+  [Effi] Round Cost: 16759 KB, +43.26s simulated time
+  [Cumul] Total Data: 16.37 MB | Total Time: 43.26s
+
+=== Round 2 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 65.16% | Global Loss: 1.2431
+  [Effi] Round Cost: 16759 KB, +43.26s simulated time
+  [Cumul] Total Data: 32.73 MB | Total Time: 86.52s
+
+=== Round 3 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 74.08% | Global Loss: 0.8653
+  [Effi] Round Cost: 16759 KB, +43.23s simulated time
+  [Cumul] Total Data: 49.10 MB | Total Time: 129.75s
+
+=== Round 4 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 74.50% | Global Loss: 0.7890
+  [Effi] Round Cost: 16759 KB, +51.85s simulated time
+  [Cumul] Total Data: 65.47 MB | Total Time: 181.60s
+
+=== Round 5 ===
+  Aggregated 9 updates.
+  [Perf] Global GA: 73.86% | Global Loss: 0.7957
+  [Effi] Round Cost: 15083 KB, +43.26s simulated time
+  [Cumul] Total Data: 80.20 MB | Total Time: 224.86s
+
+=== Round 6 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 79.55% | Global Loss: 0.6377
+  [Effi] Round Cost: 16759 KB, +43.23s simulated time
+  [Cumul] Total Data: 96.56 MB | Total Time: 268.09s
+
+=== Round 7 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 80.16% | Global Loss: 0.6129
+  [Effi] Round Cost: 16759 KB, +43.24s simulated time
+  [Cumul] Total Data: 112.93 MB | Total Time: 311.33s
+
+=== Round 8 ===
+  Aggregated 7 updates.
+  [Perf] Global GA: 80.07% | Global Loss: 0.6042
+  [Effi] Round Cost: 16759 KB, +43.22s simulated time
+  [Cumul] Total Data: 129.30 MB | Total Time: 354.55s
+
+=== Round 9 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 81.73% | Global Loss: 0.5587
+  [Effi] Round Cost: 16759 KB, +43.22s simulated time
+  [Cumul] Total Data: 145.66 MB | Total Time: 397.77s
+
+=== Round 10 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 79.01% | Global Loss: 0.6139
+  [Effi] Round Cost: 16759 KB, +34.60s simulated time
+  [Cumul] Total Data: 162.03 MB | Total Time: 432.37s
+
+=== Round 11 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 81.16% | Global Loss: 0.5580
+  [Effi] Round Cost: 16759 KB, +43.25s simulated time
+  [Cumul] Total Data: 178.40 MB | Total Time: 475.61s
+
+=== Round 12 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 82.17% | Global Loss: 0.5595
+  [Effi] Round Cost: 16759 KB, +43.21s simulated time
+  [Cumul] Total Data: 194.76 MB | Total Time: 518.82s
+
+=== Round 13 ===
+  Aggregated 9 updates.
+  [Perf] Global GA: 81.88% | Global Loss: 0.5345
+  [Effi] Round Cost: 15083 KB, +43.21s simulated time
+  [Cumul] Total Data: 209.49 MB | Total Time: 562.04s
+
+=== Round 14 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 81.45% | Global Loss: 0.5263
+  [Effi] Round Cost: 16759 KB, +43.26s simulated time
+  [Cumul] Total Data: 225.86 MB | Total Time: 605.29s
+
+=== Round 15 ===
+  Aggregated 9 updates.
+  [Perf] Global GA: 83.45% | Global Loss: 0.4943
+  [Effi] Round Cost: 15083 KB, +51.91s simulated time
+  [Cumul] Total Data: 240.59 MB | Total Time: 657.20s
+
+=== Round 16 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 77.41% | Global Loss: 0.6697
+  [Effi] Round Cost: 16759 KB, +43.22s simulated time
+  [Cumul] Total Data: 256.96 MB | Total Time: 700.42s
+
+=== Round 17 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 81.23% | Global Loss: 0.5215
+  [Effi] Round Cost: 16759 KB, +51.89s simulated time
+  [Cumul] Total Data: 273.32 MB | Total Time: 752.31s
+
+=== Round 18 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 83.95% | Global Loss: 0.4804
+  [Effi] Round Cost: 16759 KB, +43.24s simulated time
+  [Cumul] Total Data: 289.69 MB | Total Time: 795.55s
+
+=== Round 19 ===
+  Aggregated 9 updates.
+  [Perf] Global GA: 83.74% | Global Loss: 0.4861
+  [Effi] Round Cost: 16759 KB, +43.25s simulated time
+  [Cumul] Total Data: 306.05 MB | Total Time: 838.81s
+
+=== Round 20 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 83.98% | Global Loss: 0.4826
+  [Effi] Round Cost: 16759 KB, +51.86s simulated time
+  [Cumul] Total Data: 322.42 MB | Total Time: 890.67s
+
+=== Round 21 ===
+  Aggregated 9 updates.
+  [Perf] Global GA: 82.96% | Global Loss: 0.4829
+  [Effi] Round Cost: 15083 KB, +51.84s simulated time
+  [Cumul] Total Data: 337.15 MB | Total Time: 942.51s
+
+=== Round 22 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 82.26% | Global Loss: 0.4970
+  [Effi] Round Cost: 16759 KB, +34.58s simulated time
+  [Cumul] Total Data: 353.52 MB | Total Time: 977.09s
+
+=== Round 23 ===
+  Aggregated 9 updates.
+  [Perf] Global GA: 81.20% | Global Loss: 0.5238
+  [Effi] Round Cost: 15083 KB, +43.24s simulated time
+  [Cumul] Total Data: 368.25 MB | Total Time: 1020.33s
+
+=== Round 24 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 83.82% | Global Loss: 0.4632
+  [Effi] Round Cost: 16759 KB, +43.26s simulated time
+  [Cumul] Total Data: 384.61 MB | Total Time: 1063.59s
+
+=== Round 25 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 83.27% | Global Loss: 0.4714
+  [Effi] Round Cost: 16759 KB, +43.22s simulated time
+  [Cumul] Total Data: 400.98 MB | Total Time: 1106.81s
+
+=== Round 26 ===
+  Aggregated 9 updates.
+  [Perf] Global GA: 84.02% | Global Loss: 0.4565
+  [Effi] Round Cost: 15083 KB, +43.23s simulated time
+  [Cumul] Total Data: 415.71 MB | Total Time: 1150.04s
+
+=== Round 27 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 84.22% | Global Loss: 0.4529
+  [Effi] Round Cost: 16759 KB, +43.20s simulated time
+  [Cumul] Total Data: 432.08 MB | Total Time: 1193.24s
+
+=== Round 28 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 82.73% | Global Loss: 0.4800
+  [Effi] Round Cost: 16759 KB, +51.90s simulated time
+  [Cumul] Total Data: 448.44 MB | Total Time: 1245.14s
+
+=== Round 29 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 82.89% | Global Loss: 0.4726
+  [Effi] Round Cost: 16759 KB, +43.24s simulated time
+  [Cumul] Total Data: 464.81 MB | Total Time: 1288.39s
+
+=== Round 30 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 84.48% | Global Loss: 0.4479
+  [Effi] Round Cost: 16759 KB, +43.24s simulated time
+  [Cumul] Total Data: 481.18 MB | Total Time: 1331.62s
+
+=== Round 31 ===
+  Aggregated 9 updates.
+  [Perf] Global GA: 83.77% | Global Loss: 0.4532
+  [Effi] Round Cost: 15083 KB, +51.92s simulated time
+  [Cumul] Total Data: 495.91 MB | Total Time: 1383.54s
+
+=== Round 32 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 83.23% | Global Loss: 0.4608
+  [Effi] Round Cost: 16759 KB, +43.23s simulated time
+  [Cumul] Total Data: 512.27 MB | Total Time: 1426.78s
+
+=== Round 33 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 84.87% | Global Loss: 0.4555
+  [Effi] Round Cost: 16759 KB, +43.24s simulated time
+  [Cumul] Total Data: 528.64 MB | Total Time: 1470.02s
+
+=== Round 34 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 85.22% | Global Loss: 0.4383
+  [Effi] Round Cost: 16759 KB, +51.86s simulated time
+  [Cumul] Total Data: 545.01 MB | Total Time: 1521.88s
+
+=== Round 35 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 82.84% | Global Loss: 0.4694
+  [Effi] Round Cost: 16759 KB, +43.23s simulated time
+  [Cumul] Total Data: 561.37 MB | Total Time: 1565.11s
+
+=== Round 36 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 84.51% | Global Loss: 0.4421
+  [Effi] Round Cost: 16759 KB, +51.86s simulated time
+  [Cumul] Total Data: 577.74 MB | Total Time: 1616.97s
+
+=== Round 37 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 84.59% | Global Loss: 0.4897
+  [Effi] Round Cost: 16759 KB, +51.89s simulated time
+  [Cumul] Total Data: 594.11 MB | Total Time: 1668.86s
+
+=== Round 38 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 81.21% | Global Loss: 0.5116
+  [Effi] Round Cost: 16759 KB, +43.23s simulated time
+  [Cumul] Total Data: 610.47 MB | Total Time: 1712.09s
+
+=== Round 39 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 81.64% | Global Loss: 0.4969
+  [Effi] Round Cost: 16759 KB, +43.25s simulated time
+  [Cumul] Total Data: 626.84 MB | Total Time: 1755.34s
+
+=== Round 40 ===
+  Aggregated 9 updates.
+  [Perf] Global GA: 82.76% | Global Loss: 0.4752
+  [Effi] Round Cost: 15083 KB, +34.57s simulated time
+  [Cumul] Total Data: 641.57 MB | Total Time: 1789.91s
+
+=== Round 41 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 85.21% | Global Loss: 0.4254
+  [Effi] Round Cost: 16759 KB, +43.25s simulated time
+  [Cumul] Total Data: 657.94 MB | Total Time: 1833.16s
+
+=== Round 42 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 82.75% | Global Loss: 0.4750
+  [Effi] Round Cost: 16759 KB, +51.86s simulated time
+  [Cumul] Total Data: 674.30 MB | Total Time: 1885.02s
+
+=== Round 43 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 83.01% | Global Loss: 0.4629
+  [Effi] Round Cost: 16759 KB, +34.60s simulated time
+  [Cumul] Total Data: 690.67 MB | Total Time: 1919.62s
+
+=== Round 44 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 82.76% | Global Loss: 0.4658
+  [Effi] Round Cost: 16759 KB, +34.59s simulated time
+  [Cumul] Total Data: 707.04 MB | Total Time: 1954.22s
+
+=== Round 45 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 82.83% | Global Loss: 0.4650
+  [Effi] Round Cost: 16759 KB, +43.24s simulated time
+  [Cumul] Total Data: 723.40 MB | Total Time: 1997.46s
+
+=== Round 46 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 83.49% | Global Loss: 0.4477
+  [Effi] Round Cost: 16759 KB, +43.22s simulated time
+  [Cumul] Total Data: 739.77 MB | Total Time: 2040.68s
+
+=== Round 47 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 85.47% | Global Loss: 0.4360
+  [Effi] Round Cost: 16759 KB, +51.88s simulated time
+  [Cumul] Total Data: 756.14 MB | Total Time: 2092.56s
+
+=== Round 48 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 81.68% | Global Loss: 0.4973
+  [Effi] Round Cost: 16759 KB, +51.87s simulated time
+  [Cumul] Total Data: 772.50 MB | Total Time: 2144.43s
+
+=== Round 49 ===
+  Aggregated 10 updates.
+  [Perf] Global GA: 85.18% | Global Loss: 0.4169
+  [Effi] Round Cost: 16759 KB, +51.87s simulated time
+  [Cumul] Total Data: 788.87 MB | Total Time: 2196.30s
+
+=== Round 50 ===
+  Aggregated 9 updates.
+  [Perf] Global GA: 84.96% | Global Loss: 0.4795
+  [Effi] Round Cost: 15083 KB, +43.22s simulated time
+  [Cumul] Total Data: 803.60 MB | Total Time: 2239.52s
+
+Results saved to: results/bl1/bl1_summary_20251112_073354.txt

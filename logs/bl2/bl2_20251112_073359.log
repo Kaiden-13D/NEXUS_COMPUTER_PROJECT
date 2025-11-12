@@ -1,0 +1,313 @@
+Progress log: logs/progress/latest.log
+Timestamp log: logs/timestamp/latest.log
+Loading FEMNIST from Hugging Face (flwrlabs/femnist)...
+Grouping data by writer_id... (this may take a while)
+Total writers: 3597
+Assigning approx 35 writers per client for 100 clients...
+Done. Created 100 client datasets.
+✓ Completed: Data loading
+Total global test samples: 81473
+
+=== Starting BL2 (DCS Only) Simulation (Goal: GA 90.0%) ===
+
+=== Round 1 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 44.84% | Global Loss: 2.2111
+  [Effi] Round Cost: 10056 KB, +51.85s simulated time
+  [Cumul] Total Data: 9.82 MB | Total Time: 51.85s
+
+=== Round 2 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 71.75% | Global Loss: 0.9473
+  [Effi] Round Cost: 10056 KB, +51.86s simulated time
+  [Cumul] Total Data: 19.64 MB | Total Time: 103.71s
+
+=== Round 3 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 76.50% | Global Loss: 0.7422
+  [Effi] Round Cost: 10056 KB, +51.89s simulated time
+  [Cumul] Total Data: 29.46 MB | Total Time: 155.60s
+
+=== Round 4 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 78.52% | Global Loss: 0.6780
+  [Effi] Round Cost: 10056 KB, +51.84s simulated time
+  [Cumul] Total Data: 39.28 MB | Total Time: 207.44s
+
+=== Round 5 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 79.73% | Global Loss: 0.6159
+  [Effi] Round Cost: 10056 KB, +51.86s simulated time
+  [Cumul] Total Data: 49.10 MB | Total Time: 259.30s
+
+=== Round 6 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 77.91% | Global Loss: 0.6469
+  [Effi] Round Cost: 10056 KB, +51.84s simulated time
+  [Cumul] Total Data: 58.92 MB | Total Time: 311.14s
+
+=== Round 7 ===
+  Aggregated 5 updates from DCS-selected clients.
+  [Perf] Global GA: 78.63% | Global Loss: 0.6190
+  [Effi] Round Cost: 8380 KB, +43.21s simulated time
+  [Cumul] Total Data: 67.10 MB | Total Time: 354.36s
+
+=== Round 8 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 80.09% | Global Loss: 0.5816
+  [Effi] Round Cost: 10056 KB, +51.88s simulated time
+  [Cumul] Total Data: 76.92 MB | Total Time: 406.23s
+
+=== Round 9 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 79.23% | Global Loss: 0.5937
+  [Effi] Round Cost: 10056 KB, +51.89s simulated time
+  [Cumul] Total Data: 86.74 MB | Total Time: 458.12s
+
+=== Round 10 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 77.45% | Global Loss: 0.6563
+  [Effi] Round Cost: 10056 KB, +51.86s simulated time
+  [Cumul] Total Data: 96.56 MB | Total Time: 509.98s
+
+=== Round 11 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 77.92% | Global Loss: 0.6641
+  [Effi] Round Cost: 10056 KB, +51.87s simulated time
+  [Cumul] Total Data: 106.38 MB | Total Time: 561.85s
+
+=== Round 12 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 82.86% | Global Loss: 0.5133
+  [Effi] Round Cost: 10056 KB, +51.85s simulated time
+  [Cumul] Total Data: 116.20 MB | Total Time: 613.70s
+
+=== Round 13 ===
+  Aggregated 5 updates from DCS-selected clients.
+  [Perf] Global GA: 82.50% | Global Loss: 0.5341
+  [Effi] Round Cost: 10056 KB, +51.88s simulated time
+  [Cumul] Total Data: 126.02 MB | Total Time: 665.59s
+
+=== Round 14 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 79.74% | Global Loss: 0.5790
+  [Effi] Round Cost: 10056 KB, +51.88s simulated time
+  [Cumul] Total Data: 135.84 MB | Total Time: 717.47s
+
+=== Round 15 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 80.39% | Global Loss: 0.5507
+  [Effi] Round Cost: 10056 KB, +51.87s simulated time
+  [Cumul] Total Data: 145.66 MB | Total Time: 769.34s
+
+=== Round 16 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 80.83% | Global Loss: 0.5441
+  [Effi] Round Cost: 10056 KB, +51.88s simulated time
+  [Cumul] Total Data: 155.48 MB | Total Time: 821.22s
+
+=== Round 17 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 80.38% | Global Loss: 0.5587
+  [Effi] Round Cost: 10056 KB, +51.88s simulated time
+  [Cumul] Total Data: 165.30 MB | Total Time: 873.10s
+
+=== Round 18 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 81.42% | Global Loss: 0.5254
+  [Effi] Round Cost: 10056 KB, +51.87s simulated time
+  [Cumul] Total Data: 175.12 MB | Total Time: 924.97s
+
+=== Round 19 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 80.10% | Global Loss: 0.5655
+  [Effi] Round Cost: 10056 KB, +51.84s simulated time
+  [Cumul] Total Data: 184.94 MB | Total Time: 976.80s
+
+=== Round 20 ===
+  Aggregated 5 updates from DCS-selected clients.
+  [Perf] Global GA: 80.54% | Global Loss: 0.5625
+  [Effi] Round Cost: 10056 KB, +51.85s simulated time
+  [Cumul] Total Data: 194.76 MB | Total Time: 1028.66s
+
+=== Round 21 ===
+  Aggregated 5 updates from DCS-selected clients.
+  [Perf] Global GA: 80.96% | Global Loss: 0.5473
+  [Effi] Round Cost: 10056 KB, +51.85s simulated time
+  [Cumul] Total Data: 204.58 MB | Total Time: 1080.50s
+
+=== Round 22 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 80.14% | Global Loss: 0.5608
+  [Effi] Round Cost: 10056 KB, +51.88s simulated time
+  [Cumul] Total Data: 214.40 MB | Total Time: 1132.38s
+
+=== Round 23 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 80.90% | Global Loss: 0.5426
+  [Effi] Round Cost: 10056 KB, +51.89s simulated time
+  [Cumul] Total Data: 224.22 MB | Total Time: 1184.27s
+
+=== Round 24 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 80.92% | Global Loss: 0.5395
+  [Effi] Round Cost: 10056 KB, +51.84s simulated time
+  [Cumul] Total Data: 234.04 MB | Total Time: 1236.11s
+
+=== Round 25 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 80.99% | Global Loss: 0.5424
+  [Effi] Round Cost: 10056 KB, +51.84s simulated time
+  [Cumul] Total Data: 243.86 MB | Total Time: 1287.95s
+
+=== Round 26 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 80.53% | Global Loss: 0.5662
+  [Effi] Round Cost: 10056 KB, +51.88s simulated time
+  [Cumul] Total Data: 253.68 MB | Total Time: 1339.82s
+
+=== Round 27 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 80.59% | Global Loss: 0.5502
+  [Effi] Round Cost: 10056 KB, +51.88s simulated time
+  [Cumul] Total Data: 263.50 MB | Total Time: 1391.70s
+
+=== Round 28 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 80.13% | Global Loss: 0.5743
+  [Effi] Round Cost: 10056 KB, +51.90s simulated time
+  [Cumul] Total Data: 273.32 MB | Total Time: 1443.61s
+
+=== Round 29 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 81.63% | Global Loss: 0.5366
+  [Effi] Round Cost: 10056 KB, +51.84s simulated time
+  [Cumul] Total Data: 283.14 MB | Total Time: 1495.45s
+
+=== Round 30 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 80.50% | Global Loss: 0.5711
+  [Effi] Round Cost: 10056 KB, +51.87s simulated time
+  [Cumul] Total Data: 292.96 MB | Total Time: 1547.32s
+
+=== Round 31 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 81.18% | Global Loss: 0.5506
+  [Effi] Round Cost: 10056 KB, +51.85s simulated time
+  [Cumul] Total Data: 302.78 MB | Total Time: 1599.17s
+
+=== Round 32 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 80.18% | Global Loss: 0.5786
+  [Effi] Round Cost: 10056 KB, +51.86s simulated time
+  [Cumul] Total Data: 312.60 MB | Total Time: 1651.03s
+
+=== Round 33 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 79.93% | Global Loss: 0.5864
+  [Effi] Round Cost: 10056 KB, +51.85s simulated time
+  [Cumul] Total Data: 322.42 MB | Total Time: 1702.88s
+
+=== Round 34 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 80.93% | Global Loss: 0.5724
+  [Effi] Round Cost: 10056 KB, +51.84s simulated time
+  [Cumul] Total Data: 332.24 MB | Total Time: 1754.73s
+
+=== Round 35 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 80.64% | Global Loss: 0.5853
+  [Effi] Round Cost: 10056 KB, +51.89s simulated time
+  [Cumul] Total Data: 342.06 MB | Total Time: 1806.61s
+
+=== Round 36 ===
+  Aggregated 5 updates from DCS-selected clients.
+  [Perf] Global GA: 80.31% | Global Loss: 0.5977
+  [Effi] Round Cost: 8380 KB, +43.22s simulated time
+  [Cumul] Total Data: 350.24 MB | Total Time: 1849.83s
+
+=== Round 37 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 81.45% | Global Loss: 0.5724
+  [Effi] Round Cost: 10056 KB, +51.87s simulated time
+  [Cumul] Total Data: 360.06 MB | Total Time: 1901.71s
+
+=== Round 38 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 81.48% | Global Loss: 0.5656
+  [Effi] Round Cost: 10056 KB, +51.85s simulated time
+  [Cumul] Total Data: 369.88 MB | Total Time: 1953.56s
+
+=== Round 39 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 80.79% | Global Loss: 0.5827
+  [Effi] Round Cost: 10056 KB, +51.84s simulated time
+  [Cumul] Total Data: 379.70 MB | Total Time: 2005.40s
+
+=== Round 40 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 80.95% | Global Loss: 0.5833
+  [Effi] Round Cost: 10056 KB, +51.87s simulated time
+  [Cumul] Total Data: 389.52 MB | Total Time: 2057.27s
+
+=== Round 41 ===
+  Aggregated 5 updates from DCS-selected clients.
+  [Perf] Global GA: 81.40% | Global Loss: 0.5875
+  [Effi] Round Cost: 10056 KB, +51.85s simulated time
+  [Cumul] Total Data: 399.34 MB | Total Time: 2109.13s
+
+=== Round 42 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 80.69% | Global Loss: 0.5978
+  [Effi] Round Cost: 10056 KB, +51.82s simulated time
+  [Cumul] Total Data: 409.16 MB | Total Time: 2160.95s
+
+=== Round 43 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 81.02% | Global Loss: 0.5985
+  [Effi] Round Cost: 10056 KB, +51.82s simulated time
+  [Cumul] Total Data: 418.98 MB | Total Time: 2212.78s
+
+=== Round 44 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 81.15% | Global Loss: 0.5879
+  [Effi] Round Cost: 10056 KB, +51.89s simulated time
+  [Cumul] Total Data: 428.80 MB | Total Time: 2264.67s
+
+=== Round 45 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 80.27% | Global Loss: 0.6178
+  [Effi] Round Cost: 10056 KB, +51.87s simulated time
+  [Cumul] Total Data: 438.62 MB | Total Time: 2316.53s
+
+=== Round 46 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 81.06% | Global Loss: 0.5850
+  [Effi] Round Cost: 10056 KB, +51.89s simulated time
+  [Cumul] Total Data: 448.44 MB | Total Time: 2368.42s
+
+=== Round 47 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 80.84% | Global Loss: 0.6072
+  [Effi] Round Cost: 10056 KB, +51.88s simulated time
+  [Cumul] Total Data: 458.26 MB | Total Time: 2420.30s
+
+=== Round 48 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 80.21% | Global Loss: 0.6230
+  [Effi] Round Cost: 10056 KB, +51.87s simulated time
+  [Cumul] Total Data: 468.08 MB | Total Time: 2472.17s
+
+=== Round 49 ===
+  Aggregated 5 updates from DCS-selected clients.
+  [Perf] Global GA: 80.60% | Global Loss: 0.6289
+  [Effi] Round Cost: 8380 KB, +43.25s simulated time
+  [Cumul] Total Data: 476.27 MB | Total Time: 2515.41s
+
+=== Round 50 ===
+  Aggregated 6 updates from DCS-selected clients.
+  [Perf] Global GA: 80.37% | Global Loss: 0.6397
+  [Effi] Round Cost: 10056 KB, +51.85s simulated time
+  [Cumul] Total Data: 486.09 MB | Total Time: 2567.27s
+
+Results saved to: results/bl2/bl2_summary_20251112_081211.txt

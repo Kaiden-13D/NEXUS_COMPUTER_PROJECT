@@ -1,0 +1,512 @@
+Progress log: logs/progress/latest.log
+Timestamp log: logs/timestamp/latest.log
+Progress log: logs/progress/latest.log
+Timestamp log: logs/timestamp/latest.log
+Loading FEMNIST from Hugging Face (flwrlabs/femnist)...
+Loading FEMNIST from Hugging Face (flwrlabs/femnist)...
+Grouping data by writer_id... (this may take a while)
+Total writers: 3597
+Assigning approx 35 writers per client for 100 clients...
+Done. Created 100 client datasets.
+
+=== Starting ABL-1 (DCS + Clustering) Simulation (Goal: GA 100.0%) ===
+
+=== Round 1 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 0, 2: 1, 3: 0, 4: 1, 5: 1}
+  Updated 2 cluster models.
+  [Perf] Global GA: 38.89% | Global Loss: 2.6687
+  [Perf] Personalized PA: 49.69% | Personalized Loss: 2.2339 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.88s simulated time
+  [Cumul] Total Data: 9.82 MB | Total Time: 51.88s
+
+=== Round 2 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 1, 1: 1, 2: 1, 3: 0, 4: 0, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 61.08% | Global Loss: 1.4345
+  [Perf] Personalized PA: 69.77% | Personalized Loss: 1.1054 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.85s simulated time
+  [Cumul] Total Data: 19.64 MB | Total Time: 103.74s
+
+=== Round 3 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 1, 1: 1, 2: 1, 3: 0, 4: 0, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 70.68% | Global Loss: 0.9613
+  [Perf] Personalized PA: 79.21% | Personalized Loss: 0.7368 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.85s simulated time
+  [Cumul] Total Data: 29.46 MB | Total Time: 155.59s
+
+=== Round 4 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 0, 2: 0, 3: 1, 4: 0, 5: 1}
+  Updated 2 cluster models.
+  [Perf] Global GA: 71.98% | Global Loss: 0.9097
+  [Perf] Personalized PA: 81.56% | Personalized Loss: 0.6454 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.87s simulated time
+  [Cumul] Total Data: 39.28 MB | Total Time: 207.45s
+
+=== Round 5 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 1, 1: 0, 2: 0, 3: 0, 4: 1, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 74.50% | Global Loss: 0.7940
+  [Perf] Personalized PA: 83.46% | Personalized Loss: 0.5648 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.83s simulated time
+  [Cumul] Total Data: 49.10 MB | Total Time: 259.28s
+
+=== Round 6 ===
+  Received 5 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 0, 2: 1, 3: 1, 4: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 75.77% | Global Loss: 0.7307
+  [Perf] Personalized PA: 81.48% | Personalized Loss: 0.5913 (5 clients)
+  [Effi] Round Cost: 8380 KB, +43.23s simulated time
+  [Cumul] Total Data: 57.28 MB | Total Time: 302.51s
+
+=== Round 7 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 1, 3: 0, 4: 1, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 78.27% | Global Loss: 0.6444
+  [Perf] Personalized PA: 84.71% | Personalized Loss: 0.5037 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.84s simulated time
+  [Cumul] Total Data: 67.10 MB | Total Time: 354.35s
+
+=== Round 8 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 0, 2: 1, 3: 0, 4: 0, 5: 1}
+  Updated 2 cluster models.
+  [Perf] Global GA: 79.71% | Global Loss: 0.6027
+  [Perf] Personalized PA: 86.12% | Personalized Loss: 0.4495 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.87s simulated time
+  [Cumul] Total Data: 76.92 MB | Total Time: 406.22s
+
+=== Round 9 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 0, 2: 1, 3: 1, 4: 0, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 77.41% | Global Loss: 0.6606
+  [Perf] Personalized PA: 86.16% | Personalized Loss: 0.4377 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.84s simulated time
+  [Cumul] Total Data: 86.74 MB | Total Time: 458.07s
+
+=== Round 10 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 0, 2: 1, 3: 1, 4: 0, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 77.84% | Global Loss: 0.6510
+  [Perf] Personalized PA: 87.36% | Personalized Loss: 0.4056 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.84s simulated time
+  [Cumul] Total Data: 96.56 MB | Total Time: 509.91s
+
+=== Round 11 ===
+  Received 5 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 0, 2: 1, 3: 0, 4: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 78.52% | Global Loss: 0.6189
+  [Perf] Personalized PA: 87.23% | Personalized Loss: 0.4099 (5 clients)
+  [Effi] Round Cost: 8380 KB, +43.23s simulated time
+  [Cumul] Total Data: 104.75 MB | Total Time: 553.14s
+
+=== Round 12 ===
+  Received 5 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 0, 3: 1, 4: 1}
+  Updated 2 cluster models.
+  [Perf] Global GA: 77.56% | Global Loss: 0.6529
+  [Perf] Personalized PA: 86.84% | Personalized Loss: 0.4058 (5 clients)
+  [Effi] Round Cost: 8380 KB, +43.20s simulated time
+  [Cumul] Total Data: 112.93 MB | Total Time: 596.35s
+
+=== Round 13 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 0, 3: 1, 4: 1, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 77.67% | Global Loss: 0.6446
+  [Perf] Personalized PA: 88.74% | Personalized Loss: 0.3646 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.88s simulated time
+  [Cumul] Total Data: 122.75 MB | Total Time: 648.22s
+
+=== Round 14 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 0, 3: 1, 4: 1, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 77.70% | Global Loss: 0.6477
+  [Perf] Personalized PA: 88.92% | Personalized Loss: 0.3549 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.87s simulated time
+  [Cumul] Total Data: 132.57 MB | Total Time: 700.09s
+
+=== Round 15 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 0, 3: 1, 4: 1, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 79.46% | Global Loss: 0.5847
+  [Perf] Personalized PA: 86.67% | Personalized Loss: 0.4168 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.87s simulated time
+  [Cumul] Total Data: 142.39 MB | Total Time: 751.96s
+
+=== Round 16 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 0, 3: 1, 4: 1, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 79.60% | Global Loss: 0.5712
+  [Perf] Personalized PA: 86.95% | Personalized Loss: 0.4015 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.89s simulated time
+  [Cumul] Total Data: 152.21 MB | Total Time: 803.85s
+
+=== Round 17 ===
+  Received 5 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 0, 3: 0, 4: 1}
+  Updated 2 cluster models.
+  [Perf] Global GA: 80.35% | Global Loss: 0.5726
+  [Perf] Personalized PA: 89.88% | Personalized Loss: 0.3153 (5 clients)
+  [Effi] Round Cost: 8380 KB, +43.20s simulated time
+  [Cumul] Total Data: 160.39 MB | Total Time: 847.05s
+
+=== Round 18 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 0, 3: 0, 4: 1, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 81.63% | Global Loss: 0.5357
+  [Perf] Personalized PA: 89.84% | Personalized Loss: 0.3212 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.87s simulated time
+  [Cumul] Total Data: 170.21 MB | Total Time: 898.92s
+
+=== Round 19 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 0, 3: 0, 4: 1, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 81.33% | Global Loss: 0.5351
+  [Perf] Personalized PA: 90.54% | Personalized Loss: 0.3026 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.88s simulated time
+  [Cumul] Total Data: 180.03 MB | Total Time: 950.80s
+
+=== Round 20 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 0, 3: 0, 4: 1, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 81.23% | Global Loss: 0.5396
+  [Perf] Personalized PA: 90.75% | Personalized Loss: 0.2937 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.85s simulated time
+  [Cumul] Total Data: 189.85 MB | Total Time: 1002.65s
+
+=== Round 21 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 0, 3: 0, 4: 1, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 81.27% | Global Loss: 0.5345
+  [Perf] Personalized PA: 91.16% | Personalized Loss: 0.2809 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.84s simulated time
+  [Cumul] Total Data: 199.67 MB | Total Time: 1054.49s
+
+=== Round 22 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 0, 3: 0, 4: 1, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 80.67% | Global Loss: 0.5439
+  [Perf] Personalized PA: 91.20% | Personalized Loss: 0.2768 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.86s simulated time
+  [Cumul] Total Data: 209.49 MB | Total Time: 1106.35s
+
+=== Round 23 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 0, 3: 0, 4: 1, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 81.73% | Global Loss: 0.5241
+  [Perf] Personalized PA: 91.56% | Personalized Loss: 0.2648 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.84s simulated time
+  [Cumul] Total Data: 219.31 MB | Total Time: 1158.19s
+
+=== Round 24 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 0, 3: 0, 4: 1, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 81.59% | Global Loss: 0.5327
+  [Perf] Personalized PA: 91.70% | Personalized Loss: 0.2614 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.88s simulated time
+  [Cumul] Total Data: 229.13 MB | Total Time: 1210.07s
+
+=== Round 25 ===
+  Received 5 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 0, 3: 1, 4: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 82.10% | Global Loss: 0.5268
+  [Perf] Personalized PA: 92.10% | Personalized Loss: 0.2440 (5 clients)
+  [Effi] Round Cost: 10056 KB, +51.85s simulated time
+  [Cumul] Total Data: 238.95 MB | Total Time: 1261.92s
+
+=== Round 26 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 0, 3: 0, 4: 1, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 81.49% | Global Loss: 0.5343
+  [Perf] Personalized PA: 92.10% | Personalized Loss: 0.2484 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.83s simulated time
+  [Cumul] Total Data: 248.77 MB | Total Time: 1313.75s
+
+=== Round 27 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 0, 3: 0, 4: 1, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 81.68% | Global Loss: 0.5364
+  [Perf] Personalized PA: 92.37% | Personalized Loss: 0.2401 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.86s simulated time
+  [Cumul] Total Data: 258.59 MB | Total Time: 1365.61s
+
+=== Round 28 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 0, 3: 0, 4: 1, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 81.95% | Global Loss: 0.5319
+  [Perf] Personalized PA: 92.43% | Personalized Loss: 0.2346 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.85s simulated time
+  [Cumul] Total Data: 268.41 MB | Total Time: 1417.46s
+
+=== Round 29 ===
+  Received 5 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 0, 3: 0, 4: 1}
+  Updated 2 cluster models.
+  [Perf] Global GA: 81.20% | Global Loss: 0.5564
+  [Perf] Personalized PA: 92.66% | Personalized Loss: 0.2280 (5 clients)
+  [Effi] Round Cost: 10056 KB, +51.86s simulated time
+  [Cumul] Total Data: 278.23 MB | Total Time: 1469.32s
+
+=== Round 30 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 0, 3: 0, 4: 1, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 81.52% | Global Loss: 0.5470
+  [Perf] Personalized PA: 92.64% | Personalized Loss: 0.2288 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.89s simulated time
+  [Cumul] Total Data: 288.05 MB | Total Time: 1521.20s
+
+=== Round 31 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 0, 3: 0, 4: 1, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 81.82% | Global Loss: 0.5383
+  [Perf] Personalized PA: 92.94% | Personalized Loss: 0.2198 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.85s simulated time
+  [Cumul] Total Data: 297.87 MB | Total Time: 1573.06s
+
+=== Round 32 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 0, 3: 0, 4: 1, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 82.13% | Global Loss: 0.5350
+  [Perf] Personalized PA: 93.03% | Personalized Loss: 0.2146 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.84s simulated time
+  [Cumul] Total Data: 307.69 MB | Total Time: 1624.90s
+
+=== Round 33 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 0, 3: 0, 4: 1, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 82.08% | Global Loss: 0.5357
+  [Perf] Personalized PA: 93.33% | Personalized Loss: 0.2093 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.88s simulated time
+  [Cumul] Total Data: 317.51 MB | Total Time: 1676.78s
+
+=== Round 34 ===
+  Received 5 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 0, 2: 0, 3: 1, 4: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 82.08% | Global Loss: 0.5471
+  [Perf] Personalized PA: 93.77% | Personalized Loss: 0.1932 (5 clients)
+  [Effi] Round Cost: 8380 KB, +43.24s simulated time
+  [Cumul] Total Data: 325.69 MB | Total Time: 1720.02s
+
+=== Round 35 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 0, 2: 0, 3: 1, 4: 0, 5: 1}
+  Updated 2 cluster models.
+  [Perf] Global GA: 82.41% | Global Loss: 0.5422
+  [Perf] Personalized PA: 93.40% | Personalized Loss: 0.2033 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.86s simulated time
+  [Cumul] Total Data: 335.51 MB | Total Time: 1771.88s
+
+=== Round 36 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 0, 2: 0, 3: 1, 4: 0, 5: 1}
+  Updated 2 cluster models.
+  [Perf] Global GA: 82.31% | Global Loss: 0.5463
+  [Perf] Personalized PA: 93.42% | Personalized Loss: 0.2037 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.87s simulated time
+  [Cumul] Total Data: 345.33 MB | Total Time: 1823.75s
+
+=== Round 37 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 0, 2: 0, 3: 1, 4: 0, 5: 1}
+  Updated 2 cluster models.
+  [Perf] Global GA: 82.18% | Global Loss: 0.5490
+  [Perf] Personalized PA: 93.72% | Personalized Loss: 0.1955 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.87s simulated time
+  [Cumul] Total Data: 355.15 MB | Total Time: 1875.62s
+
+=== Round 38 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 0, 2: 0, 3: 1, 4: 0, 5: 1}
+  Updated 2 cluster models.
+  [Perf] Global GA: 81.95% | Global Loss: 0.5562
+  [Perf] Personalized PA: 93.73% | Personalized Loss: 0.1922 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.88s simulated time
+  [Cumul] Total Data: 364.97 MB | Total Time: 1927.50s
+
+=== Round 39 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 0, 2: 0, 3: 1, 4: 0, 5: 1}
+  Updated 2 cluster models.
+  [Perf] Global GA: 82.32% | Global Loss: 0.5526
+  [Perf] Personalized PA: 93.85% | Personalized Loss: 0.1894 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.84s simulated time
+  [Cumul] Total Data: 374.79 MB | Total Time: 1979.34s
+
+=== Round 40 ===
+  Received 5 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 0, 2: 1, 3: 0, 4: 1}
+  Updated 2 cluster models.
+  [Perf] Global GA: 82.09% | Global Loss: 0.5575
+  [Perf] Personalized PA: 93.77% | Personalized Loss: 0.1945 (5 clients)
+  [Effi] Round Cost: 8380 KB, +43.23s simulated time
+  [Cumul] Total Data: 382.98 MB | Total Time: 2022.57s
+
+=== Round 41 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 0, 2: 1, 3: 0, 4: 1, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 82.14% | Global Loss: 0.5674
+  [Perf] Personalized PA: 94.18% | Personalized Loss: 0.1801 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.84s simulated time
+  [Cumul] Total Data: 392.80 MB | Total Time: 2074.40s
+
+=== Round 42 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 0, 2: 1, 3: 0, 4: 1, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 81.58% | Global Loss: 0.5823
+  [Perf] Personalized PA: 94.29% | Personalized Loss: 0.1786 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.84s simulated time
+  [Cumul] Total Data: 402.62 MB | Total Time: 2126.25s
+
+=== Round 43 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 0, 2: 1, 3: 0, 4: 1, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 81.39% | Global Loss: 0.5924
+  [Perf] Personalized PA: 94.16% | Personalized Loss: 0.1820 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.84s simulated time
+  [Cumul] Total Data: 412.44 MB | Total Time: 2178.09s
+
+=== Round 44 ===
+  Received 5 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 0, 2: 1, 3: 1, 4: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 81.25% | Global Loss: 0.5980
+  [Perf] Personalized PA: 94.39% | Personalized Loss: 0.1751 (5 clients)
+  [Effi] Round Cost: 10056 KB, +51.87s simulated time
+  [Cumul] Total Data: 422.26 MB | Total Time: 2229.96s
+
+=== Round 45 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 0, 2: 1, 3: 0, 4: 1, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 81.90% | Global Loss: 0.5817
+  [Perf] Personalized PA: 94.58% | Personalized Loss: 0.1692 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.83s simulated time
+  [Cumul] Total Data: 432.08 MB | Total Time: 2281.79s
+
+=== Round 46 ===
+  Received 5 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 0, 2: 1, 3: 1, 4: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 80.86% | Global Loss: 0.6138
+  [Perf] Personalized PA: 94.48% | Personalized Loss: 0.1693 (5 clients)
+  [Effi] Round Cost: 8380 KB, +43.21s simulated time
+  [Cumul] Total Data: 440.26 MB | Total Time: 2324.99s
+
+=== Round 47 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 0, 2: 1, 3: 1, 4: 0, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 81.66% | Global Loss: 0.5897
+  [Perf] Personalized PA: 94.75% | Personalized Loss: 0.1623 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.89s simulated time
+  [Cumul] Total Data: 450.08 MB | Total Time: 2376.88s
+
+=== Round 48 ===
+  Received 5 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 0, 2: 1, 3: 0, 4: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 82.19% | Global Loss: 0.5881
+  [Perf] Personalized PA: 95.50% | Personalized Loss: 0.1408 (5 clients)
+  [Effi] Round Cost: 10056 KB, +51.85s simulated time
+  [Cumul] Total Data: 459.90 MB | Total Time: 2428.73s
+
+=== Round 49 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 0, 2: 1, 3: 1, 4: 0, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 82.32% | Global Loss: 0.5889
+  [Perf] Personalized PA: 95.00% | Personalized Loss: 0.1580 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.87s simulated time
+  [Cumul] Total Data: 469.72 MB | Total Time: 2480.61s
+
+=== Round 50 ===
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 0, 2: 1, 3: 1, 4: 0, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 82.10% | Global Loss: 0.6033
+  [Perf] Personalized PA: 94.98% | Personalized Loss: 0.1574 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.83s simulated time
+  [Cumul] Total Data: 479.54 MB | Total Time: 2532.44s
