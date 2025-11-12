@@ -28,7 +28,7 @@ class Config:
     SAMPLE_FRAC = 0.1  # 10% of clients participate per round
     
     # Target accuracy
-    TARGET_ACC = 87.0  # Target Global Accuracy (%) - for baseline experiments
+    TARGET_ACC = 90.0  # Target Global Accuracy (%) - for baseline experiments
     CLUSTERING_TARGET_ACC = 100.0  # Target accuracy (%) for clustering experiments (BL3, ABL-1)
     
     # Network bandwidth (bps)
