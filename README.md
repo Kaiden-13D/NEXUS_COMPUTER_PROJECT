@@ -396,23 +396,7 @@ Experiment results are saved in the `results/` directory. Each experiment tracks
 - Time cost vs. accuracy
 - Comparison between different methods
 
-## Citation
-
-If you use this code in your research, please cite:
-
-```bibtex
-@software{hpfl2024,
-  title={HPFL: Hierarchical Cluster-based Personalized Federated Learning for SAGIN},
-  author={Your Name},
-  year={2024},
-  url={https://github.com/yourusername/hpfl}
-}
-```
-
 ## License
 
-[Specify your license here]
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Contact
-
-For questions or issues, please open an issue on GitHub or contact [your email].
