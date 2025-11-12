@@ -90,7 +90,8 @@ except ImportError as e:
     print('✗ numpy: Not installed')
 
 if errors:
-    print(f'\n{len(errors)} package(s) failed to install: {', '.join(errors)}')
+    error_str = ', '.join(errors)
+    print(f'\n{len(errors)} package(s) failed to install: {error_str}')
     sys.exit(1)
 else:
     print('\n✓ All packages installed successfully!')
