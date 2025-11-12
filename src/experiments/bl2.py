@@ -20,21 +20,21 @@ from ..utils import get_state_dict_bytes
 from ..utils.progress_logger import init_progress_logger, get_progress_logger
 from ..config import Config
 
-# 전역 비용 측정기
+# Global cost meter
 COST = CostMeter()
 
 
 async def main():
-    """BL2 실험 메인 함수"""
-    # 진행 상황 로거 초기화
+    """BL2 experiment main function"""
+    # Initialize progress logger
     logger = init_progress_logger("bl2")
     logger.log("=== Starting BL2 Experiment ===", print_to_console=False)
     
-    # 시드 설정
+    # Set seed
     random.seed(Config.SEED)
     torch.manual_seed(Config.SEED)
     
-    # 1. 데이터 준비
+    # 1. Data preparation
     logger.log("Loading FEMNIST dataset...", print_to_console=False)
     client_train_ds, client_test_ds, num_classes = setup_femnist_by_writer(
         Config.NUM_CLIENTS
@@ -46,10 +46,10 @@ async def main():
     )
     print(f"Total global test samples: {len(global_test_loader.dataset)}")
     
-    # 2. 모델 초기화
+    # 2. Model initialization
     model = SimpleCNN(num_classes).to(Config.DEVICE)
     
-    # 3. 네트워크 토폴로지 구축
+    # 3. Build network topology
     uav_links = [
         Link(f"UAV{i}-SAT", 30+i*5, 10, Config.UAV_SAT_BW, 0.01)
         for i in range(Config.NUM_UAV)
@@ -68,7 +68,7 @@ async def main():
         for i in range(Config.NUM_UAV)
     ]
     
-    # 4. 클라이언트 생성 및 UAV에 할당
+    # 4. Create clients and assign to UAVs
     clients = []
     for i in range(Config.NUM_CLIENTS):
         uav_idx = i % Config.NUM_UAV
@@ -83,21 +83,21 @@ async def main():
             )
         )
         clients.append(c)
-        uavs[uav_idx].assigned_clients.append(c)  # UAV에 클라이언트 등록
+        uavs[uav_idx].assigned_clients.append(c)  # Register client to UAV
     
-    # 5. 백그라운드 태스크 시작
+    # 5. Start background tasks
     bg_tasks = [asyncio.create_task(x.run()) for x in uavs + [sat]]
     
     print(f"\n=== Starting BL2 (DCS Only) Simulation (Goal: GA {Config.TARGET_ACC}%) ===", flush=True)
     
-    # 6. FL 라운드 실행
+    # 6. FL round execution
     for r in range(Config.ROUNDS):
         print(f"\n=== Round {r+1} ===", flush=True)
         
-        # [BL2 핵심] UAV별 DCS 수행
+        # [BL2 Core] DCS per UAV
         selected_total = []
         for uav in uavs:
-            # 각 UAV가 자신의 구역(Zone)에서 DCS로 클라이언트 선별
+            # Each UAV selects clients using DCS in its zone
             selected_in_zone = uav.select_clients_dcs(Config.SAMPLE_FRAC)
             selected_total.extend(selected_in_zone)
         
@@ -105,7 +105,7 @@ async def main():
             print("  No clients selected this round.")
             continue
         
-        # 클라이언트 학습 및 전송
+        # Client training and transmission
         async def client_task(c):
             sd = c.train(model)
             payload = get_state_dict_bytes(sd)
@@ -118,11 +118,11 @@ async def main():
         await asyncio.gather(*(client_task(c) for c in selected_total))
         await asyncio.sleep(1)
         
-        # 집계
+        # Aggregation
         if sat.buffer:
-            # sat.buffer는 (client_id, state_dict) 튜플 리스트
+            # sat.buffer is list of (client_id, state_dict) tuples
             buffer_state_dicts = [sd for _, sd in sat.buffer]
-            # 클라이언트 데이터 크기 가중치 계산
+            # Calculate client data size weights
             client_weights = []
             client_id_to_idx = {c.id: i for i, c in enumerate(clients)}
             for client_id, _ in sat.buffer:
@@ -139,11 +139,11 @@ async def main():
         else:
             print("  No updates received this round.")
         
-        # 평가: Global Accuracy
+        # Evaluation: Global Accuracy
         logger.log(f"Round {r+1}: Evaluating model...", print_to_console=False)
         model.eval()
         
-        # 평가 진행 상황 표시 (progress 로그에만 기록)
+        # Show evaluation progress (logged to progress log only)
         try:
             from tqdm import tqdm
             import sys
@@ -180,7 +180,7 @@ async def main():
         gl = total_loss / total_samples  # Global Loss
         logger.log(f"Round {r+1}: Global Accuracy = {ga:.2f}%, Global Loss = {gl:.4f}", print_to_console=False)
         
-        # 효율성 측정
+        # Efficiency measurement
         r_bytes, r_delay = COST.end_round()
         
         print(f"  [Perf] Global GA: {ga:.2f}% | Global Loss: {gl:.4f}", flush=True)
@@ -188,7 +188,7 @@ async def main():
         print(f"  [Cumul] Total Data: {COST.total_cum_bytes/1024/1024:.2f} MB | "
               f"Total Time: {COST.total_cum_time:.2f}s", flush=True)
         
-        # 목표 달성 체크
+        # Check target achievement
         if ga >= Config.TARGET_ACC:
             print(f"\n!!! Target Accuracy ({Config.TARGET_ACC}%) Reached at Round {r+1} !!!", flush=True)
             print(f"FINAL Metrics -> Accuracy: {ga:.2f}% | Loss: {gl:.4f} | "
@@ -196,7 +196,7 @@ async def main():
                   f"Time Cost: {COST.total_cum_time:.2f}s", flush=True)
             break
     
-    # 정리
+    # Cleanup
     for t in bg_tasks:
         t.cancel()
 

@@ -1,5 +1,5 @@
 """
-네트워크 시뮬레이션: 링크 및 비용 측정
+Network simulation: links and cost measurement
 """
 import random
 from collections import defaultdict
@@ -9,23 +9,23 @@ from typing import Optional
 
 @dataclass
 class Link:
-    """네트워크 링크 시뮬레이션"""
+    """Network link simulation"""
     name: str
     latency_ms: int
     jitter_ms: int
     bandwidth_bps: int
-    loss: float  # 패킷 손실률 (0.0 ~ 1.0)
+    loss: float  # Packet loss rate (0.0 ~ 1.0)
     
     async def transmit(self, packet: bytes, cost_meter=None) -> Optional[bytes]:
         """
-        패킷 전송 시뮬레이션
+        Simulate packet transmission
         
         Args:
-            packet: 전송할 패킷 (bytes)
-            cost_meter: 비용 측정기 (CostMeter 인스턴스)
+            packet: Packet to transmit (bytes)
+            cost_meter: Cost meter instance (CostMeter)
         
         Returns:
-            성공 시 packet, 실패 시 None
+            packet on success, None on failure
         """
         delay = (self.latency_ms + random.randint(0, self.jitter_ms)) / 1000 + \
                 len(packet) / max(1, self.bandwidth_bps)
@@ -41,26 +41,26 @@ class Link:
 
 
 class CostMeter:
-    """통신 비용 및 시간 비용 측정"""
+    """Communication and time cost measurement"""
     
     def __init__(self):
         self.reset_all()
         self.total_cum_bytes = 0
-        self.total_cum_time = 0.0  # 시뮬레이션된 논리적 시간
+        self.total_cum_time = 0.0  # Simulated logical time
     
     def reset_all(self):
-        """라운드별 통계 초기화"""
+        """Reset round-by-round statistics"""
         self._round = defaultdict(lambda: {"bytes": 0, "max_delay": 0.0})
     
     def note(self, link_name: str, ok: bool, nbytes: int, delay_s: float):
         """
-        링크 사용 기록
+        Record link usage
         
         Args:
-            link_name: 링크 이름
-            ok: 전송 성공 여부
-            nbytes: 전송된 바이트 수
-            delay_s: 지연 시간 (초)
+            link_name: Link name
+            ok: Transmission success status
+            nbytes: Number of bytes transmitted
+            delay_s: Delay time (seconds)
         """
         if ok:
             self._round[link_name]["bytes"] += nbytes
@@ -70,7 +70,7 @@ class CostMeter:
     
     def end_round(self):
         """
-        라운드 종료 및 비용 정산
+        End round and finalize costs
         
         Returns:
             (round_bytes, round_max_delay)
@@ -78,7 +78,7 @@ class CostMeter:
         round_bytes = sum(d["bytes"] for d in self._round.values())
         self.total_cum_bytes += round_bytes
         
-        # 이번 라운드의 소요 시간 = 모든 링크에서 발생한 최대 지연 시간의 합
+        # Round time = sum of max delays from all links
         round_max_delay = sum(d["max_delay"] for d in self._round.values())
         self.total_cum_time += round_max_delay
         

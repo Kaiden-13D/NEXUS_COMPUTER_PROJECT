@@ -1,5 +1,5 @@
 """
-신경망 모델 정의
+Neural network model definitions
 """
 import torch
 import torch.nn as nn
@@ -7,7 +7,7 @@ import torch.nn.functional as F
 
 
 class SimpleCNN(nn.Module):
-    """FEMNIST용 간단한 CNN 모델"""
+    """Simple CNN model for FEMNIST"""
     
     def __init__(self, num_classes=62):
         super().__init__()

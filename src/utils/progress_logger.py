@@ -1,5 +1,5 @@
 """
-진행 상황 로깅 유틸리티
+Progress logging utility
 """
 import os
 import sys
@@ -12,7 +12,7 @@ try:
     TQDM_AVAILABLE = True
 except ImportError:
     TQDM_AVAILABLE = False
-    # tqdm이 없으면 간단한 fallback
+    # Simple fallback if tqdm is not available
     class tqdm:
         def __init__(self, *args, **kwargs):
             self.iterable = kwargs.get('iterable', args[0] if args else [])
@@ -43,14 +43,14 @@ except ImportError:
 
 
 class ProgressLogger:
-    """진행 상황 로깅 클래스"""
+    """Progress logging class"""
     
     def __init__(self, experiment_name: str, log_dir: str = "logs/progress", timestamp_dir: str = "logs/timestamp"):
         """
         Args:
-            experiment_name: 실험 이름 (bl1, bl2, bl3, abl1)
-            log_dir: 진행 상황 로그 디렉토리 (실험 종류 구분 없음)
-            timestamp_dir: 타임스탬프 로그 디렉토리
+            experiment_name: Experiment name (bl1, bl2, bl3, abl1)
+            log_dir: Progress log directory (not separated by experiment type)
+            timestamp_dir: Timestamp log directory
         """
         self.experiment_name = experiment_name
         self.log_dir = Path(log_dir)
@@ -59,16 +59,16 @@ class ProgressLogger:
         self.timestamp_dir = Path(timestamp_dir)
         self.timestamp_dir.mkdir(parents=True, exist_ok=True)
         
-        # 진행 상황 로그 파일 (최신 1개만 유지 - latest.log)
+        # Progress log file (keep only latest - latest.log)
         self.log_file = self.log_dir / "latest.log"
-        # 기존 파일 삭제 후 새로 생성
+        # Delete existing file and create new one
         if self.log_file.exists():
             self.log_file.unlink()
         self.log_file.touch()
         
-        # 타임스탬프 로그 파일 (최신 1개만 유지)
+        # Timestamp log file (keep only latest)
         self.timestamp_file = self.timestamp_dir / "latest.log"
-        # 기존 파일 삭제 후 새로 생성
+        # Delete existing file and create new one
         if self.timestamp_file.exists():
             self.timestamp_file.unlink()
         self.timestamp_file.touch()
@@ -78,21 +78,21 @@ class ProgressLogger:
     
     def log(self, message: str, print_to_console: bool = True, include_timestamp: bool = True):
         """
-        로그 메시지 기록
+        Log message
         
         Args:
-            message: 로그 메시지
-            print_to_console: 콘솔에도 출력할지 여부
-            include_timestamp: 타임스탬프 로그에도 기록할지 여부
+            message: Log message
+            print_to_console: Whether to print to console
+            include_timestamp: Whether to log to timestamp log
         """
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         log_message = f"[{timestamp}] {message}\n"
         
-        # 진행 상황 로그에 기록
+        # Write to progress log
         with open(self.log_file, 'a', encoding='utf-8') as f:
             f.write(log_message)
         
-        # 타임스탬프 로그에도 기록 (최신 1개만 유지)
+        # Also write to timestamp log (keep only latest)
         if include_timestamp:
             with open(self.timestamp_file, 'a', encoding='utf-8') as f:
                 f.write(log_message)
@@ -102,19 +102,19 @@ class ProgressLogger:
     
     def tqdm(self, iterable, desc: str = "", total: Optional[int] = None, **kwargs):
         """
-        tqdm 래퍼 (로그 파일에도 기록)
+        tqdm wrapper (also logs to file)
         
         Args:
-            iterable: 반복 가능한 객체
-            desc: 설명
-            total: 전체 개수
-            **kwargs: tqdm 추가 옵션
+            iterable: Iterable object
+            desc: Description
+            total: Total count
+            **kwargs: Additional tqdm options
         """
         if not TQDM_AVAILABLE:
             self.log(f"Starting: {desc}")
             return tqdm(iterable, desc=desc, total=total, **kwargs)
         
-        # tqdm 설정
+        # Configure tqdm
         pbar = tqdm(
             iterable,
             desc=desc,
@@ -123,11 +123,11 @@ class ProgressLogger:
             **kwargs
         )
         
-        # 초기 로그
+        # Initial log
         if desc:
             self.log(f"Starting: {desc}")
         
-        # 진행 상황을 주기적으로 로그에 기록
+        # Periodically log progress
         original_update = pbar.update
         
         def update_with_log(n=1):
@@ -142,22 +142,22 @@ class ProgressLogger:
         return pbar
     
     def log_complete(self, task_name: str):
-        """작업 완료 로그"""
+        """Log task completion"""
         self.log(f"✓ Completed: {task_name}")
 
 
-# 전역 인스턴스 (실험별로 생성)
+# Global instance (created per experiment)
 _progress_logger: Optional[ProgressLogger] = None
 
 
 def init_progress_logger(experiment_name: str):
-    """진행 상황 로거 초기화"""
+    """Initialize progress logger"""
     global _progress_logger
     _progress_logger = ProgressLogger(experiment_name)
     return _progress_logger
 
 
 def get_progress_logger() -> Optional[ProgressLogger]:
-    """진행 상황 로거 가져오기"""
+    """Get progress logger"""
     return _progress_logger
 

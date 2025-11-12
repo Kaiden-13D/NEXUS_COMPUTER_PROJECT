@@ -1,5 +1,5 @@
 """
-연합학습 집계 함수
+Federated learning aggregation functions
 """
 from typing import List, Dict, Optional
 import torch
@@ -10,34 +10,34 @@ def fedavg(
     weights: Optional[List[float]] = None
 ) -> Dict:
     """
-    Federated Averaging (FedAvg) 집계
+    Federated Averaging (FedAvg) aggregation
     
     Args:
-        state_dicts: 클라이언트들의 모델 state_dict 리스트
-        weights: 각 클라이언트의 가중치 리스트 (데이터 크기 등)
-                 None이면 균등 가중치 (1/n)
+        state_dicts: List of client model state_dicts
+        weights: List of client weights (e.g., data size)
+                 None for uniform weights (1/n)
     
     Returns:
-        가중 평균화된 state_dict
+        Weighted averaged state_dict
     """
     if not state_dicts:
         raise ValueError("Empty state_dicts list")
     
     n = len(state_dicts)
     
-    # 가중치가 없으면 균등 가중치
+    # Use uniform weights if not provided
     if weights is None:
         weights = [1.0 / n] * n
     else:
         if len(weights) != n:
             raise ValueError(f"weights length ({len(weights)}) must match state_dicts length ({n})")
-        # 가중치 정규화
+        # Normalize weights
         total_weight = sum(weights)
         if total_weight == 0:
             raise ValueError("Total weight cannot be zero")
         weights = [w / total_weight for w in weights]
     
-    # 가중 평균 계산
+    # Calculate weighted average
     result = {}
     for k in state_dicts[0]:
         result[k] = sum(

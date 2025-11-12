@@ -1,5 +1,5 @@
 """
-FEMNIST 데이터셋 로딩 및 Writer 기반 파티셔닝
+FEMNIST dataset loading and writer-based partitioning
 """
 import random
 from collections import defaultdict
@@ -14,7 +14,7 @@ from ..utils.progress_logger import get_progress_logger
 
 
 class FEMNISTDataset(Dataset):
-    """FEMNIST 데이터셋 래퍼"""
+    """FEMNIST dataset wrapper"""
     
     def __init__(self, dataset, transform=None):
         self.dataset = dataset
@@ -28,7 +28,7 @@ class FEMNISTDataset(Dataset):
         image = sample['image']
         label = sample['character']
         
-        # 이미지가 RGB 모드일 경우 L(grayscale)로 변환
+        # Convert RGB to grayscale if needed
         if hasattr(image, 'convert') and image.mode != 'L':
             image = image.convert('L')
         
@@ -44,12 +44,12 @@ def setup_femnist_by_writer(
     max_samples: Optional[int] = None
 ) -> Tuple[List[FEMNISTDataset], List[FEMNISTDataset], int]:
     """
-    FEMNIST 데이터를 Writer ID 기반으로 클라이언트에게 분배
+    Distribute FEMNIST data to clients based on writer ID
     
     Args:
-        num_clients: 클라이언트 수
-        test_split_ratio: 테스트셋 비율
-        max_samples: 클라이언트당 최대 샘플 수 (None이면 제한 없음)
+        num_clients: Number of clients
+        test_split_ratio: Test set ratio
+        max_samples: Maximum samples per client (None for unlimited)
     
     Returns:
         (client_train_datasets, client_test_datasets, num_classes)
@@ -64,14 +64,14 @@ def setup_femnist_by_writer(
     if logger:
         logger.log("Grouping data by writer_id...", print_to_console=False)
     
-    # tqdm으로 진행 상황 표시 (progress 로그에만 기록)
+    # Show progress with tqdm (logged to progress log only)
     try:
         from tqdm import tqdm
-        # tqdm 출력을 파일로 리다이렉트
+        # Redirect tqdm output to file
         import sys
         original_stdout = sys.stdout
         if logger:
-            # tqdm 출력을 progress 로그 파일로
+            # Redirect tqdm output to progress log file
             tqdm_file = open(logger.log_file, 'a') if logger else None
             writer_ids_iter = tqdm(enumerate(hf_dataset['writer_id']), 
                                    total=len(hf_dataset),
@@ -99,7 +99,7 @@ def setup_femnist_by_writer(
     writers_per_client = len(writer_ids) // num_clients
     print(f"Assigning approx {writers_per_client} writers per client for {num_clients} clients...")
     
-    # 공통 변환
+    # Common transform
     transform = transforms.Compose([
         transforms.Resize((28, 28)),
         transforms.ToTensor(),
@@ -113,7 +113,7 @@ def setup_femnist_by_writer(
     if logger:
         logger.log(f"Creating datasets for {num_clients} clients...", print_to_console=False)
     
-    # 클라이언트별 데이터셋 생성 진행 상황 표시 (progress 로그에만 기록)
+    # Show progress for creating client datasets (logged to progress log only)
     try:
         from tqdm import tqdm
         import sys
@@ -128,28 +128,28 @@ def setup_femnist_by_writer(
     
     try:
         for i in clients_iter:
-            # 현재 클라이언트에게 할당할 Writer ID 범위 계산
+            # Calculate writer ID range for current client
             start_idx = i * writers_per_client
             end_idx = (i + 1) * writers_per_client if i < num_clients - 1 else len(writer_ids)
             client_writers = writer_ids[start_idx:end_idx]
             
-            # 할당된 Writer들의 데이터 인덱스 수집
+            # Collect data indices from assigned writers
             client_indices = []
             for wid in client_writers:
                 client_indices.extend(writer_to_indices[wid])
             
-            # (옵션) 클라이언트당 최대 샘플 수 제한
+            # (Optional) Limit maximum samples per client
             if max_samples and len(client_indices) > max_samples:
                 random.shuffle(client_indices)
                 client_indices = client_indices[:max_samples]
             
-            # Train/Test 분할
+            # Train/Test split
             random.shuffle(client_indices)
             split_pt = int(len(client_indices) * (1 - test_split_ratio))
             train_idx = client_indices[:split_pt]
             test_idx = client_indices[split_pt:]
             
-            # HF Dataset의 .select()는 메타데이터를 유지하며 서브셋을 만듭니다
+            # HF Dataset's .select() creates subset while preserving metadata
             train_sub = hf_dataset.select(train_idx)
             test_sub = hf_dataset.select(test_idx)
             
