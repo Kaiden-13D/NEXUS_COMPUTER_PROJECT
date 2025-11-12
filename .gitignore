@@ -40,7 +40,7 @@ ENV/
 
 # 실험 결과 및 로그
 logs/
-results/
+# results/ - removed: results should be tracked in main branch
 *.log
 *.csv
 *.json
