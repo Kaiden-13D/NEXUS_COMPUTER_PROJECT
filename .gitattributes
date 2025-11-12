@@ -1,3 +1,0 @@
-# Branch-specific files - keep ours during merge
-.gitignore merge=ours
-
