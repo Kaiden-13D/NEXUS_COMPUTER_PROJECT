@@ -51,7 +51,7 @@ def parse_log_file(log_path: Path) -> Optional[ExperimentData]:
     exp_name = log_path.stem.split('_')[0]  # e.g., 'bl1_20251112_064959.log' -> 'bl1'
     data = ExperimentData(exp_name)
     
-    with open(log_path, 'r') as f:
+    with open(log_path, 'r', encoding='utf-8') as f:
         content = f.read()
     
     # Pattern for round header: "=== Round X ==="
@@ -163,15 +163,14 @@ def visualize_experiments(experiments: Dict[str, ExperimentData], output_path: O
         print("No experiment data to visualize")
         return
     
-    # Color palette for different experiments
-    colors = {
-        'bl1': '#1f77b4',   # Blue
-        'bl2': '#ff7f0e',   # Orange
-        'bl3': '#2ca02c',   # Green
-        'abl1': '#d62728',  # Red
-        'abl2': '#9467bd',  # Purple
+    # Color palette for different experiments    
+    styles = {
+        'bl1': {'color': '#1f77b4', 'linestyle': ':' , 'linewidth': 1, 'markersize': 0.5},
+        'bl2': {'color': '#ff7f0e', 'linestyle': '-', 'linewidth': 1, 'markersize': 0.5},
+        'bl3': {'color': '#2ca02c', 'linestyle': '-.', 'linewidth': 1, 'markersize': 0.5},
+        'abl1': {'color': '#d62728', 'linestyle': 'solid', 'linewidth': 1, 'markersize': 0.5},
+        'abl2': {'color': '#9467bd', 'linestyle': '--', 'linewidth': 1, 'markersize': 0.5},
     }
-    
     # Determine if any experiment has personalized metrics
     has_any_personalized = any(exp.has_personalized for exp in experiments.values())
     
@@ -186,9 +185,9 @@ def visualize_experiments(experiments: Dict[str, ExperimentData], output_path: O
     # 1. Global Accuracy (y-axis starts from 30%)
     ax1 = fig.add_subplot(gs[0, 0])
     for exp_name, data in experiments.items():
-        color = colors.get(exp_name, '#000000')
+        style = styles.get(exp_name, {'color': '#000000', 'linestyle': 'solid'} )
         ax1.plot(data.rounds, data.global_acc, marker='o', label=exp_name.upper(), 
-                color=color, linewidth=2, markersize=4, alpha=0.8)
+                 alpha=0.8, **style)
     ax1.set_xlabel('Round', fontsize=12, fontweight='bold')
     ax1.set_ylabel('Global Accuracy (%)', fontsize=12, fontweight='bold')
     ax1.set_title('Global Accuracy vs Round', fontsize=14, fontweight='bold')
@@ -199,9 +198,9 @@ def visualize_experiments(experiments: Dict[str, ExperimentData], output_path: O
     # 2. Global Loss
     ax2 = fig.add_subplot(gs[0, 1])
     for exp_name, data in experiments.items():
-        color = colors.get(exp_name, '#000000')
+        style = styles.get(exp_name, {'color': '#000000', 'linestyle': 'solid'} )
         ax2.plot(data.rounds, data.global_loss, marker='s', label=exp_name.upper(), 
-                color=color, linewidth=2, markersize=4, alpha=0.8)
+                   alpha=0.8, **style)
     ax2.set_xlabel('Round', fontsize=12, fontweight='bold')
     ax2.set_ylabel('Global Loss', fontsize=12, fontweight='bold')
     ax2.set_title('Global Loss vs Round', fontsize=14, fontweight='bold')
@@ -213,13 +212,13 @@ def visualize_experiments(experiments: Dict[str, ExperimentData], output_path: O
         ax3 = fig.add_subplot(gs[1, 0])
         for exp_name, data in experiments.items():
             if data.has_personalized:
-                color = colors.get(exp_name, '#000000')
+                style = styles.get(exp_name, {'color': '#000000', 'linestyle': 'solid'} )
                 # Filter out None values
                 valid_rounds = [r for r, pa in zip(data.rounds, data.personalized_acc) if pa is not None]
                 valid_acc = [pa for pa in data.personalized_acc if pa is not None]
                 if valid_rounds:
                     ax3.plot(valid_rounds, valid_acc, marker='^', label=exp_name.upper(), 
-                            color=color, linewidth=2, markersize=4, alpha=0.8)
+                             alpha=0.8, **style)
         ax3.set_xlabel('Round', fontsize=12, fontweight='bold')
         ax3.set_ylabel('Personalized Accuracy (%)', fontsize=12, fontweight='bold')
         ax3.set_title('Personalized Accuracy vs Round', fontsize=14, fontweight='bold')
@@ -231,12 +230,12 @@ def visualize_experiments(experiments: Dict[str, ExperimentData], output_path: O
         ax4 = fig.add_subplot(gs[1, 1])
         for exp_name, data in experiments.items():
             if data.has_personalized:
-                color = colors.get(exp_name, '#000000')
+                style = styles.get(exp_name, {'color': '#000000', 'linestyle': 'solid'} )
                 valid_rounds = [r for r, pl in zip(data.rounds, data.personalized_loss) if pl is not None]
                 valid_loss = [pl for pl in data.personalized_loss if pl is not None]
                 if valid_rounds:
                     ax4.plot(valid_rounds, valid_loss, marker='v', label=exp_name.upper(), 
-                            color=color, linewidth=2, markersize=4, alpha=0.8)
+                             alpha=0.8, **style)
         ax4.set_xlabel('Round', fontsize=12, fontweight='bold')
         ax4.set_ylabel('Personalized Loss', fontsize=12, fontweight='bold')
         ax4.set_title('Personalized Loss vs Round', fontsize=14, fontweight='bold')
@@ -246,9 +245,9 @@ def visualize_experiments(experiments: Dict[str, ExperimentData], output_path: O
         # 5. Round Communication Cost (per round)
         ax5 = fig.add_subplot(gs[2, 0])
         for exp_name, data in experiments.items():
-            color = colors.get(exp_name, '#000000')
+            style = styles.get(exp_name, {'color': '#000000', 'linestyle': 'solid'} )
             ax5.plot(data.rounds, data.round_cost_kb, marker='o', label=exp_name.upper(), 
-                    color=color, linewidth=2, markersize=4, alpha=0.8)
+                     alpha=0.8, **style)
         ax5.set_xlabel('Round', fontsize=12, fontweight='bold')
         ax5.set_ylabel('Round Communication Cost (KB)', fontsize=12, fontweight='bold')
         ax5.set_title('Round Communication Cost vs Round', fontsize=14, fontweight='bold')
@@ -258,9 +257,9 @@ def visualize_experiments(experiments: Dict[str, ExperimentData], output_path: O
         # 6. Round Simulated Time (per round)
         ax6 = fig.add_subplot(gs[2, 1])
         for exp_name, data in experiments.items():
-            color = colors.get(exp_name, '#000000')
+            style = styles.get(exp_name, {'color': '#000000', 'linestyle': 'solid'} )
             ax6.plot(data.rounds, data.round_time_s, marker='s', label=exp_name.upper(), 
-                    color=color, linewidth=2, markersize=4, alpha=0.8)
+                     alpha=0.8, **style)
         ax6.set_xlabel('Round', fontsize=12, fontweight='bold')
         ax6.set_ylabel('Round Simulated Time (seconds)', fontsize=12, fontweight='bold')
         ax6.set_title('Round Simulated Time vs Round', fontsize=14, fontweight='bold')
@@ -270,9 +269,9 @@ def visualize_experiments(experiments: Dict[str, ExperimentData], output_path: O
         # 7. Cumulative Communication Cost
         ax7 = fig.add_subplot(gs[3, 0])
         for exp_name, data in experiments.items():
-            color = colors.get(exp_name, '#000000')
+            style = styles.get(exp_name, {'color': '#000000', 'linestyle': 'solid'} )
             ax7.plot(data.rounds, data.cumulative_data_mb, marker='o', label=exp_name.upper(), 
-                    color=color, linewidth=2, markersize=4, alpha=0.8)
+                     alpha=0.8, **style)
         ax7.set_xlabel('Round', fontsize=12, fontweight='bold')
         ax7.set_ylabel('Cumulative Communication Cost (MB)', fontsize=12, fontweight='bold')
         ax7.set_title('Cumulative Communication Cost vs Round', fontsize=14, fontweight='bold')
@@ -282,9 +281,9 @@ def visualize_experiments(experiments: Dict[str, ExperimentData], output_path: O
         # 8. Cumulative Time
         ax8 = fig.add_subplot(gs[3, 1])
         for exp_name, data in experiments.items():
-            color = colors.get(exp_name, '#000000')
+            style = styles.get(exp_name, {'color': '#000000', 'linestyle': 'solid'} )
             ax8.plot(data.rounds, data.cumulative_time_s, marker='s', label=exp_name.upper(), 
-                    color=color, linewidth=2, markersize=4, alpha=0.8)
+                     alpha=0.8, **style)
         ax8.set_xlabel('Round', fontsize=12, fontweight='bold')
         ax8.set_ylabel('Cumulative Time (seconds)', fontsize=12, fontweight='bold')
         ax8.set_title('Cumulative Time vs Round', fontsize=14, fontweight='bold')
@@ -295,9 +294,9 @@ def visualize_experiments(experiments: Dict[str, ExperimentData], output_path: O
         # 3. Round Communication Cost (per round)
         ax3 = fig.add_subplot(gs[1, 0])
         for exp_name, data in experiments.items():
-            color = colors.get(exp_name, '#000000')
+            style = styles.get(exp_name, {'color': '#000000', 'linestyle': 'solid'} )
             ax3.plot(data.rounds, data.round_cost_kb, marker='o', label=exp_name.upper(), 
-                    color=color, linewidth=2, markersize=4, alpha=0.8)
+                    linewidth=2, markersize=4, alpha=0.8, **style)
         ax3.set_xlabel('Round', fontsize=12, fontweight='bold')
         ax3.set_ylabel('Round Communication Cost (KB)', fontsize=12, fontweight='bold')
         ax3.set_title('Round Communication Cost vs Round', fontsize=14, fontweight='bold')
@@ -307,9 +306,9 @@ def visualize_experiments(experiments: Dict[str, ExperimentData], output_path: O
         # 4. Round Simulated Time (per round)
         ax4 = fig.add_subplot(gs[1, 1])
         for exp_name, data in experiments.items():
-            color = colors.get(exp_name, '#000000')
+            style = styles.get(exp_name, {'color': '#000000', 'linestyle': 'solid'} )
             ax4.plot(data.rounds, data.round_time_s, marker='s', label=exp_name.upper(), 
-                    color=color, linewidth=2, markersize=4, alpha=0.8)
+                    linewidth=2, markersize=4, alpha=0.8, **style)
         ax4.set_xlabel('Round', fontsize=12, fontweight='bold')
         ax4.set_ylabel('Round Simulated Time (seconds)', fontsize=12, fontweight='bold')
         ax4.set_title('Round Simulated Time vs Round', fontsize=14, fontweight='bold')
@@ -319,9 +318,9 @@ def visualize_experiments(experiments: Dict[str, ExperimentData], output_path: O
         # 5. Cumulative Communication Cost
         ax5 = fig.add_subplot(gs[2, 0])
         for exp_name, data in experiments.items():
-            color = colors.get(exp_name, '#000000')
+            style = styles.get(exp_name, {'color': '#000000', 'linestyle': 'solid'} )
             ax5.plot(data.rounds, data.cumulative_data_mb, marker='o', label=exp_name.upper(), 
-                    color=color, linewidth=2, markersize=4, alpha=0.8)
+                    linewidth=2, markersize=4, alpha=0.8, **style)
         ax5.set_xlabel('Round', fontsize=12, fontweight='bold')
         ax5.set_ylabel('Cumulative Communication Cost (MB)', fontsize=12, fontweight='bold')
         ax5.set_title('Cumulative Communication Cost vs Round', fontsize=14, fontweight='bold')
@@ -331,9 +330,9 @@ def visualize_experiments(experiments: Dict[str, ExperimentData], output_path: O
         # 6. Cumulative Time
         ax6 = fig.add_subplot(gs[2, 1])
         for exp_name, data in experiments.items():
-            color = colors.get(exp_name, '#000000')
+            style = styles.get(exp_name, {'color': '#000000', 'linestyle': 'solid'} )
             ax6.plot(data.rounds, data.cumulative_time_s, marker='s', label=exp_name.upper(), 
-                    color=color, linewidth=2, markersize=4, alpha=0.8)
+                    linewidth=2, markersize=4, alpha=0.8, **style)
         ax6.set_xlabel('Round', fontsize=12, fontweight='bold')
         ax6.set_ylabel('Cumulative Time (seconds)', fontsize=12, fontweight='bold')
         ax6.set_title('Cumulative Time vs Round', fontsize=14, fontweight='bold')
