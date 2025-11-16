@@ -182,63 +182,69 @@ def visualize_experiments(experiments: Dict[str, ExperimentData], output_path: O
         fig = plt.figure(figsize=(18, 12))
         gs = GridSpec(3, 2, figure=fig, hspace=0.35, wspace=0.3)
     
-    # 1. Global Accuracy (y-axis starts from 30%)
-    ax1 = fig.add_subplot(gs[0, 0])
-    for exp_name, data in experiments.items():
-        style = styles.get(exp_name, {'color': '#000000', 'linestyle': 'solid'} )
-        ax1.plot(data.rounds, data.global_acc, marker='o', label=exp_name.upper(), 
-                 alpha=0.8, **style)
-    ax1.set_xlabel('Round', fontsize=12, fontweight='bold')
-    ax1.set_ylabel('Global Accuracy (%)', fontsize=12, fontweight='bold')
-    ax1.set_title('Global Accuracy vs Round', fontsize=14, fontweight='bold')
-    ax1.grid(True, alpha=0.3)
-    ax1.legend(loc='best', fontsize=10)
-    ax1.set_ylim(bottom=30)
+    # # 1. Global Accuracy (y-axis starts from 30%)
+    # ax1 = fig.add_subplot(gs[0, 0])
+    # for exp_name, data in experiments.items():
+    #     style = styles.get(exp_name, {'color': '#000000', 'linestyle': 'solid'} )
+    #     ax1.plot(data.rounds, data.global_acc, marker='o', label=exp_name.upper(), 
+    #              alpha=0.8, **style)
+    # ax1.set_xlabel('Round', fontsize=12, fontweight='bold')
+    # ax1.set_ylabel('Global Accuracy (%)', fontsize=12, fontweight='bold')
+    # ax1.set_title('Global Accuracy vs Round', fontsize=14, fontweight='bold')
+    # ax1.grid(True, alpha=0.3)
+    # ax1.legend(loc='best', fontsize=10)
+    # ax1.set_ylim(bottom=30)
     
-    # 2. Global Loss
-    ax2 = fig.add_subplot(gs[0, 1])
-    for exp_name, data in experiments.items():
-        style = styles.get(exp_name, {'color': '#000000', 'linestyle': 'solid'} )
-        ax2.plot(data.rounds, data.global_loss, marker='s', label=exp_name.upper(), 
-                   alpha=0.8, **style)
-    ax2.set_xlabel('Round', fontsize=12, fontweight='bold')
-    ax2.set_ylabel('Global Loss', fontsize=12, fontweight='bold')
-    ax2.set_title('Global Loss vs Round', fontsize=14, fontweight='bold')
-    ax2.grid(True, alpha=0.3)
-    ax2.legend(loc='best', fontsize=10)
+    # # 2. Global Loss
+    # ax2 = fig.add_subplot(gs[0, 1])
+    # for exp_name, data in experiments.items():
+    #     style = styles.get(exp_name, {'color': '#000000', 'linestyle': 'solid'} )
+    #     ax2.plot(data.rounds, data.global_loss, marker='s', label=exp_name.upper(), 
+    #                alpha=0.8, **style)
+    # ax2.set_xlabel('Round', fontsize=12, fontweight='bold')
+    # ax2.set_ylabel('Global Loss', fontsize=12, fontweight='bold')
+    # ax2.set_title('Global Loss vs Round', fontsize=14, fontweight='bold')
+    # ax2.grid(True, alpha=0.3)
+    # ax2.legend(loc='best', fontsize=10)
     
     # 3. Personalized Accuracy (if available)
     if has_any_personalized:
-        ax3 = fig.add_subplot(gs[1, 0])
+        ax3 = fig.add_subplot(gs[0, 0])
         for exp_name, data in experiments.items():
-            if data.has_personalized:
-                style = styles.get(exp_name, {'color': '#000000', 'linestyle': 'solid'} )
-                # Filter out None values
-                valid_rounds = [r for r, pa in zip(data.rounds, data.personalized_acc) if pa is not None]
-                valid_acc = [pa for pa in data.personalized_acc if pa is not None]
-                if valid_rounds:
-                    ax3.plot(valid_rounds, valid_acc, marker='^', label=exp_name.upper(), 
-                             alpha=0.8, **style)
+            style = styles.get(exp_name, {'color': '#000000', 'linestyle': 'solid'} )
+            # Filter out None values
+            if exp_name.upper() in ['BL1', 'BL2']:
+                data_to_plot = data.global_acc
+            else:
+                data_to_plot = data.personalized_acc
+            valid_rounds = [r for r, pa in zip(data.rounds, data_to_plot) if pa is not None]
+            valid_acc = [pa for pa in data_to_plot if pa is not None]
+            if valid_rounds:
+                ax3.plot(valid_rounds, valid_acc, marker='^', label=exp_name.upper(), 
+                        alpha=0.8, **style)
         ax3.set_xlabel('Round', fontsize=12, fontweight='bold')
-        ax3.set_ylabel('Personalized Accuracy (%)', fontsize=12, fontweight='bold')
-        ax3.set_title('Personalized Accuracy vs Round', fontsize=14, fontweight='bold')
+        ax3.set_ylabel('Accuracy (%)', fontsize=12, fontweight='bold')
+        ax3.set_title('Accuracy vs Round', fontsize=14, fontweight='bold')
         ax3.grid(True, alpha=0.3)
         ax3.legend(loc='best', fontsize=10)
         ax3.set_ylim(bottom=40)
         
         # 4. Personalized Loss (if available)
-        ax4 = fig.add_subplot(gs[1, 1])
+        ax4 = fig.add_subplot(gs[0, 1])
         for exp_name, data in experiments.items():
-            if data.has_personalized:
-                style = styles.get(exp_name, {'color': '#000000', 'linestyle': 'solid'} )
-                valid_rounds = [r for r, pl in zip(data.rounds, data.personalized_loss) if pl is not None]
-                valid_loss = [pl for pl in data.personalized_loss if pl is not None]
-                if valid_rounds:
-                    ax4.plot(valid_rounds, valid_loss, marker='v', label=exp_name.upper(), 
-                             alpha=0.8, **style)
+            style = styles.get(exp_name, {'color': '#000000', 'linestyle': 'solid'} )
+            if exp_name.upper() in ['BL1', 'BL2']:
+                data_to_plot = data.global_loss
+            else:
+                data_to_plot = data.personalized_loss
+            valid_rounds = [r for r, gl in zip(data.rounds, data_to_plot) if gl is not None]
+            valid_loss = [gl for gl in data_to_plot if gl is not None]
+            if valid_rounds:
+                ax4.plot(valid_rounds, valid_loss, marker='v', label=exp_name.upper(), 
+                        alpha=0.8, **style)
         ax4.set_xlabel('Round', fontsize=12, fontweight='bold')
-        ax4.set_ylabel('Personalized Loss', fontsize=12, fontweight='bold')
-        ax4.set_title('Personalized Loss vs Round', fontsize=14, fontweight='bold')
+        ax4.set_ylabel('Loss', fontsize=12, fontweight='bold')
+        ax4.set_title('Loss vs Round', fontsize=14, fontweight='bold')
         ax4.grid(True, alpha=0.3)
         ax4.legend(loc='best', fontsize=10)
         
@@ -288,7 +294,7 @@ def visualize_experiments(experiments: Dict[str, ExperimentData], output_path: O
                 cumul_time_values.append(0)
 
         # 7. Cumulative Communication Cost
-        ax7 = fig.add_subplot(gs[2, 0])
+        ax7 = fig.add_subplot(gs[1, 0])
         ax7.bar(bar_labels, cumul_cost_values, color=bar_colors,width=0.4)
         ax7.set_xlabel('Experiment', fontsize=12, fontweight='bold')
         ax7.set_ylabel('Cumulative Communication Cost (MB)', fontsize=12, fontweight='bold')
@@ -296,7 +302,7 @@ def visualize_experiments(experiments: Dict[str, ExperimentData], output_path: O
         ax7.grid(True, alpha=0.3, axis='y') # Horizontal gridlines only
         
         # 8. Cumulative Time
-        ax8 = fig.add_subplot(gs[2, 1])
+        ax8 = fig.add_subplot(gs[1, 1])
         ax8.bar(bar_labels, cumul_time_values, color=bar_colors, width=0.4)
         ax8.set_xlabel('Experiment', fontsize=12, fontweight='bold')
         ax8.set_ylabel('Cumulative Time (seconds)', fontsize=12, fontweight='bold')
