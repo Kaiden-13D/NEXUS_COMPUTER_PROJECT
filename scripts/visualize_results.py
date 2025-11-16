@@ -176,8 +176,8 @@ def visualize_experiments(experiments: Dict[str, ExperimentData], output_path: O
     
     # Create figure with subplots
     if has_any_personalized:
-        fig = plt.figure(figsize=(18, 16))
-        gs = GridSpec(4, 2, figure=fig, hspace=0.35, wspace=0.3)
+        fig = plt.figure(figsize=(16, 14))
+        gs = GridSpec(3, 2, figure=fig, hspace=0.4, wspace=0.3)
     else:
         fig = plt.figure(figsize=(18, 12))
         gs = GridSpec(3, 2, figure=fig, hspace=0.35, wspace=0.3)
@@ -242,53 +242,66 @@ def visualize_experiments(experiments: Dict[str, ExperimentData], output_path: O
         ax4.grid(True, alpha=0.3)
         ax4.legend(loc='best', fontsize=10)
         
-        # 5. Round Communication Cost (per round)
-        ax5 = fig.add_subplot(gs[2, 0])
-        for exp_name, data in experiments.items():
-            style = styles.get(exp_name, {'color': '#000000', 'linestyle': 'solid'} )
-            ax5.plot(data.rounds, data.round_cost_kb, marker='o', label=exp_name.upper(), 
-                     alpha=0.8, **style)
-        ax5.set_xlabel('Round', fontsize=12, fontweight='bold')
-        ax5.set_ylabel('Round Communication Cost (KB)', fontsize=12, fontweight='bold')
-        ax5.set_title('Round Communication Cost vs Round', fontsize=14, fontweight='bold')
-        ax5.grid(True, alpha=0.3)
-        ax5.legend(loc='best', fontsize=10)
+        # # 5. Round Communication Cost (per round)
+        # ax5 = fig.add_subplot(gs[2, 0])
+        # for exp_name, data in experiments.items():
+        #     style = styles.get(exp_name, {'color': '#000000', 'linestyle': 'solid'} )
+        #     ax5.plot(data.rounds, data.round_cost_kb, marker='o', label=exp_name.upper(), 
+        #              alpha=0.8, **style)
+        # ax5.set_xlabel('Round', fontsize=12, fontweight='bold')
+        # ax5.set_ylabel('Round Communication Cost (KB)', fontsize=12, fontweight='bold')
+        # ax5.set_title('Round Communication Cost vs Round', fontsize=14, fontweight='bold')
+        # ax5.grid(True, alpha=0.3)
+        # ax5.legend(loc='best', fontsize=10)
         
-        # 6. Round Simulated Time (per round)
-        ax6 = fig.add_subplot(gs[2, 1])
-        for exp_name, data in experiments.items():
-            style = styles.get(exp_name, {'color': '#000000', 'linestyle': 'solid'} )
-            ax6.plot(data.rounds, data.round_time_s, marker='s', label=exp_name.upper(), 
-                     alpha=0.8, **style)
-        ax6.set_xlabel('Round', fontsize=12, fontweight='bold')
-        ax6.set_ylabel('Round Simulated Time (seconds)', fontsize=12, fontweight='bold')
-        ax6.set_title('Round Simulated Time vs Round', fontsize=14, fontweight='bold')
-        ax6.grid(True, alpha=0.3)
-        ax6.legend(loc='best', fontsize=10)
+        # # 6. Round Simulated Time (per round)
+        # ax6 = fig.add_subplot(gs[2, 1])
+        # for exp_name, data in experiments.items():
+        #     style = styles.get(exp_name, {'color': '#000000', 'linestyle': 'solid'} )
+        #     ax6.plot(data.rounds, data.round_time_s, marker='s', label=exp_name.upper(), 
+        #              alpha=0.8, **style)
+        # ax6.set_xlabel('Round', fontsize=12, fontweight='bold')
+        # ax6.set_ylabel('Round Simulated Time (seconds)', fontsize=12, fontweight='bold')
+        # ax6.set_title('Round Simulated Time vs Round', fontsize=14, fontweight='bold')
+        # ax6.grid(True, alpha=0.3)
+        # ax6.legend(loc='best', fontsize=10)
         
+        cumul_cost_values = []
+        cumul_time_values = []
+        bar_labels = []
+        bar_colors = []
+
+        exp_keys = list(experiments.keys())
+        for exp_name in exp_keys:
+            data = experiments[exp_name]
+            bar_labels.append(exp_name.upper())
+            bar_colors.append(styles.get(exp_name, {'color': '#000000'})['color'])
+            # Get last value, or 0 if list is empty
+            if data.cumulative_data_mb:
+                cumul_cost_values.append(data.cumulative_data_mb[-1])
+            else:
+                cumul_cost_values.append(0)
+                
+            if data.cumulative_time_s:
+                cumul_time_values.append(data.cumulative_time_s[-1])
+            else:
+                cumul_time_values.append(0)
+
         # 7. Cumulative Communication Cost
-        ax7 = fig.add_subplot(gs[3, 0])
-        for exp_name, data in experiments.items():
-            style = styles.get(exp_name, {'color': '#000000', 'linestyle': 'solid'} )
-            ax7.plot(data.rounds, data.cumulative_data_mb, marker='o', label=exp_name.upper(), 
-                     alpha=0.8, **style)
-        ax7.set_xlabel('Round', fontsize=12, fontweight='bold')
+        ax7 = fig.add_subplot(gs[2, 0])
+        ax7.bar(bar_labels, cumul_cost_values, color=bar_colors,width=0.4)
+        ax7.set_xlabel('Experiment', fontsize=12, fontweight='bold')
         ax7.set_ylabel('Cumulative Communication Cost (MB)', fontsize=12, fontweight='bold')
-        ax7.set_title('Cumulative Communication Cost vs Round', fontsize=14, fontweight='bold')
-        ax7.grid(True, alpha=0.3)
-        ax7.legend(loc='best', fontsize=10)
+        ax7.set_title('Cumulative Communication Cost (Final Round)', fontsize=14, fontweight='bold')
+        ax7.grid(True, alpha=0.3, axis='y') # Horizontal gridlines only
         
         # 8. Cumulative Time
-        ax8 = fig.add_subplot(gs[3, 1])
-        for exp_name, data in experiments.items():
-            style = styles.get(exp_name, {'color': '#000000', 'linestyle': 'solid'} )
-            ax8.plot(data.rounds, data.cumulative_time_s, marker='s', label=exp_name.upper(), 
-                     alpha=0.8, **style)
-        ax8.set_xlabel('Round', fontsize=12, fontweight='bold')
+        ax8 = fig.add_subplot(gs[2, 1])
+        ax8.bar(bar_labels, cumul_time_values, color=bar_colors, width=0.4)
+        ax8.set_xlabel('Experiment', fontsize=12, fontweight='bold')
         ax8.set_ylabel('Cumulative Time (seconds)', fontsize=12, fontweight='bold')
-        ax8.set_title('Cumulative Time vs Round', fontsize=14, fontweight='bold')
-        ax8.grid(True, alpha=0.3)
-        ax8.legend(loc='best', fontsize=10)
+        ax8.set_title('Cumulative Time (Final Round)', fontsize=14, fontweight='bold')
+        ax8.grid(True, alpha=0.3, axis='y') # Horizontal gridlines only
     else:
         # Without personalized metrics, use 3x2 layout
         # 3. Round Communication Cost (per round)
