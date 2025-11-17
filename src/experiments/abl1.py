@@ -90,6 +90,13 @@ async def main():
     cluster_models_dict = {}  # {cluster_id: state_dict}
     client_to_cluster = {}    # {client_id: cluster_id}
     
+    # Prepare cluster assignment log
+    results_dir = Path("results/abl1")
+    results_dir.mkdir(parents=True, exist_ok=True)
+    cluster_log_file = results_dir / "cluster_assignments.csv"
+    with open(cluster_log_file, 'w') as f:
+        f.write("round,client_id,cluster_id\n")
+
     print(f"\n=== Starting ABL-1 (DCS + Clustering) Simulation (Goal: GA {Config.CLUSTERING_TARGET_ACC}%) ===", flush=True)
     
     for r in range(Config.ROUNDS):
@@ -156,6 +163,11 @@ async def main():
             
             print(f"  Clustered into {len(set(cluster_labels))} clusters: {dict(zip(range(len(cluster_labels)), cluster_labels))}", flush=True)
             
+            # Log cluster assignments
+            with open(cluster_log_file, 'a') as f:
+                for i, client_id in enumerate(buffer_client_ids):
+                    f.write(f"{r+1},{client_id},{cluster_labels[i]}\n")
+
             # Weighted aggregation per cluster
             new_cluster_models = cluster_based_aggregation(
                 buffer_state_dicts,
