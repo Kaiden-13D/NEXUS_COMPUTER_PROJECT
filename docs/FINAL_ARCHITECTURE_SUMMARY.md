@@ -218,6 +218,37 @@ s_i = α·q_i + β·c_i + γ·d_i + δ·g_i
 - 클라이언트 → UAV, UAV → Satellite 모든 링크 측정
 - 클러스터별 모델 전송으로 인한 추가 비용도 포함
 
+**Round Cost 계산 상세 (구현):**
+
+1. **데이터 수집 단계** (`src/core/network.py` - `Link.transmit()`):
+   - 패킷 전송 시마다 `cost_meter.note()` 호출
+   - 지연 시간 계산: `delay = (latency_ms + jitter) / 1000 + packet_size / bandwidth_bps`
+   - 성공한 전송만 bytes와 delay 기록
+
+2. **링크별 추적** (`src/core/network.py` - `CostMeter.note()`):
+   - 링크 이름별로 bytes 누적: `_round[link_name]["bytes"] += nbytes`
+   - 링크별 최대 지연 시간 추적: `_round[link_name]["max_delay"] = max(...)`
+   - 예: `_round["C->UAV0"]`, `_round["UAV0-SAT"]` 등
+
+3. **Round Cost 계산** (`src/core/network.py` - `CostMeter.end_round()`):
+   - **Round Cost (bytes)**: 모든 링크의 성공한 전송 bytes 합
+     ```python
+     round_bytes = sum(d["bytes"] for d in self._round.values())
+     ```
+   - **Round Time**: 모든 링크의 max_delay 합
+     ```python
+     round_max_delay = sum(d["max_delay"] for d in self._round.values())
+     ```
+
+4. **호출 위치**:
+   - Client → UAV: `c.link.transmit(payload, cost_meter=COST)` (30개 클라이언트)
+   - UAV → Satellite: `uav.link.transmit(payload_bytes, cost_meter=COST)` (6개 UAV)
+
+**예시:**
+- Round 1에서 30개 클라이언트가 각각 2MB 전송 → 60MB
+- 6개 UAV가 각각 1MB 전송 → 6MB
+- Round Cost = 66MB (약 67,584 KB)
+
 ---
 
 ## 5. 시각화 개선
