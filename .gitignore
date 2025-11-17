@@ -76,3 +76,4 @@ archive/
 *.bak
 .cache/
 materials/
+tmp_ignore/
