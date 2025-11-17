@@ -31,6 +31,10 @@ class Config:
     TARGET_ACC = 90.0  # Target Global Accuracy (%) - for baseline experiments
     CLUSTERING_TARGET_ACC = 100.0  # Target accuracy (%) for clustering experiments (BL3, ABL-1)
     
+    # Clustering settings
+    NUM_CLUSTERS = 3  # Fixed number of clusters (determined in round 0, then fixed)
+    AUTO_DETERMINE_CLUSTERS = True  # If True, auto-determine in round 0, else use NUM_CLUSTERS
+    
     # Network bandwidth (bps)
     CLIENT_UPLINK_BW = 200_000
     UAV_SAT_BW = 600_000
