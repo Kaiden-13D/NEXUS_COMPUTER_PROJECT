@@ -241,6 +241,15 @@ async def main():
                     
                     # Update satellite's client_to_cluster
                     sat.client_to_cluster.update(new_client_to_cluster)
+                    
+                    # Initialize all cluster models from Round 0 clustering
+                    initial_cluster_models = cluster_based_aggregation(
+                        all_state_dicts,
+                        cluster_labels,
+                        weights=all_weights
+                    )
+                    sat.cluster_models = initial_cluster_models
+                    print(f"  Initialized {len(sat.cluster_models)} cluster models from Round 0.", flush=True)
                 else:
                     sat.num_clusters = Config.NUM_CLUSTERS
                     print(f"  Using default {sat.num_clusters} clusters.", flush=True)
@@ -289,7 +298,9 @@ async def main():
                 if uav_client_mapping:
                     uav.update_client_cluster_mapping(uav_client_mapping)
             
-            print(f"  Updated {len(sat.cluster_models)} global cluster models.", flush=True)
+            updated_count = sum(1 for cluster_id in range(num_clusters) 
+                               if cluster_id in sat.cluster_models and cluster_id in cluster_collections)
+            print(f"  Updated {updated_count}/{num_clusters} global cluster models.", flush=True)
             sat.buffer.clear()
         else:
             print("  No updates received this round.", flush=True)
