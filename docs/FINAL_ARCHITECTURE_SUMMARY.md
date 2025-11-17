@@ -440,7 +440,7 @@ DELTA = 0.2  # 기여도
 
 ## 11. 참고 문서
 
-- `docs/OPTION_B_DESIGN.md`: UAV 지역 집계 아키텍처 상세 설계
+- `docs/UAV_LOCAL_AGGREGATION_DESIGN.md`: UAV 지역 집계 아키텍처 상세 설계
 - `docs/PROCESS_DOCUMENTATION.md`: 기존 프로세스 문서화
 - `docs/LOG_OUTPUT_EXAMPLES.md`: 로그 출력 예시
 - `src/core/fl_nodes.py`: 핵심 노드 구현
