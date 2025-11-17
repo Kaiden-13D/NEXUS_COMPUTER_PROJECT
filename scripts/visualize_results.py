@@ -163,340 +163,83 @@ def load_experiments(exp_names: List[str]) -> Dict[str, ExperimentData]:
 
 
 def visualize_experiments(experiments: Dict[str, ExperimentData], output_path: Optional[Path] = None):
-    """Create comprehensive visualizations for all experiments"""
+    """Create comprehensive visualizations for all experiments in 2x2 grid style"""
     if not experiments:
         print("No experiment data to visualize")
         return
     
-    # Color palette for different experiments
-    colors = {
-        'bl1': '#1f77b4',   # Blue
-        'bl2': '#ff7f0e',   # Orange
-        'bl3': '#2ca02c',   # Green
-        'abl1': '#d62728',  # Red
-        'abl2': '#9467bd',  # Purple
+    # Color palette and line styles for different experiments (matching image style)
+    experiment_styles = {
+        'bl1': {'color': '#000000', 'linestyle': '-', 'marker': '+', 'label': 'BL1'},      # Solid black with +
+        'bl2': {'color': '#FF0000', 'linestyle': '--', 'marker': '*', 'label': 'BL2'},     # Dashed red with *
+        'bl3': {'color': '#0000FF', 'linestyle': ':', 'marker': 'o', 'label': 'BL3'},      # Dotted blue with •
+        'abl1': {'color': '#00FF00', 'linestyle': '-.', 'marker': 'x', 'label': 'ABL1'},   # Dash-dot green with x
+        'abl2': {'color': '#9467bd', 'linestyle': '-', 'marker': 's', 'label': 'ABL2'},    # Purple with square
     }
     
-    # Determine if any experiment has personalized metrics
-    has_any_personalized = any(exp.has_personalized for exp in experiments.values())
+    # Create figure with 2x2 grid layout (clean style like the reference image)
+    fig = plt.figure(figsize=(14, 10))
+    gs = GridSpec(2, 2, figure=fig, hspace=0.35, wspace=0.3, left=0.1, right=0.95, top=0.95, bottom=0.1)
     
-    # Create figure with subplots - 추가된 통합 cost 차트를 위해 공간 확장
-    if has_any_personalized:
-        fig = plt.figure(figsize=(20, 18))
-        gs = GridSpec(5, 2, figure=fig, hspace=0.35, wspace=0.3)
-    else:
-        fig = plt.figure(figsize=(20, 14))
-        gs = GridSpec(4, 2, figure=fig, hspace=0.35, wspace=0.3)
-    
-    # 1. Average Test Accuracy (y-axis starts from 30%)
+    # 1. Average Test Accuracy (Top-Left)
     ax1 = fig.add_subplot(gs[0, 0])
     for exp_name, data in experiments.items():
-        color = colors.get(exp_name, '#000000')
-        ax1.plot(data.rounds, data.global_acc, marker='o', label=exp_name.upper(), 
-                color=color, linewidth=2, markersize=4, alpha=0.8)
+        style = experiment_styles.get(exp_name, {'color': '#000000', 'linestyle': '-', 'marker': 'o', 'label': exp_name.upper()})
+        ax1.plot(data.rounds, data.global_acc, 
+                linestyle=style['linestyle'], marker=style['marker'], 
+                label=style['label'], color=style['color'], 
+                linewidth=2, markersize=6, markevery=max(1, len(data.rounds)//10))
     ax1.set_xlabel('Round', fontsize=12, fontweight='bold')
     ax1.set_ylabel('Average Test Accuracy (%)', fontsize=12, fontweight='bold')
-    ax1.set_title('Average Test Accuracy vs Round', fontsize=14, fontweight='bold')
-    ax1.grid(True, alpha=0.3)
-    ax1.legend(loc='best', fontsize=10)
-    ax1.set_ylim(bottom=30)
+    ax1.set_title('(a) Average Test Accuracy', fontsize=13, fontweight='bold')
+    ax1.grid(True, alpha=0.3, linestyle='--')
+    ax1.legend(loc='best', fontsize=10, framealpha=0.9)
+    # Set y-axis limit based on all data
+    all_acc_values = [acc for data in experiments.values() for acc in data.global_acc if data.global_acc]
+    if all_acc_values:
+        ax1.set_ylim(bottom=max(0, min(all_acc_values) - 5))
     
-    # 2. Average Loss
+    # 2. Average Loss (Top-Right)
     ax2 = fig.add_subplot(gs[0, 1])
     for exp_name, data in experiments.items():
-        color = colors.get(exp_name, '#000000')
-        ax2.plot(data.rounds, data.global_loss, marker='s', label=exp_name.upper(), 
-                color=color, linewidth=2, markersize=4, alpha=0.8)
+        style = experiment_styles.get(exp_name, {'color': '#000000', 'linestyle': '-', 'marker': 'o', 'label': exp_name.upper()})
+        ax2.plot(data.rounds, data.global_loss, 
+                linestyle=style['linestyle'], marker=style['marker'], 
+                label=style['label'], color=style['color'], 
+                linewidth=2, markersize=6, markevery=max(1, len(data.rounds)//10))
     ax2.set_xlabel('Round', fontsize=12, fontweight='bold')
     ax2.set_ylabel('Average Loss', fontsize=12, fontweight='bold')
-    ax2.set_title('Average Loss vs Round', fontsize=14, fontweight='bold')
-    ax2.grid(True, alpha=0.3)
-    ax2.legend(loc='best', fontsize=10)
+    ax2.set_title('(b) Average Loss', fontsize=13, fontweight='bold')
+    ax2.grid(True, alpha=0.3, linestyle='--')
+    ax2.legend(loc='best', fontsize=10, framealpha=0.9)
     
-    # 3. Personalized Accuracy (if available)
-    if has_any_personalized:
-        ax3 = fig.add_subplot(gs[1, 0])
-        for exp_name, data in experiments.items():
-            if data.has_personalized:
-                color = colors.get(exp_name, '#000000')
-                # Filter out None values
-                valid_rounds = [r for r, pa in zip(data.rounds, data.personalized_acc) if pa is not None]
-                valid_acc = [pa for pa in data.personalized_acc if pa is not None]
-                if valid_rounds:
-                    ax3.plot(valid_rounds, valid_acc, marker='^', label=exp_name.upper(), 
-                            color=color, linewidth=2, markersize=4, alpha=0.8)
-        ax3.set_xlabel('Round', fontsize=12, fontweight='bold')
-        ax3.set_ylabel('Average Test Accuracy (%)', fontsize=12, fontweight='bold')
-        ax3.set_title('Average Test Accuracy vs Round (Per-Client)', fontsize=14, fontweight='bold')
-        ax3.grid(True, alpha=0.3)
-        ax3.legend(loc='best', fontsize=10)
-        ax3.set_ylim(bottom=40)
-        
-        # 4. Average Loss (same as ax2, for consistency)
-        ax4 = fig.add_subplot(gs[1, 1])
-        for exp_name, data in experiments.items():
-            if data.has_personalized:
-                color = colors.get(exp_name, '#000000')
-                valid_rounds = [r for r, pl in zip(data.rounds, data.personalized_loss) if pl is not None]
-                valid_loss = [pl for pl in data.personalized_loss if pl is not None]
-                if valid_rounds:
-                    ax4.plot(valid_rounds, valid_loss, marker='v', label=exp_name.upper(), 
-                            color=color, linewidth=2, markersize=4, alpha=0.8)
-        ax4.set_xlabel('Round', fontsize=12, fontweight='bold')
-        ax4.set_ylabel('Average Loss', fontsize=12, fontweight='bold')
-        ax4.set_title('Average Loss vs Round (Per-Client)', fontsize=14, fontweight='bold')
-        ax4.grid(True, alpha=0.3)
-        ax4.legend(loc='best', fontsize=10)
-        
-        # 5. Round Communication Cost (Bar Chart)
-        ax5 = fig.add_subplot(gs[2, 0])
-        x_pos = np.arange(len(experiments))
-        bar_width = 0.35
-        # 마지막 라운드의 cost를 bar chart로 표시
-        last_round_costs = []
-        exp_names_list = list(experiments.keys())
-        for exp_name in exp_names_list:
-            if experiments[exp_name].round_cost_kb:
-                last_round_costs.append(experiments[exp_name].round_cost_kb[-1])
-            else:
-                last_round_costs.append(0)
-        bars = ax5.bar(x_pos, last_round_costs, bar_width, 
-                      color=[colors.get(name, '#000000') for name in exp_names_list],
-                      alpha=0.8, edgecolor='black', linewidth=1.2)
-        ax5.set_xlabel('Experiment', fontsize=12, fontweight='bold')
-        ax5.set_ylabel('Last Round Communication Cost (KB)', fontsize=12, fontweight='bold')
-        ax5.set_title('Round Communication Cost Comparison (Bar Chart)', fontsize=14, fontweight='bold')
-        ax5.set_xticks(x_pos)
-        ax5.set_xticklabels([name.upper() for name in exp_names_list], fontsize=10)
-        ax5.grid(True, alpha=0.3, axis='y')
-        # 값 표시
-        for i, (bar, cost) in enumerate(zip(bars, last_round_costs)):
-            height = bar.get_height()
-            ax5.text(bar.get_x() + bar.get_width()/2., height,
-                    f'{cost:.0f} KB', ha='center', va='bottom', fontsize=9, fontweight='bold')
-        
-        # 6. Round Simulated Time (Bar Chart)
-        ax6 = fig.add_subplot(gs[2, 1])
-        last_round_times = []
-        for exp_name in exp_names_list:
-            if experiments[exp_name].round_time_s:
-                last_round_times.append(experiments[exp_name].round_time_s[-1])
-            else:
-                last_round_times.append(0)
-        bars = ax6.bar(x_pos, last_round_times, bar_width,
-                      color=[colors.get(name, '#000000') for name in exp_names_list],
-                      alpha=0.8, edgecolor='black', linewidth=1.2)
-        ax6.set_xlabel('Experiment', fontsize=12, fontweight='bold')
-        ax6.set_ylabel('Last Round Simulated Time (seconds)', fontsize=12, fontweight='bold')
-        ax6.set_title('Round Simulated Time Comparison (Bar Chart)', fontsize=14, fontweight='bold')
-        ax6.set_xticks(x_pos)
-        ax6.set_xticklabels([name.upper() for name in exp_names_list], fontsize=10)
-        ax6.grid(True, alpha=0.3, axis='y')
-        # 값 표시
-        for i, (bar, time) in enumerate(zip(bars, last_round_times)):
-            height = bar.get_height()
-            ax6.text(bar.get_x() + bar.get_width()/2., height,
-                    f'{time:.2f}s', ha='center', va='bottom', fontsize=9, fontweight='bold')
-        
-        # 7. Cumulative Communication Cost
-        ax7 = fig.add_subplot(gs[3, 0])
-        for exp_name, data in experiments.items():
-            color = colors.get(exp_name, '#000000')
-            ax7.plot(data.rounds, data.cumulative_data_mb, marker='o', label=exp_name.upper(), 
-                    color=color, linewidth=2, markersize=4, alpha=0.8)
-        ax7.set_xlabel('Round', fontsize=12, fontweight='bold')
-        ax7.set_ylabel('Cumulative Communication Cost (MB)', fontsize=12, fontweight='bold')
-        ax7.set_title('Cumulative Communication Cost vs Round', fontsize=14, fontweight='bold')
-        ax7.grid(True, alpha=0.3)
-        ax7.legend(loc='best', fontsize=10)
-        
-        # 8. Cumulative Time
-        ax8 = fig.add_subplot(gs[3, 1])
-        for exp_name, data in experiments.items():
-            color = colors.get(exp_name, '#000000')
-            ax8.plot(data.rounds, data.cumulative_time_s, marker='s', label=exp_name.upper(), 
-                    color=color, linewidth=2, markersize=4, alpha=0.8)
-        ax8.set_xlabel('Round', fontsize=12, fontweight='bold')
-        ax8.set_ylabel('Cumulative Time (seconds)', fontsize=12, fontweight='bold')
-        ax8.set_title('Cumulative Time vs Round', fontsize=14, fontweight='bold')
-        ax8.grid(True, alpha=0.3)
-        ax8.legend(loc='best', fontsize=10)
-        
-        # 9. 통합 Cost (Memory + Time) - Normalized Bar Chart
-        ax9 = fig.add_subplot(gs[4, :])
-        # 정규화된 통합 cost 계산 (α=1.0, β=0.1)
-        alpha, beta = 1.0, 0.1
-        max_comm = max([max(data.cumulative_data_mb) if data.cumulative_data_mb else 0 
-                       for data in experiments.values()])
-        max_time = max([max(data.cumulative_time_s) if data.cumulative_time_s else 0 
-                       for data in experiments.values()])
-        
-        integrated_costs = []
-        for exp_name in exp_names_list:
-            data = experiments[exp_name]
-            if data.cumulative_data_mb and data.cumulative_time_s:
-                # 정규화된 통합 cost
-                norm_comm = (data.cumulative_data_mb[-1] / max_comm) if max_comm > 0 else 0
-                norm_time = (data.cumulative_time_s[-1] / max_time) if max_time > 0 else 0
-                integrated_cost = alpha * norm_comm + beta * norm_time
-            else:
-                integrated_cost = 0
-            integrated_costs.append(integrated_cost)
-        
-        # Stacked bar chart로 memory와 time을 함께 표시
-        x_pos_wide = np.arange(len(exp_names_list))
-        width = 0.6
-        norm_comm_values = [(data.cumulative_data_mb[-1] / max_comm) if max_comm > 0 and data.cumulative_data_mb else 0 
-                           for data in [experiments[name] for name in exp_names_list]]
-        norm_time_values = [(data.cumulative_time_s[-1] / max_time) * beta if max_time > 0 and data.cumulative_time_s else 0 
-                           for data in [experiments[name] for name in exp_names_list]]
-        
-        bars1 = ax9.bar(x_pos_wide, norm_comm_values, width, 
-                       label='Normalized Comm Cost (α=1.0)', 
-                       color=[colors.get(name, '#000000') for name in exp_names_list],
-                       alpha=0.7, edgecolor='black', linewidth=1.2)
-        bars2 = ax9.bar(x_pos_wide, norm_time_values, width, bottom=norm_comm_values,
-                       label='Normalized Time Cost (β=0.1)', 
-                       color=[colors.get(name, '#888888') for name in exp_names_list],
-                       alpha=0.5, edgecolor='black', linewidth=1.2)
-        
-        ax9.set_xlabel('Experiment', fontsize=12, fontweight='bold')
-        ax9.set_ylabel('Normalized Integrated Cost', fontsize=12, fontweight='bold')
-        ax9.set_title('Integrated Cost Comparison (Memory + Time) - Normalized Stacked Bar Chart', 
-                     fontsize=14, fontweight='bold')
-        ax9.set_xticks(x_pos_wide)
-        ax9.set_xticklabels([name.upper() for name in exp_names_list], fontsize=10)
-        ax9.legend(loc='upper left', fontsize=10)
-        ax9.grid(True, alpha=0.3, axis='y')
-        
-        # 통합 cost 값 표시
-        for i, (bar1, bar2, cost) in enumerate(zip(bars1, bars2, integrated_costs)):
-            total_height = bar1.get_height() + bar2.get_height()
-            ax9.text(bar1.get_x() + bar1.get_width()/2., total_height,
-                    f'Total: {cost:.3f}', ha='center', va='bottom', fontsize=9, fontweight='bold')
-    else:
-        # Without personalized metrics, use 3x2 layout
-        # 3. Round Communication Cost (Bar Chart)
-        ax3 = fig.add_subplot(gs[1, 0])
-        x_pos = np.arange(len(experiments))
-        bar_width = 0.35
-        exp_names_list = list(experiments.keys())
-        last_round_costs = []
-        for exp_name in exp_names_list:
-            if experiments[exp_name].round_cost_kb:
-                last_round_costs.append(experiments[exp_name].round_cost_kb[-1])
-            else:
-                last_round_costs.append(0)
-        bars = ax3.bar(x_pos, last_round_costs, bar_width, 
-                      color=[colors.get(name, '#000000') for name in exp_names_list],
-                      alpha=0.8, edgecolor='black', linewidth=1.2)
-        ax3.set_xlabel('Experiment', fontsize=12, fontweight='bold')
-        ax3.set_ylabel('Last Round Communication Cost (KB)', fontsize=12, fontweight='bold')
-        ax3.set_title('Round Communication Cost Comparison (Bar Chart)', fontsize=14, fontweight='bold')
-        ax3.set_xticks(x_pos)
-        ax3.set_xticklabels([name.upper() for name in exp_names_list], fontsize=10)
-        ax3.grid(True, alpha=0.3, axis='y')
-        for i, (bar, cost) in enumerate(zip(bars, last_round_costs)):
-            height = bar.get_height()
-            ax3.text(bar.get_x() + bar.get_width()/2., height,
-                    f'{cost:.0f} KB', ha='center', va='bottom', fontsize=9, fontweight='bold')
-        
-        # 4. Round Simulated Time (Bar Chart)
-        ax4 = fig.add_subplot(gs[1, 1])
-        last_round_times = []
-        for exp_name in exp_names_list:
-            if experiments[exp_name].round_time_s:
-                last_round_times.append(experiments[exp_name].round_time_s[-1])
-            else:
-                last_round_times.append(0)
-        bars = ax4.bar(x_pos, last_round_times, bar_width,
-                      color=[colors.get(name, '#000000') for name in exp_names_list],
-                      alpha=0.8, edgecolor='black', linewidth=1.2)
-        ax4.set_xlabel('Experiment', fontsize=12, fontweight='bold')
-        ax4.set_ylabel('Last Round Simulated Time (seconds)', fontsize=12, fontweight='bold')
-        ax4.set_title('Round Simulated Time Comparison (Bar Chart)', fontsize=14, fontweight='bold')
-        ax4.set_xticks(x_pos)
-        ax4.set_xticklabels([name.upper() for name in exp_names_list], fontsize=10)
-        ax4.grid(True, alpha=0.3, axis='y')
-        for i, (bar, time) in enumerate(zip(bars, last_round_times)):
-            height = bar.get_height()
-            ax4.text(bar.get_x() + bar.get_width()/2., height,
-                    f'{time:.2f}s', ha='center', va='bottom', fontsize=9, fontweight='bold')
-        
-        # 5. Cumulative Communication Cost
-        ax5 = fig.add_subplot(gs[2, 0])
-        for exp_name, data in experiments.items():
-            color = colors.get(exp_name, '#000000')
-            ax5.plot(data.rounds, data.cumulative_data_mb, marker='o', label=exp_name.upper(), 
-                    color=color, linewidth=2, markersize=4, alpha=0.8)
-        ax5.set_xlabel('Round', fontsize=12, fontweight='bold')
-        ax5.set_ylabel('Cumulative Communication Cost (MB)', fontsize=12, fontweight='bold')
-        ax5.set_title('Cumulative Communication Cost vs Round', fontsize=14, fontweight='bold')
-        ax5.grid(True, alpha=0.3)
-        ax5.legend(loc='best', fontsize=10)
-        
-        # 6. Cumulative Time
-        ax6 = fig.add_subplot(gs[2, 1])
-        for exp_name, data in experiments.items():
-            color = colors.get(exp_name, '#000000')
-            ax6.plot(data.rounds, data.cumulative_time_s, marker='s', label=exp_name.upper(), 
-                    color=color, linewidth=2, markersize=4, alpha=0.8)
-        ax6.set_xlabel('Round', fontsize=12, fontweight='bold')
-        ax6.set_ylabel('Cumulative Time (seconds)', fontsize=12, fontweight='bold')
-        ax6.set_title('Cumulative Time vs Round', fontsize=14, fontweight='bold')
-        ax6.grid(True, alpha=0.3)
-        ax6.legend(loc='best', fontsize=10)
-        
-        # 7. 통합 Cost (Memory + Time) - Normalized Bar Chart
-        ax7 = fig.add_subplot(gs[3, :])
-        alpha, beta = 1.0, 0.1
-        max_comm = max([max(data.cumulative_data_mb) if data.cumulative_data_mb else 0 
-                       for data in experiments.values()])
-        max_time = max([max(data.cumulative_time_s) if data.cumulative_time_s else 0 
-                       for data in experiments.values()])
-        
-        integrated_costs = []
-        for exp_name in exp_names_list:
-            data = experiments[exp_name]
-            if data.cumulative_data_mb and data.cumulative_time_s:
-                norm_comm = (data.cumulative_data_mb[-1] / max_comm) if max_comm > 0 else 0
-                norm_time = (data.cumulative_time_s[-1] / max_time) if max_time > 0 else 0
-                integrated_cost = alpha * norm_comm + beta * norm_time
-            else:
-                integrated_cost = 0
-            integrated_costs.append(integrated_cost)
-        
-        x_pos_wide = np.arange(len(exp_names_list))
-        width = 0.6
-        norm_comm_values = [(data.cumulative_data_mb[-1] / max_comm) if max_comm > 0 and data.cumulative_data_mb else 0 
-                           for data in [experiments[name] for name in exp_names_list]]
-        norm_time_values = [(data.cumulative_time_s[-1] / max_time) * beta if max_time > 0 and data.cumulative_time_s else 0 
-                           for data in [experiments[name] for name in exp_names_list]]
-        
-        bars1 = ax7.bar(x_pos_wide, norm_comm_values, width, 
-                       label='Normalized Comm Cost (α=1.0)', 
-                       color=[colors.get(name, '#000000') for name in exp_names_list],
-                       alpha=0.7, edgecolor='black', linewidth=1.2)
-        bars2 = ax7.bar(x_pos_wide, norm_time_values, width, bottom=norm_comm_values,
-                       label='Normalized Time Cost (β=0.1)', 
-                       color=[colors.get(name, '#888888') for name in exp_names_list],
-                       alpha=0.5, edgecolor='black', linewidth=1.2)
-        
-        ax7.set_xlabel('Experiment', fontsize=12, fontweight='bold')
-        ax7.set_ylabel('Normalized Integrated Cost', fontsize=12, fontweight='bold')
-        ax7.set_title('Integrated Cost Comparison (Memory + Time) - Normalized Stacked Bar Chart', 
-                     fontsize=14, fontweight='bold')
-        ax7.set_xticks(x_pos_wide)
-        ax7.set_xticklabels([name.upper() for name in exp_names_list], fontsize=10)
-        ax7.legend(loc='upper left', fontsize=10)
-        ax7.grid(True, alpha=0.3, axis='y')
-        
-        for i, (bar1, bar2, cost) in enumerate(zip(bars1, bars2, integrated_costs)):
-            total_height = bar1.get_height() + bar2.get_height()
-            ax7.text(bar1.get_x() + bar1.get_width()/2., total_height,
-                    f'Total: {cost:.3f}', ha='center', va='bottom', fontsize=9, fontweight='bold')
+    # 3. Cumulative Communication Cost (Bottom-Left)
+    ax3 = fig.add_subplot(gs[1, 0])
+    for exp_name, data in experiments.items():
+        style = experiment_styles.get(exp_name, {'color': '#000000', 'linestyle': '-', 'marker': 'o', 'label': exp_name.upper()})
+        ax3.plot(data.rounds, data.cumulative_data_mb, 
+                linestyle=style['linestyle'], marker=style['marker'], 
+                label=style['label'], color=style['color'], 
+                linewidth=2, markersize=6, markevery=max(1, len(data.rounds)//10))
+    ax3.set_xlabel('Round', fontsize=12, fontweight='bold')
+    ax3.set_ylabel('Cumulative Communication Cost (MB)', fontsize=12, fontweight='bold')
+    ax3.set_title('(c) Cumulative Communication Cost', fontsize=13, fontweight='bold')
+    ax3.grid(True, alpha=0.3, linestyle='--')
+    ax3.legend(loc='best', fontsize=10, framealpha=0.9)
     
-    plt.suptitle('Experiment Results Comparison', fontsize=16, fontweight='bold', y=0.995)
+    # 4. Cumulative Time (Bottom-Right)
+    ax4 = fig.add_subplot(gs[1, 1])
+    for exp_name, data in experiments.items():
+        style = experiment_styles.get(exp_name, {'color': '#000000', 'linestyle': '-', 'marker': 'o', 'label': exp_name.upper()})
+        ax4.plot(data.rounds, data.cumulative_time_s, 
+                linestyle=style['linestyle'], marker=style['marker'], 
+                label=style['label'], color=style['color'], 
+                linewidth=2, markersize=6, markevery=max(1, len(data.rounds)//10))
+    ax4.set_xlabel('Round', fontsize=12, fontweight='bold')
+    ax4.set_ylabel('Cumulative Time (seconds)', fontsize=12, fontweight='bold')
+    ax4.set_title('(d) Cumulative Time', fontsize=13, fontweight='bold')
+    ax4.grid(True, alpha=0.3, linestyle='--')
+    ax4.legend(loc='best', fontsize=10, framealpha=0.9)
     
     if output_path:
         plt.savefig(output_path, dpi=300, bbox_inches='tight')
