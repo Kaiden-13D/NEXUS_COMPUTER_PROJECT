@@ -175,13 +175,13 @@ def visualize_experiments(experiments: Dict[str, ExperimentData], output_path: O
     # Determine if any experiment has personalized metrics
     has_any_personalized = any(exp.has_personalized for exp in experiments.values())
     
-    # Create figure with subplots
+    # Create figure with subplots - 추가된 통합 cost 차트를 위해 공간 확장
     if has_any_personalized:
-        fig = plt.figure(figsize=(18, 16))
-        gs = GridSpec(4, 2, figure=fig, hspace=0.35, wspace=0.3)
+        fig = plt.figure(figsize=(20, 18))
+        gs = GridSpec(5, 2, figure=fig, hspace=0.35, wspace=0.3)
     else:
-        fig = plt.figure(figsize=(18, 12))
-        gs = GridSpec(3, 2, figure=fig, hspace=0.35, wspace=0.3)
+        fig = plt.figure(figsize=(20, 14))
+        gs = GridSpec(4, 2, figure=fig, hspace=0.35, wspace=0.3)
     
     # 1. Global Accuracy (y-axis starts from 30%)
     ax1 = fig.add_subplot(gs[0, 0])
@@ -243,29 +243,55 @@ def visualize_experiments(experiments: Dict[str, ExperimentData], output_path: O
         ax4.grid(True, alpha=0.3)
         ax4.legend(loc='best', fontsize=10)
         
-        # 5. Round Communication Cost (per round)
+        # 5. Round Communication Cost (Bar Chart)
         ax5 = fig.add_subplot(gs[2, 0])
-        for exp_name, data in experiments.items():
-            color = colors.get(exp_name, '#000000')
-            ax5.plot(data.rounds, data.round_cost_kb, marker='o', label=exp_name.upper(), 
-                    color=color, linewidth=2, markersize=4, alpha=0.8)
-        ax5.set_xlabel('Round', fontsize=12, fontweight='bold')
-        ax5.set_ylabel('Round Communication Cost (KB)', fontsize=12, fontweight='bold')
-        ax5.set_title('Round Communication Cost vs Round', fontsize=14, fontweight='bold')
-        ax5.grid(True, alpha=0.3)
-        ax5.legend(loc='best', fontsize=10)
+        x_pos = np.arange(len(experiments))
+        bar_width = 0.35
+        # 마지막 라운드의 cost를 bar chart로 표시
+        last_round_costs = []
+        exp_names_list = list(experiments.keys())
+        for exp_name in exp_names_list:
+            if experiments[exp_name].round_cost_kb:
+                last_round_costs.append(experiments[exp_name].round_cost_kb[-1])
+            else:
+                last_round_costs.append(0)
+        bars = ax5.bar(x_pos, last_round_costs, bar_width, 
+                      color=[colors.get(name, '#000000') for name in exp_names_list],
+                      alpha=0.8, edgecolor='black', linewidth=1.2)
+        ax5.set_xlabel('Experiment', fontsize=12, fontweight='bold')
+        ax5.set_ylabel('Last Round Communication Cost (KB)', fontsize=12, fontweight='bold')
+        ax5.set_title('Round Communication Cost Comparison (Bar Chart)', fontsize=14, fontweight='bold')
+        ax5.set_xticks(x_pos)
+        ax5.set_xticklabels([name.upper() for name in exp_names_list], fontsize=10)
+        ax5.grid(True, alpha=0.3, axis='y')
+        # 값 표시
+        for i, (bar, cost) in enumerate(zip(bars, last_round_costs)):
+            height = bar.get_height()
+            ax5.text(bar.get_x() + bar.get_width()/2., height,
+                    f'{cost:.0f} KB', ha='center', va='bottom', fontsize=9, fontweight='bold')
         
-        # 6. Round Simulated Time (per round)
+        # 6. Round Simulated Time (Bar Chart)
         ax6 = fig.add_subplot(gs[2, 1])
-        for exp_name, data in experiments.items():
-            color = colors.get(exp_name, '#000000')
-            ax6.plot(data.rounds, data.round_time_s, marker='s', label=exp_name.upper(), 
-                    color=color, linewidth=2, markersize=4, alpha=0.8)
-        ax6.set_xlabel('Round', fontsize=12, fontweight='bold')
-        ax6.set_ylabel('Round Simulated Time (seconds)', fontsize=12, fontweight='bold')
-        ax6.set_title('Round Simulated Time vs Round', fontsize=14, fontweight='bold')
-        ax6.grid(True, alpha=0.3)
-        ax6.legend(loc='best', fontsize=10)
+        last_round_times = []
+        for exp_name in exp_names_list:
+            if experiments[exp_name].round_time_s:
+                last_round_times.append(experiments[exp_name].round_time_s[-1])
+            else:
+                last_round_times.append(0)
+        bars = ax6.bar(x_pos, last_round_times, bar_width,
+                      color=[colors.get(name, '#000000') for name in exp_names_list],
+                      alpha=0.8, edgecolor='black', linewidth=1.2)
+        ax6.set_xlabel('Experiment', fontsize=12, fontweight='bold')
+        ax6.set_ylabel('Last Round Simulated Time (seconds)', fontsize=12, fontweight='bold')
+        ax6.set_title('Round Simulated Time Comparison (Bar Chart)', fontsize=14, fontweight='bold')
+        ax6.set_xticks(x_pos)
+        ax6.set_xticklabels([name.upper() for name in exp_names_list], fontsize=10)
+        ax6.grid(True, alpha=0.3, axis='y')
+        # 값 표시
+        for i, (bar, time) in enumerate(zip(bars, last_round_times)):
+            height = bar.get_height()
+            ax6.text(bar.get_x() + bar.get_width()/2., height,
+                    f'{time:.2f}s', ha='center', va='bottom', fontsize=9, fontweight='bold')
         
         # 7. Cumulative Communication Cost
         ax7 = fig.add_subplot(gs[3, 0])
@@ -290,31 +316,107 @@ def visualize_experiments(experiments: Dict[str, ExperimentData], output_path: O
         ax8.set_title('Cumulative Time vs Round', fontsize=14, fontweight='bold')
         ax8.grid(True, alpha=0.3)
         ax8.legend(loc='best', fontsize=10)
+        
+        # 9. 통합 Cost (Memory + Time) - Normalized Bar Chart
+        ax9 = fig.add_subplot(gs[4, :])
+        # 정규화된 통합 cost 계산 (α=1.0, β=0.1)
+        alpha, beta = 1.0, 0.1
+        max_comm = max([max(data.cumulative_data_mb) if data.cumulative_data_mb else 0 
+                       for data in experiments.values()])
+        max_time = max([max(data.cumulative_time_s) if data.cumulative_time_s else 0 
+                       for data in experiments.values()])
+        
+        integrated_costs = []
+        for exp_name in exp_names_list:
+            data = experiments[exp_name]
+            if data.cumulative_data_mb and data.cumulative_time_s:
+                # 정규화된 통합 cost
+                norm_comm = (data.cumulative_data_mb[-1] / max_comm) if max_comm > 0 else 0
+                norm_time = (data.cumulative_time_s[-1] / max_time) if max_time > 0 else 0
+                integrated_cost = alpha * norm_comm + beta * norm_time
+            else:
+                integrated_cost = 0
+            integrated_costs.append(integrated_cost)
+        
+        # Stacked bar chart로 memory와 time을 함께 표시
+        x_pos_wide = np.arange(len(exp_names_list))
+        width = 0.6
+        norm_comm_values = [(data.cumulative_data_mb[-1] / max_comm) if max_comm > 0 and data.cumulative_data_mb else 0 
+                           for data in [experiments[name] for name in exp_names_list]]
+        norm_time_values = [(data.cumulative_time_s[-1] / max_time) * beta if max_time > 0 and data.cumulative_time_s else 0 
+                           for data in [experiments[name] for name in exp_names_list]]
+        
+        bars1 = ax9.bar(x_pos_wide, norm_comm_values, width, 
+                       label='Normalized Comm Cost (α=1.0)', 
+                       color=[colors.get(name, '#000000') for name in exp_names_list],
+                       alpha=0.7, edgecolor='black', linewidth=1.2)
+        bars2 = ax9.bar(x_pos_wide, norm_time_values, width, bottom=norm_comm_values,
+                       label='Normalized Time Cost (β=0.1)', 
+                       color=[colors.get(name, '#888888') for name in exp_names_list],
+                       alpha=0.5, edgecolor='black', linewidth=1.2)
+        
+        ax9.set_xlabel('Experiment', fontsize=12, fontweight='bold')
+        ax9.set_ylabel('Normalized Integrated Cost', fontsize=12, fontweight='bold')
+        ax9.set_title('Integrated Cost Comparison (Memory + Time) - Normalized Stacked Bar Chart', 
+                     fontsize=14, fontweight='bold')
+        ax9.set_xticks(x_pos_wide)
+        ax9.set_xticklabels([name.upper() for name in exp_names_list], fontsize=10)
+        ax9.legend(loc='upper left', fontsize=10)
+        ax9.grid(True, alpha=0.3, axis='y')
+        
+        # 통합 cost 값 표시
+        for i, (bar1, bar2, cost) in enumerate(zip(bars1, bars2, integrated_costs)):
+            total_height = bar1.get_height() + bar2.get_height()
+            ax9.text(bar1.get_x() + bar1.get_width()/2., total_height,
+                    f'Total: {cost:.3f}', ha='center', va='bottom', fontsize=9, fontweight='bold')
     else:
         # Without personalized metrics, use 3x2 layout
-        # 3. Round Communication Cost (per round)
+        # 3. Round Communication Cost (Bar Chart)
         ax3 = fig.add_subplot(gs[1, 0])
-        for exp_name, data in experiments.items():
-            color = colors.get(exp_name, '#000000')
-            ax3.plot(data.rounds, data.round_cost_kb, marker='o', label=exp_name.upper(), 
-                    color=color, linewidth=2, markersize=4, alpha=0.8)
-        ax3.set_xlabel('Round', fontsize=12, fontweight='bold')
-        ax3.set_ylabel('Round Communication Cost (KB)', fontsize=12, fontweight='bold')
-        ax3.set_title('Round Communication Cost vs Round', fontsize=14, fontweight='bold')
-        ax3.grid(True, alpha=0.3)
-        ax3.legend(loc='best', fontsize=10)
+        x_pos = np.arange(len(experiments))
+        bar_width = 0.35
+        exp_names_list = list(experiments.keys())
+        last_round_costs = []
+        for exp_name in exp_names_list:
+            if experiments[exp_name].round_cost_kb:
+                last_round_costs.append(experiments[exp_name].round_cost_kb[-1])
+            else:
+                last_round_costs.append(0)
+        bars = ax3.bar(x_pos, last_round_costs, bar_width, 
+                      color=[colors.get(name, '#000000') for name in exp_names_list],
+                      alpha=0.8, edgecolor='black', linewidth=1.2)
+        ax3.set_xlabel('Experiment', fontsize=12, fontweight='bold')
+        ax3.set_ylabel('Last Round Communication Cost (KB)', fontsize=12, fontweight='bold')
+        ax3.set_title('Round Communication Cost Comparison (Bar Chart)', fontsize=14, fontweight='bold')
+        ax3.set_xticks(x_pos)
+        ax3.set_xticklabels([name.upper() for name in exp_names_list], fontsize=10)
+        ax3.grid(True, alpha=0.3, axis='y')
+        for i, (bar, cost) in enumerate(zip(bars, last_round_costs)):
+            height = bar.get_height()
+            ax3.text(bar.get_x() + bar.get_width()/2., height,
+                    f'{cost:.0f} KB', ha='center', va='bottom', fontsize=9, fontweight='bold')
         
-        # 4. Round Simulated Time (per round)
+        # 4. Round Simulated Time (Bar Chart)
         ax4 = fig.add_subplot(gs[1, 1])
-        for exp_name, data in experiments.items():
-            color = colors.get(exp_name, '#000000')
-            ax4.plot(data.rounds, data.round_time_s, marker='s', label=exp_name.upper(), 
-                    color=color, linewidth=2, markersize=4, alpha=0.8)
-        ax4.set_xlabel('Round', fontsize=12, fontweight='bold')
-        ax4.set_ylabel('Round Simulated Time (seconds)', fontsize=12, fontweight='bold')
-        ax4.set_title('Round Simulated Time vs Round', fontsize=14, fontweight='bold')
-        ax4.grid(True, alpha=0.3)
-        ax4.legend(loc='best', fontsize=10)
+        last_round_times = []
+        for exp_name in exp_names_list:
+            if experiments[exp_name].round_time_s:
+                last_round_times.append(experiments[exp_name].round_time_s[-1])
+            else:
+                last_round_times.append(0)
+        bars = ax4.bar(x_pos, last_round_times, bar_width,
+                      color=[colors.get(name, '#000000') for name in exp_names_list],
+                      alpha=0.8, edgecolor='black', linewidth=1.2)
+        ax4.set_xlabel('Experiment', fontsize=12, fontweight='bold')
+        ax4.set_ylabel('Last Round Simulated Time (seconds)', fontsize=12, fontweight='bold')
+        ax4.set_title('Round Simulated Time Comparison (Bar Chart)', fontsize=14, fontweight='bold')
+        ax4.set_xticks(x_pos)
+        ax4.set_xticklabels([name.upper() for name in exp_names_list], fontsize=10)
+        ax4.grid(True, alpha=0.3, axis='y')
+        for i, (bar, time) in enumerate(zip(bars, last_round_times)):
+            height = bar.get_height()
+            ax4.text(bar.get_x() + bar.get_width()/2., height,
+                    f'{time:.2f}s', ha='center', va='bottom', fontsize=9, fontweight='bold')
         
         # 5. Cumulative Communication Cost
         ax5 = fig.add_subplot(gs[2, 0])
@@ -339,6 +441,55 @@ def visualize_experiments(experiments: Dict[str, ExperimentData], output_path: O
         ax6.set_title('Cumulative Time vs Round', fontsize=14, fontweight='bold')
         ax6.grid(True, alpha=0.3)
         ax6.legend(loc='best', fontsize=10)
+        
+        # 7. 통합 Cost (Memory + Time) - Normalized Bar Chart
+        ax7 = fig.add_subplot(gs[3, :])
+        alpha, beta = 1.0, 0.1
+        max_comm = max([max(data.cumulative_data_mb) if data.cumulative_data_mb else 0 
+                       for data in experiments.values()])
+        max_time = max([max(data.cumulative_time_s) if data.cumulative_time_s else 0 
+                       for data in experiments.values()])
+        
+        integrated_costs = []
+        for exp_name in exp_names_list:
+            data = experiments[exp_name]
+            if data.cumulative_data_mb and data.cumulative_time_s:
+                norm_comm = (data.cumulative_data_mb[-1] / max_comm) if max_comm > 0 else 0
+                norm_time = (data.cumulative_time_s[-1] / max_time) if max_time > 0 else 0
+                integrated_cost = alpha * norm_comm + beta * norm_time
+            else:
+                integrated_cost = 0
+            integrated_costs.append(integrated_cost)
+        
+        x_pos_wide = np.arange(len(exp_names_list))
+        width = 0.6
+        norm_comm_values = [(data.cumulative_data_mb[-1] / max_comm) if max_comm > 0 and data.cumulative_data_mb else 0 
+                           for data in [experiments[name] for name in exp_names_list]]
+        norm_time_values = [(data.cumulative_time_s[-1] / max_time) * beta if max_time > 0 and data.cumulative_time_s else 0 
+                           for data in [experiments[name] for name in exp_names_list]]
+        
+        bars1 = ax7.bar(x_pos_wide, norm_comm_values, width, 
+                       label='Normalized Comm Cost (α=1.0)', 
+                       color=[colors.get(name, '#000000') for name in exp_names_list],
+                       alpha=0.7, edgecolor='black', linewidth=1.2)
+        bars2 = ax7.bar(x_pos_wide, norm_time_values, width, bottom=norm_comm_values,
+                       label='Normalized Time Cost (β=0.1)', 
+                       color=[colors.get(name, '#888888') for name in exp_names_list],
+                       alpha=0.5, edgecolor='black', linewidth=1.2)
+        
+        ax7.set_xlabel('Experiment', fontsize=12, fontweight='bold')
+        ax7.set_ylabel('Normalized Integrated Cost', fontsize=12, fontweight='bold')
+        ax7.set_title('Integrated Cost Comparison (Memory + Time) - Normalized Stacked Bar Chart', 
+                     fontsize=14, fontweight='bold')
+        ax7.set_xticks(x_pos_wide)
+        ax7.set_xticklabels([name.upper() for name in exp_names_list], fontsize=10)
+        ax7.legend(loc='upper left', fontsize=10)
+        ax7.grid(True, alpha=0.3, axis='y')
+        
+        for i, (bar1, bar2, cost) in enumerate(zip(bars1, bars2, integrated_costs)):
+            total_height = bar1.get_height() + bar2.get_height()
+            ax7.text(bar1.get_x() + bar1.get_width()/2., total_height,
+                    f'Total: {cost:.3f}', ha='center', va='bottom', fontsize=9, fontweight='bold')
     
     plt.suptitle('Experiment Results Comparison', fontsize=16, fontweight='bold', y=0.995)
     
