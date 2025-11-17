@@ -25,7 +25,7 @@ class Config:
     MOMENTUM = 0.9
     
     # Client selection
-    SAMPLE_FRAC = 0.1  # 10% of clients participate per round
+    SAMPLE_FRAC = 0.3  # 30% of clients participate per round
     
     # Target accuracy
     TARGET_ACC = 90.0  # Target Global Accuracy (%) - for baseline experiments
