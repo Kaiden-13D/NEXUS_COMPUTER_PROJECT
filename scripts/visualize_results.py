@@ -69,32 +69,37 @@ def parse_log_file(log_path: Path) -> Optional[ExperimentData]:
         round_num = int(round_sections[i])
         round_content = round_sections[i + 1]
         
-        # Parse Global Accuracy and Loss
-        perf_match = re.search(r'\[Perf\] Global GA: ([\d.]+)% \| Global Loss: ([\d.]+)', round_content)
+        # Parse Avg Test Accuracy and Loss (new unified format)
+        perf_match = re.search(r'\[Perf\] Avg Test Acc: ([\d.]+)% \| Avg Loss: ([\d.]+)', round_content)
         if perf_match:
             data.rounds.append(round_num)
-            data.global_acc.append(float(perf_match.group(1)))
-            data.global_loss.append(float(perf_match.group(2)))
-        else:
-            continue  # Skip this round if we can't parse it
-        
-        # Parse Personalized Accuracy and Loss (optional, for bl3, abl1, abl2)
-        personalized_match = re.search(
-            r'\[Perf\] Personalized PA: ([\d.]+)% \| Personalized Loss: ([\d.]+)',
-            round_content
-        )
-        if personalized_match:
+            data.global_acc.append(float(perf_match.group(1)))  # Store as global_acc for compatibility
+            data.global_loss.append(float(perf_match.group(2)))  # Store as global_loss for compatibility
+            # Also store as personalized (same value, unified metric)
             data.has_personalized = True
-            data.personalized_acc.append(float(personalized_match.group(1)))
-            data.personalized_loss.append(float(personalized_match.group(2)))
+            data.personalized_acc.append(float(perf_match.group(1)))
+            data.personalized_loss.append(float(perf_match.group(2)))
         else:
-            # Fill with None or previous value for consistency
-            if data.has_personalized and len(data.personalized_acc) > 0:
-                data.personalized_acc.append(data.personalized_acc[-1])
-                data.personalized_loss.append(data.personalized_loss[-1])
+            # Try old format for backward compatibility
+            old_perf_match = re.search(r'\[Perf\] Global GA: ([\d.]+)% \| Global Loss: ([\d.]+)', round_content)
+            if old_perf_match:
+                data.rounds.append(round_num)
+                data.global_acc.append(float(old_perf_match.group(1)))
+                data.global_loss.append(float(old_perf_match.group(2)))
+                # Check for old personalized format
+                old_personalized_match = re.search(
+                    r'\[Perf\] Personalized PA: ([\d.]+)% \| Personalized Loss: ([\d.]+)',
+                    round_content
+                )
+                if old_personalized_match:
+                    data.has_personalized = True
+                    data.personalized_acc.append(float(old_personalized_match.group(1)))
+                    data.personalized_loss.append(float(old_personalized_match.group(2)))
+                else:
+                    data.personalized_acc.append(None)
+                    data.personalized_loss.append(None)
             else:
-                data.personalized_acc.append(None)
-                data.personalized_loss.append(None)
+                continue  # Skip this round if we can't parse it
         
         # Parse Round Cost and Time
         effi_match = re.search(
@@ -183,28 +188,28 @@ def visualize_experiments(experiments: Dict[str, ExperimentData], output_path: O
         fig = plt.figure(figsize=(20, 14))
         gs = GridSpec(4, 2, figure=fig, hspace=0.35, wspace=0.3)
     
-    # 1. Global Accuracy (y-axis starts from 30%)
+    # 1. Average Test Accuracy (y-axis starts from 30%)
     ax1 = fig.add_subplot(gs[0, 0])
     for exp_name, data in experiments.items():
         color = colors.get(exp_name, '#000000')
         ax1.plot(data.rounds, data.global_acc, marker='o', label=exp_name.upper(), 
                 color=color, linewidth=2, markersize=4, alpha=0.8)
     ax1.set_xlabel('Round', fontsize=12, fontweight='bold')
-    ax1.set_ylabel('Global Accuracy (%)', fontsize=12, fontweight='bold')
-    ax1.set_title('Global Accuracy vs Round', fontsize=14, fontweight='bold')
+    ax1.set_ylabel('Average Test Accuracy (%)', fontsize=12, fontweight='bold')
+    ax1.set_title('Average Test Accuracy vs Round', fontsize=14, fontweight='bold')
     ax1.grid(True, alpha=0.3)
     ax1.legend(loc='best', fontsize=10)
     ax1.set_ylim(bottom=30)
     
-    # 2. Global Loss
+    # 2. Average Loss
     ax2 = fig.add_subplot(gs[0, 1])
     for exp_name, data in experiments.items():
         color = colors.get(exp_name, '#000000')
         ax2.plot(data.rounds, data.global_loss, marker='s', label=exp_name.upper(), 
                 color=color, linewidth=2, markersize=4, alpha=0.8)
     ax2.set_xlabel('Round', fontsize=12, fontweight='bold')
-    ax2.set_ylabel('Global Loss', fontsize=12, fontweight='bold')
-    ax2.set_title('Global Loss vs Round', fontsize=14, fontweight='bold')
+    ax2.set_ylabel('Average Loss', fontsize=12, fontweight='bold')
+    ax2.set_title('Average Loss vs Round', fontsize=14, fontweight='bold')
     ax2.grid(True, alpha=0.3)
     ax2.legend(loc='best', fontsize=10)
     
@@ -221,13 +226,13 @@ def visualize_experiments(experiments: Dict[str, ExperimentData], output_path: O
                     ax3.plot(valid_rounds, valid_acc, marker='^', label=exp_name.upper(), 
                             color=color, linewidth=2, markersize=4, alpha=0.8)
         ax3.set_xlabel('Round', fontsize=12, fontweight='bold')
-        ax3.set_ylabel('Personalized Accuracy (%)', fontsize=12, fontweight='bold')
-        ax3.set_title('Personalized Accuracy vs Round', fontsize=14, fontweight='bold')
+        ax3.set_ylabel('Average Test Accuracy (%)', fontsize=12, fontweight='bold')
+        ax3.set_title('Average Test Accuracy vs Round (Per-Client)', fontsize=14, fontweight='bold')
         ax3.grid(True, alpha=0.3)
         ax3.legend(loc='best', fontsize=10)
         ax3.set_ylim(bottom=40)
         
-        # 4. Personalized Loss (if available)
+        # 4. Average Loss (same as ax2, for consistency)
         ax4 = fig.add_subplot(gs[1, 1])
         for exp_name, data in experiments.items():
             if data.has_personalized:
@@ -238,8 +243,8 @@ def visualize_experiments(experiments: Dict[str, ExperimentData], output_path: O
                     ax4.plot(valid_rounds, valid_loss, marker='v', label=exp_name.upper(), 
                             color=color, linewidth=2, markersize=4, alpha=0.8)
         ax4.set_xlabel('Round', fontsize=12, fontweight='bold')
-        ax4.set_ylabel('Personalized Loss', fontsize=12, fontweight='bold')
-        ax4.set_title('Personalized Loss vs Round', fontsize=14, fontweight='bold')
+        ax4.set_ylabel('Average Loss', fontsize=12, fontweight='bold')
+        ax4.set_title('Average Loss vs Round (Per-Client)', fontsize=14, fontweight='bold')
         ax4.grid(True, alpha=0.3)
         ax4.legend(loc='best', fontsize=10)
         
