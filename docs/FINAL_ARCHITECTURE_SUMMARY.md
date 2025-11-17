@@ -2,13 +2,13 @@
 
 ## 개요
 
-이 문서는 Hierarchical Cluster-based Personalized Federated Learning (HPFL) 시스템의 최종 아키텍처와 설계 결정사항을 종합적으로 정리한 것입니다. Option B 아키텍처로의 리팩토링 과정에서 논의된 모든 주요 사항들을 포함합니다.
+이 문서는 Hierarchical Cluster-based Personalized Federated Learning (HPFL) 시스템의 최종 아키텍처와 설계 결정사항을 종합적으로 정리한 것입니다. UAV 지역 집계 아키텍처로의 리팩토링 과정에서 논의된 모든 주요 사항들을 포함합니다.
 
 ---
 
 ## 1. 아키텍처 설계 결정
 
-### 1.1 Option B 아키텍처 채택
+### 1.1 UAV 지역 집계 아키텍처 채택
 
 **결정 배경:**
 - 기존 아키텍처에서는 Satellite가 모든 클라이언트의 개별 모델을 받아 처리하는 구조였음
@@ -440,7 +440,7 @@ DELTA = 0.2  # 기여도
 
 ## 11. 참고 문서
 
-- `docs/OPTION_B_DESIGN.md`: Option B 아키텍처 상세 설계
+- `docs/OPTION_B_DESIGN.md`: UAV 지역 집계 아키텍처 상세 설계
 - `docs/PROCESS_DOCUMENTATION.md`: 기존 프로세스 문서화
 - `docs/LOG_OUTPUT_EXAMPLES.md`: 로그 출력 예시
 - `src/core/fl_nodes.py`: 핵심 노드 구현

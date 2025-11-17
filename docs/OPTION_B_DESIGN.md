@@ -1,4 +1,4 @@
-# UAV Local Aggregation (Option B) Design
+# UAV 지역 집계 아키텍처 설계
 
 ## 1. 목표
 
