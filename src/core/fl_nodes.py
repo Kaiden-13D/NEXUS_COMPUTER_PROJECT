@@ -199,15 +199,11 @@ class UAV:
         return cluster_models
     
     async def run(self):
-        """UAV run loop (collect client updates)"""
+        """UAV run loop (placeholder - packets are processed by experiment script)"""
+        # Note: Packets are processed directly by experiment scripts via uav.in_q.get_nowait()
+        # This method is kept as a background task placeholder but doesn't consume packets
         while True:
-            try:
-                pkt = await asyncio.wait_for(self.in_q.get(), 0.1)
-                # Store packet for later processing (will be processed by experiment script)
-                # This is just a placeholder - actual processing happens in experiment loop
-                pass
-            except asyncio.TimeoutError:
-                await asyncio.sleep(0.1)
+            await asyncio.sleep(1.0)  # Just keep the task alive
     
     async def send_cluster_models_to_satellite(self, cluster_models: Dict[int, Dict], 
                                                client_id_to_data_size: Dict[str, int],
