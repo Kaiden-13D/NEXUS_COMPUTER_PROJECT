@@ -166,15 +166,15 @@ async def main():
                     break
             
             # Aggregate cluster models
-            cluster_models = uav.aggregate_cluster_models()
-            if cluster_models:
+            uav_cluster_models = uav.aggregate_cluster_models()
+            if uav_cluster_models:
                 # Send to satellite
                 client_id_to_data_size = {
                     c.id: len(client_train_ds[client_id_to_idx[c.id]])
                     for c in uav.assigned_clients
                 }
                 await uav.send_cluster_models_to_satellite(
-                    cluster_models, client_id_to_data_size, cost_meter=COST
+                    uav_cluster_models, client_id_to_data_size, cost_meter=COST
                 )
         
         await asyncio.sleep(0.5)  # Wait for UAVs to send to satellite
