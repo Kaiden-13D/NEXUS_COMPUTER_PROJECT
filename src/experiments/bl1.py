@@ -21,6 +21,7 @@ from ..core import (
 )
 from ..utils import get_state_dict_bytes, bytes_to_state_dict
 from ..utils.progress_logger import init_progress_logger, get_progress_logger
+from ..utils.cluster_logger import log_cluster_assignments
 from ..config import Config
 
 # Global cost meter
@@ -182,6 +183,10 @@ async def main():
             sat.buffer.clear()
         else:
             print("  No updates received this round.")
+
+        # Log cluster assignments for selected clients
+        if selected:
+            log_cluster_assignments("bl1", r + 1, selected, sat.client_to_cluster)
         
         # Evaluation: Per-client test accuracy
         logger.log(f"Round {r+1}: Evaluating model...", print_to_console=False)
