@@ -188,7 +188,7 @@ def visualize_experiments(experiments: Dict[str, ExperimentData], output_path: O
         ax1.plot(data.rounds, data.global_acc, 
                 linestyle=style['linestyle'], marker=style['marker'], 
                 label=style['label'], color=style['color'], 
-                linewidth=2, markersize=6, markevery=max(1, len(data.rounds)//10))
+                linewidth=1, markersize=0.5, markevery=max(1, len(data.rounds)//10))
     ax1.set_xlabel('Round', fontsize=12, fontweight='bold')
     ax1.set_ylabel('Average Test Accuracy (%)', fontsize=12, fontweight='bold')
     ax1.set_title('(a) Average Test Accuracy', fontsize=13, fontweight='bold')
@@ -206,7 +206,7 @@ def visualize_experiments(experiments: Dict[str, ExperimentData], output_path: O
         ax2.plot(data.rounds, data.global_loss, 
                 linestyle=style['linestyle'], marker=style['marker'], 
                 label=style['label'], color=style['color'], 
-                linewidth=2, markersize=6, markevery=max(1, len(data.rounds)//10))
+                linewidth=1, markersize=0.5, markevery=max(1, len(data.rounds)//10))
     ax2.set_xlabel('Round', fontsize=12, fontweight='bold')
     ax2.set_ylabel('Average Loss', fontsize=12, fontweight='bold')
     ax2.set_title('(b) Average Loss', fontsize=13, fontweight='bold')
@@ -220,7 +220,7 @@ def visualize_experiments(experiments: Dict[str, ExperimentData], output_path: O
         ax3.plot(data.rounds, data.cumulative_data_mb, 
                 linestyle=style['linestyle'], marker=style['marker'], 
                 label=style['label'], color=style['color'], 
-                linewidth=2, markersize=6, markevery=max(1, len(data.rounds)//10))
+                linewidth=1, markersize=0.5, markevery=max(1, len(data.rounds)//10))
     ax3.set_xlabel('Round', fontsize=12, fontweight='bold')
     ax3.set_ylabel('Cumulative Communication Cost (MB)', fontsize=12, fontweight='bold')
     ax3.set_title('(c) Cumulative Communication Cost', fontsize=13, fontweight='bold')
@@ -234,7 +234,7 @@ def visualize_experiments(experiments: Dict[str, ExperimentData], output_path: O
         ax4.plot(data.rounds, data.cumulative_time_s, 
                 linestyle=style['linestyle'], marker=style['marker'], 
                 label=style['label'], color=style['color'], 
-                linewidth=2, markersize=6, markevery=max(1, len(data.rounds)//10))
+                linewidth=1, markersize=0.5, markevery=max(1, len(data.rounds)//10))
     ax4.set_xlabel('Round', fontsize=12, fontweight='bold')
     ax4.set_ylabel('Cumulative Time (seconds)', fontsize=12, fontweight='bold')
     ax4.set_title('(d) Cumulative Time', fontsize=13, fontweight='bold')

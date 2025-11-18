@@ -1,0 +1,15 @@
+=== ABL-1 Experiment Summary ===
+Timestamp: 2025-11-14 17:56:43
+Total Rounds: 50
+
+--- Final Performance Metrics ---
+Global Accuracy: 79.40%
+Global Loss: 0.6732
+Personalized Accuracy: 91.35%
+Personalized Loss: 0.2355
+
+--- Efficiency Metrics ---
+Total Communication Cost: 479.54 MB
+Total Time Cost: 2532.44 seconds
+Average Round Cost: 9.59 MB
+Average Round Time: 50.65 seconds

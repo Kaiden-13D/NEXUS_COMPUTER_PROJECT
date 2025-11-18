@@ -1,0 +1,314 @@
+Progress log: logs/progress/latest.log
+Timestamp log: logs/timestamp/latest.log
+Loading FEMNIST from Hugging Face (flwrlabs/femnist)...
+Grouping data by writer_id... (this may take a while)
+Total writers: 3597
+Assigning approx 35 writers per client for 100 clients...
+Done. Created 100 client datasets.
+✓ Completed: Data loading
+
+=== Starting BL2 (DCS Only) Simulation (Goal: Avg Test Acc 90.0%) ===
+
+=== Round 1 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 35.20% | Avg Loss: 2.8034 (100 clients)
+  [Effi] Round Cost: 60333 KB, +75.08s simulated time
+  [Cumul] Total Data: 58.92 MB | Total Time: 75.08s
+
+=== Round 2 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 68.27% | Avg Loss: 1.1520 (100 clients)
+  [Effi] Round Cost: 60333 KB, +75.06s simulated time
+  [Cumul] Total Data: 117.84 MB | Total Time: 150.15s
+
+=== Round 3 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 74.64% | Avg Loss: 0.8262 (100 clients)
+  [Effi] Round Cost: 56981 KB, +75.06s simulated time
+  [Cumul] Total Data: 173.48 MB | Total Time: 225.20s
+
+=== Round 4 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 76.90% | Avg Loss: 0.7319 (100 clients)
+  [Effi] Round Cost: 60333 KB, +75.07s simulated time
+  [Cumul] Total Data: 232.40 MB | Total Time: 300.27s
+
+=== Round 5 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 79.02% | Avg Loss: 0.6539 (100 clients)
+  [Effi] Round Cost: 58657 KB, +75.08s simulated time
+  [Cumul] Total Data: 289.68 MB | Total Time: 375.35s
+
+=== Round 6 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 80.22% | Avg Loss: 0.6079 (100 clients)
+  [Effi] Round Cost: 60333 KB, +75.08s simulated time
+  [Cumul] Total Data: 348.60 MB | Total Time: 450.43s
+
+=== Round 7 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 81.03% | Avg Loss: 0.5830 (100 clients)
+  [Effi] Round Cost: 60333 KB, +75.08s simulated time
+  [Cumul] Total Data: 407.52 MB | Total Time: 525.51s
+
+=== Round 8 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 81.39% | Avg Loss: 0.5677 (100 clients)
+  [Effi] Round Cost: 58657 KB, +75.09s simulated time
+  [Cumul] Total Data: 464.80 MB | Total Time: 600.59s
+
+=== Round 9 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 81.84% | Avg Loss: 0.5480 (100 clients)
+  [Effi] Round Cost: 58657 KB, +75.07s simulated time
+  [Cumul] Total Data: 522.09 MB | Total Time: 675.66s
+
+=== Round 10 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 82.05% | Avg Loss: 0.5369 (100 clients)
+  [Effi] Round Cost: 60333 KB, +75.09s simulated time
+  [Cumul] Total Data: 581.00 MB | Total Time: 750.75s
+
+=== Round 11 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 82.33% | Avg Loss: 0.5304 (100 clients)
+  [Effi] Round Cost: 60333 KB, +75.07s simulated time
+  [Cumul] Total Data: 639.92 MB | Total Time: 825.82s
+
+=== Round 12 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 82.28% | Avg Loss: 0.5312 (100 clients)
+  [Effi] Round Cost: 58657 KB, +75.06s simulated time
+  [Cumul] Total Data: 697.20 MB | Total Time: 900.88s
+
+=== Round 13 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 82.70% | Avg Loss: 0.5148 (100 clients)
+  [Effi] Round Cost: 58657 KB, +75.08s simulated time
+  [Cumul] Total Data: 754.49 MB | Total Time: 975.96s
+
+=== Round 14 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 83.31% | Avg Loss: 0.4998 (100 clients)
+  [Effi] Round Cost: 60333 KB, +75.08s simulated time
+  [Cumul] Total Data: 813.41 MB | Total Time: 1051.05s
+
+=== Round 15 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 83.28% | Avg Loss: 0.4922 (100 clients)
+  [Effi] Round Cost: 58657 KB, +75.06s simulated time
+  [Cumul] Total Data: 870.69 MB | Total Time: 1126.10s
+
+=== Round 16 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 83.59% | Avg Loss: 0.4870 (100 clients)
+  [Effi] Round Cost: 60333 KB, +75.08s simulated time
+  [Cumul] Total Data: 929.61 MB | Total Time: 1201.18s
+
+=== Round 17 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 83.79% | Avg Loss: 0.4827 (100 clients)
+  [Effi] Round Cost: 60333 KB, +75.09s simulated time
+  [Cumul] Total Data: 988.52 MB | Total Time: 1276.28s
+
+=== Round 18 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 83.90% | Avg Loss: 0.4791 (100 clients)
+  [Effi] Round Cost: 58657 KB, +75.08s simulated time
+  [Cumul] Total Data: 1045.81 MB | Total Time: 1351.36s
+
+=== Round 19 ===
+  Aggregated 5 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 83.73% | Avg Loss: 0.4793 (100 clients)
+  [Effi] Round Cost: 58098 KB, +71.21s simulated time
+  [Cumul] Total Data: 1102.54 MB | Total Time: 1422.56s
+
+=== Round 20 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 83.83% | Avg Loss: 0.4772 (100 clients)
+  [Effi] Round Cost: 60333 KB, +75.08s simulated time
+  [Cumul] Total Data: 1161.46 MB | Total Time: 1497.64s
+
+=== Round 21 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 83.99% | Avg Loss: 0.4668 (100 clients)
+  [Effi] Round Cost: 60333 KB, +75.06s simulated time
+  [Cumul] Total Data: 1220.38 MB | Total Time: 1572.71s
+
+=== Round 22 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 84.06% | Avg Loss: 0.4642 (100 clients)
+  [Effi] Round Cost: 60333 KB, +75.08s simulated time
+  [Cumul] Total Data: 1279.30 MB | Total Time: 1647.79s
+
+=== Round 23 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 84.04% | Avg Loss: 0.4698 (100 clients)
+  [Effi] Round Cost: 56981 KB, +75.06s simulated time
+  [Cumul] Total Data: 1334.95 MB | Total Time: 1722.85s
+
+=== Round 24 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 84.18% | Avg Loss: 0.4638 (100 clients)
+  [Effi] Round Cost: 60333 KB, +75.08s simulated time
+  [Cumul] Total Data: 1393.86 MB | Total Time: 1797.93s
+
+=== Round 25 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 84.16% | Avg Loss: 0.4591 (100 clients)
+  [Effi] Round Cost: 60333 KB, +75.08s simulated time
+  [Cumul] Total Data: 1452.78 MB | Total Time: 1873.00s
+
+=== Round 26 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 84.21% | Avg Loss: 0.4610 (100 clients)
+  [Effi] Round Cost: 60333 KB, +75.10s simulated time
+  [Cumul] Total Data: 1511.70 MB | Total Time: 1948.10s
+
+=== Round 27 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 84.43% | Avg Loss: 0.4515 (100 clients)
+  [Effi] Round Cost: 60333 KB, +75.06s simulated time
+  [Cumul] Total Data: 1570.62 MB | Total Time: 2023.16s
+
+=== Round 28 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 84.29% | Avg Loss: 0.4559 (100 clients)
+  [Effi] Round Cost: 60333 KB, +75.05s simulated time
+  [Cumul] Total Data: 1629.54 MB | Total Time: 2098.21s
+
+=== Round 29 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 84.42% | Avg Loss: 0.4499 (100 clients)
+  [Effi] Round Cost: 58657 KB, +75.07s simulated time
+  [Cumul] Total Data: 1686.82 MB | Total Time: 2173.28s
+
+=== Round 30 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 84.39% | Avg Loss: 0.4521 (100 clients)
+  [Effi] Round Cost: 58657 KB, +75.09s simulated time
+  [Cumul] Total Data: 1744.10 MB | Total Time: 2248.37s
+
+=== Round 31 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 84.54% | Avg Loss: 0.4461 (100 clients)
+  [Effi] Round Cost: 58657 KB, +75.10s simulated time
+  [Cumul] Total Data: 1801.38 MB | Total Time: 2323.47s
+
+=== Round 32 ===
+  Aggregated 5 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 84.05% | Avg Loss: 0.4644 (100 clients)
+  [Effi] Round Cost: 58098 KB, +71.22s simulated time
+  [Cumul] Total Data: 1858.12 MB | Total Time: 2394.69s
+
+=== Round 33 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 84.56% | Avg Loss: 0.4475 (100 clients)
+  [Effi] Round Cost: 58657 KB, +75.07s simulated time
+  [Cumul] Total Data: 1915.40 MB | Total Time: 2469.76s
+
+=== Round 34 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 84.39% | Avg Loss: 0.4474 (100 clients)
+  [Effi] Round Cost: 60333 KB, +75.09s simulated time
+  [Cumul] Total Data: 1974.32 MB | Total Time: 2544.85s
+
+=== Round 35 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 84.37% | Avg Loss: 0.4427 (100 clients)
+  [Effi] Round Cost: 58657 KB, +75.06s simulated time
+  [Cumul] Total Data: 2031.60 MB | Total Time: 2619.91s
+
+=== Round 36 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 84.40% | Avg Loss: 0.4440 (100 clients)
+  [Effi] Round Cost: 60333 KB, +75.09s simulated time
+  [Cumul] Total Data: 2090.52 MB | Total Time: 2695.00s
+
+=== Round 37 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 84.48% | Avg Loss: 0.4413 (100 clients)
+  [Effi] Round Cost: 60333 KB, +75.08s simulated time
+  [Cumul] Total Data: 2149.44 MB | Total Time: 2770.08s
+
+=== Round 38 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 84.54% | Avg Loss: 0.4420 (100 clients)
+  [Effi] Round Cost: 60333 KB, +75.07s simulated time
+  [Cumul] Total Data: 2208.36 MB | Total Time: 2845.15s
+
+=== Round 39 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 84.75% | Avg Loss: 0.4390 (100 clients)
+  [Effi] Round Cost: 60333 KB, +75.08s simulated time
+  [Cumul] Total Data: 2267.28 MB | Total Time: 2920.24s
+
+=== Round 40 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 84.76% | Avg Loss: 0.4354 (100 clients)
+  [Effi] Round Cost: 60333 KB, +75.08s simulated time
+  [Cumul] Total Data: 2326.20 MB | Total Time: 2995.31s
+
+=== Round 41 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 84.68% | Avg Loss: 0.4387 (100 clients)
+  [Effi] Round Cost: 60333 KB, +75.06s simulated time
+  [Cumul] Total Data: 2385.12 MB | Total Time: 3070.38s
+
+=== Round 42 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 84.73% | Avg Loss: 0.4369 (100 clients)
+  [Effi] Round Cost: 60333 KB, +75.08s simulated time
+  [Cumul] Total Data: 2444.04 MB | Total Time: 3145.46s
+
+=== Round 43 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 84.64% | Avg Loss: 0.4353 (100 clients)
+  [Effi] Round Cost: 58657 KB, +75.08s simulated time
+  [Cumul] Total Data: 2501.32 MB | Total Time: 3220.54s
+
+=== Round 44 ===
+  Aggregated 5 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 84.85% | Avg Loss: 0.4320 (100 clients)
+  [Effi] Round Cost: 58098 KB, +71.20s simulated time
+  [Cumul] Total Data: 2558.05 MB | Total Time: 3291.74s
+
+=== Round 45 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 84.73% | Avg Loss: 0.4312 (100 clients)
+  [Effi] Round Cost: 58657 KB, +75.07s simulated time
+  [Cumul] Total Data: 2615.34 MB | Total Time: 3366.81s
+
+=== Round 46 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 84.69% | Avg Loss: 0.4339 (100 clients)
+  [Effi] Round Cost: 58657 KB, +75.08s simulated time
+  [Cumul] Total Data: 2672.62 MB | Total Time: 3441.89s
+
+=== Round 47 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 84.73% | Avg Loss: 0.4321 (100 clients)
+  [Effi] Round Cost: 58657 KB, +75.06s simulated time
+  [Cumul] Total Data: 2729.90 MB | Total Time: 3516.95s
+
+=== Round 48 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 84.68% | Avg Loss: 0.4375 (100 clients)
+  [Effi] Round Cost: 58657 KB, +75.09s simulated time
+  [Cumul] Total Data: 2787.18 MB | Total Time: 3592.04s
+
+=== Round 49 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 84.70% | Avg Loss: 0.4322 (100 clients)
+  [Effi] Round Cost: 60333 KB, +75.07s simulated time
+  [Cumul] Total Data: 2846.10 MB | Total Time: 3667.11s
+
+=== Round 50 ===
+  Aggregated 6 UAV updates from DCS-selected clients.
+  [Perf] Avg Test Acc: 84.97% | Avg Loss: 0.4257 (100 clients)
+  [Effi] Round Cost: 58657 KB, +75.08s simulated time
+  [Cumul] Total Data: 2903.38 MB | Total Time: 3742.19s
+
+Results saved to: results/bl2/bl2_summary_20251118_165332.txt

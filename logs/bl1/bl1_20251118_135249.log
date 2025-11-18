@@ -1,0 +1,314 @@
+Progress log: logs/progress/latest.log
+Timestamp log: logs/timestamp/latest.log
+Loading FEMNIST from Hugging Face (flwrlabs/femnist)...
+Grouping data by writer_id... (this may take a while)
+Total writers: 3597
+Assigning approx 35 writers per client for 100 clients...
+Done. Created 100 client datasets.
+✓ Completed: Data loading
+
+=== Starting BL1 Simulation (Goal: Avg Test Acc 90.0%) ===
+
+=== Round 1 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 37.28% | Avg Loss: 2.7625 (100 clients)
+  [Effi] Round Cost: 63685 KB, +75.08s simulated time
+  [Cumul] Total Data: 62.19 MB | Total Time: 75.08s
+
+=== Round 2 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 67.36% | Avg Loss: 1.1877 (100 clients)
+  [Effi] Round Cost: 60333 KB, +75.07s simulated time
+  [Cumul] Total Data: 121.11 MB | Total Time: 150.15s
+
+=== Round 3 ===
+  Aggregated 5 UAV updates.
+  [Perf] Avg Test Acc: 73.17% | Avg Loss: 0.8838 (100 clients)
+  [Effi] Round Cost: 61450 KB, +71.19s simulated time
+  [Cumul] Total Data: 181.12 MB | Total Time: 221.34s
+
+=== Round 4 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 76.66% | Avg Loss: 0.7513 (100 clients)
+  [Effi] Round Cost: 63685 KB, +75.08s simulated time
+  [Cumul] Total Data: 243.31 MB | Total Time: 296.42s
+
+=== Round 5 ===
+  Aggregated 5 UAV updates.
+  [Perf] Avg Test Acc: 77.93% | Avg Loss: 0.6964 (100 clients)
+  [Effi] Round Cost: 59774 KB, +71.24s simulated time
+  [Cumul] Total Data: 301.69 MB | Total Time: 367.66s
+
+=== Round 6 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 79.41% | Avg Loss: 0.6401 (100 clients)
+  [Effi] Round Cost: 62009 KB, +75.08s simulated time
+  [Cumul] Total Data: 362.24 MB | Total Time: 442.74s
+
+=== Round 7 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 80.49% | Avg Loss: 0.6012 (100 clients)
+  [Effi] Round Cost: 63685 KB, +75.08s simulated time
+  [Cumul] Total Data: 424.43 MB | Total Time: 517.82s
+
+=== Round 8 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 80.95% | Avg Loss: 0.5792 (100 clients)
+  [Effi] Round Cost: 63685 KB, +75.07s simulated time
+  [Cumul] Total Data: 486.63 MB | Total Time: 592.89s
+
+=== Round 9 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 81.10% | Avg Loss: 0.5653 (100 clients)
+  [Effi] Round Cost: 62009 KB, +75.08s simulated time
+  [Cumul] Total Data: 547.18 MB | Total Time: 667.97s
+
+=== Round 10 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 81.41% | Avg Loss: 0.5523 (100 clients)
+  [Effi] Round Cost: 62009 KB, +75.07s simulated time
+  [Cumul] Total Data: 607.74 MB | Total Time: 743.04s
+
+=== Round 11 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 81.31% | Avg Loss: 0.5584 (100 clients)
+  [Effi] Round Cost: 62009 KB, +75.10s simulated time
+  [Cumul] Total Data: 668.29 MB | Total Time: 818.14s
+
+=== Round 12 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 82.36% | Avg Loss: 0.5278 (100 clients)
+  [Effi] Round Cost: 62009 KB, +75.08s simulated time
+  [Cumul] Total Data: 728.85 MB | Total Time: 893.22s
+
+=== Round 13 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 81.79% | Avg Loss: 0.5510 (100 clients)
+  [Effi] Round Cost: 62009 KB, +75.07s simulated time
+  [Cumul] Total Data: 789.40 MB | Total Time: 968.28s
+
+=== Round 14 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 82.54% | Avg Loss: 0.5205 (100 clients)
+  [Effi] Round Cost: 63685 KB, +75.07s simulated time
+  [Cumul] Total Data: 851.59 MB | Total Time: 1043.35s
+
+=== Round 15 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 82.69% | Avg Loss: 0.5063 (100 clients)
+  [Effi] Round Cost: 63685 KB, +75.05s simulated time
+  [Cumul] Total Data: 913.79 MB | Total Time: 1118.40s
+
+=== Round 16 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 83.00% | Avg Loss: 0.4945 (100 clients)
+  [Effi] Round Cost: 63685 KB, +75.09s simulated time
+  [Cumul] Total Data: 975.98 MB | Total Time: 1193.49s
+
+=== Round 17 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 83.00% | Avg Loss: 0.4922 (100 clients)
+  [Effi] Round Cost: 63685 KB, +75.09s simulated time
+  [Cumul] Total Data: 1038.17 MB | Total Time: 1268.58s
+
+=== Round 18 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 83.48% | Avg Loss: 0.4829 (100 clients)
+  [Effi] Round Cost: 63685 KB, +75.06s simulated time
+  [Cumul] Total Data: 1100.36 MB | Total Time: 1343.64s
+
+=== Round 19 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 83.01% | Avg Loss: 0.5018 (100 clients)
+  [Effi] Round Cost: 63685 KB, +75.05s simulated time
+  [Cumul] Total Data: 1162.56 MB | Total Time: 1418.69s
+
+=== Round 20 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 83.32% | Avg Loss: 0.4902 (100 clients)
+  [Effi] Round Cost: 63685 KB, +75.07s simulated time
+  [Cumul] Total Data: 1224.75 MB | Total Time: 1493.76s
+
+=== Round 21 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 83.53% | Avg Loss: 0.4790 (100 clients)
+  [Effi] Round Cost: 62009 KB, +75.08s simulated time
+  [Cumul] Total Data: 1285.30 MB | Total Time: 1568.84s
+
+=== Round 22 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 83.67% | Avg Loss: 0.4686 (100 clients)
+  [Effi] Round Cost: 62009 KB, +75.08s simulated time
+  [Cumul] Total Data: 1345.86 MB | Total Time: 1643.91s
+
+=== Round 23 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 83.92% | Avg Loss: 0.4642 (100 clients)
+  [Effi] Round Cost: 62009 KB, +75.05s simulated time
+  [Cumul] Total Data: 1406.41 MB | Total Time: 1718.97s
+
+=== Round 24 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 84.04% | Avg Loss: 0.4624 (100 clients)
+  [Effi] Round Cost: 62009 KB, +75.07s simulated time
+  [Cumul] Total Data: 1466.97 MB | Total Time: 1794.04s
+
+=== Round 25 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 83.83% | Avg Loss: 0.4575 (100 clients)
+  [Effi] Round Cost: 63685 KB, +75.06s simulated time
+  [Cumul] Total Data: 1529.16 MB | Total Time: 1869.10s
+
+=== Round 26 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 84.10% | Avg Loss: 0.4564 (100 clients)
+  [Effi] Round Cost: 63685 KB, +75.08s simulated time
+  [Cumul] Total Data: 1591.35 MB | Total Time: 1944.19s
+
+=== Round 27 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 84.31% | Avg Loss: 0.4583 (100 clients)
+  [Effi] Round Cost: 63685 KB, +75.07s simulated time
+  [Cumul] Total Data: 1653.54 MB | Total Time: 2019.26s
+
+=== Round 28 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 83.89% | Avg Loss: 0.4515 (100 clients)
+  [Effi] Round Cost: 63685 KB, +75.07s simulated time
+  [Cumul] Total Data: 1715.74 MB | Total Time: 2094.33s
+
+=== Round 29 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 84.25% | Avg Loss: 0.4465 (100 clients)
+  [Effi] Round Cost: 62009 KB, +75.07s simulated time
+  [Cumul] Total Data: 1776.29 MB | Total Time: 2169.40s
+
+=== Round 30 ===
+  Aggregated 5 UAV updates.
+  [Perf] Avg Test Acc: 83.27% | Avg Loss: 0.4683 (100 clients)
+  [Effi] Round Cost: 61450 KB, +71.18s simulated time
+  [Cumul] Total Data: 1836.30 MB | Total Time: 2240.58s
+
+=== Round 31 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 84.33% | Avg Loss: 0.4427 (100 clients)
+  [Effi] Round Cost: 62009 KB, +75.08s simulated time
+  [Cumul] Total Data: 1896.86 MB | Total Time: 2315.66s
+
+=== Round 32 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 83.62% | Avg Loss: 0.4788 (100 clients)
+  [Effi] Round Cost: 62009 KB, +75.06s simulated time
+  [Cumul] Total Data: 1957.41 MB | Total Time: 2390.72s
+
+=== Round 33 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 83.93% | Avg Loss: 0.4637 (100 clients)
+  [Effi] Round Cost: 63685 KB, +75.05s simulated time
+  [Cumul] Total Data: 2019.61 MB | Total Time: 2465.77s
+
+=== Round 34 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 84.22% | Avg Loss: 0.4589 (100 clients)
+  [Effi] Round Cost: 62009 KB, +75.09s simulated time
+  [Cumul] Total Data: 2080.16 MB | Total Time: 2540.86s
+
+=== Round 35 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 84.46% | Avg Loss: 0.4399 (100 clients)
+  [Effi] Round Cost: 62009 KB, +75.06s simulated time
+  [Cumul] Total Data: 2140.72 MB | Total Time: 2615.92s
+
+=== Round 36 ===
+  Aggregated 5 UAV updates.
+  [Perf] Avg Test Acc: 84.33% | Avg Loss: 0.4484 (100 clients)
+  [Effi] Round Cost: 58098 KB, +62.56s simulated time
+  [Cumul] Total Data: 2197.45 MB | Total Time: 2678.48s
+
+=== Round 37 ===
+  Aggregated 5 UAV updates.
+  [Perf] Avg Test Acc: 84.18% | Avg Loss: 0.4566 (100 clients)
+  [Effi] Round Cost: 58098 KB, +71.22s simulated time
+  [Cumul] Total Data: 2254.19 MB | Total Time: 2749.70s
+
+=== Round 38 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 84.08% | Avg Loss: 0.4391 (100 clients)
+  [Effi] Round Cost: 63685 KB, +75.09s simulated time
+  [Cumul] Total Data: 2316.38 MB | Total Time: 2824.79s
+
+=== Round 39 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 84.45% | Avg Loss: 0.4456 (100 clients)
+  [Effi] Round Cost: 63685 KB, +75.08s simulated time
+  [Cumul] Total Data: 2378.57 MB | Total Time: 2899.88s
+
+=== Round 40 ===
+  Aggregated 5 UAV updates.
+  [Perf] Avg Test Acc: 84.16% | Avg Loss: 0.4581 (100 clients)
+  [Effi] Round Cost: 61450 KB, +71.20s simulated time
+  [Cumul] Total Data: 2438.58 MB | Total Time: 2971.08s
+
+=== Round 41 ===
+  Aggregated 5 UAV updates.
+  [Perf] Avg Test Acc: 84.65% | Avg Loss: 0.4339 (100 clients)
+  [Effi] Round Cost: 61450 KB, +71.20s simulated time
+  [Cumul] Total Data: 2498.59 MB | Total Time: 3042.28s
+
+=== Round 42 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 84.39% | Avg Loss: 0.4321 (100 clients)
+  [Effi] Round Cost: 63685 KB, +75.08s simulated time
+  [Cumul] Total Data: 2560.79 MB | Total Time: 3117.36s
+
+=== Round 43 ===
+  Aggregated 5 UAV updates.
+  [Perf] Avg Test Acc: 83.45% | Avg Loss: 0.5004 (100 clients)
+  [Effi] Round Cost: 61450 KB, +71.20s simulated time
+  [Cumul] Total Data: 2620.80 MB | Total Time: 3188.56s
+
+=== Round 44 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 84.48% | Avg Loss: 0.4297 (100 clients)
+  [Effi] Round Cost: 62009 KB, +75.07s simulated time
+  [Cumul] Total Data: 2681.35 MB | Total Time: 3263.64s
+
+=== Round 45 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 84.58% | Avg Loss: 0.4421 (100 clients)
+  [Effi] Round Cost: 62009 KB, +75.08s simulated time
+  [Cumul] Total Data: 2741.91 MB | Total Time: 3338.72s
+
+=== Round 46 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 84.81% | Avg Loss: 0.4286 (100 clients)
+  [Effi] Round Cost: 62009 KB, +75.10s simulated time
+  [Cumul] Total Data: 2802.46 MB | Total Time: 3413.82s
+
+=== Round 47 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 84.99% | Avg Loss: 0.4212 (100 clients)
+  [Effi] Round Cost: 63685 KB, +75.08s simulated time
+  [Cumul] Total Data: 2864.65 MB | Total Time: 3488.90s
+
+=== Round 48 ===
+  Aggregated 5 UAV updates.
+  [Perf] Avg Test Acc: 84.66% | Avg Loss: 0.4276 (100 clients)
+  [Effi] Round Cost: 59774 KB, +71.26s simulated time
+  [Cumul] Total Data: 2923.03 MB | Total Time: 3560.16s
+
+=== Round 49 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 84.81% | Avg Loss: 0.4225 (100 clients)
+  [Effi] Round Cost: 63685 KB, +75.06s simulated time
+  [Cumul] Total Data: 2985.22 MB | Total Time: 3635.22s
+
+=== Round 50 ===
+  Aggregated 6 UAV updates.
+  [Perf] Avg Test Acc: 84.89% | Avg Loss: 0.4217 (100 clients)
+  [Effi] Round Cost: 63685 KB, +75.08s simulated time
+  [Cumul] Total Data: 3047.41 MB | Total Time: 3710.30s
+
+Results saved to: results/bl1/bl1_summary_20251118_152210.txt

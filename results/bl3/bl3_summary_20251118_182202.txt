@@ -1,0 +1,14 @@
+=== BL3 Experiment Summary ===
+Timestamp: 2025-11-18 18:22:02
+Total Rounds: 50
+Number of Clusters: 5
+
+--- Final Performance Metrics ---
+Average Test Accuracy: 85.87%
+Average Loss: 0.4240
+
+--- Efficiency Metrics ---
+Total Communication Cost: 3540.53 MB
+Total Time Cost: 4572.10 seconds
+Average Round Cost: 70.81 MB
+Average Round Time: 91.44 seconds

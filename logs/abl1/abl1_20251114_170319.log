@@ -1,0 +1,615 @@
+Progress log: logs/progress/latest.log
+Timestamp log: logs/timestamp/latest.log
+Progress log: logs/progress/latest.log
+Timestamp log: logs/timestamp/latest.log
+Loading FEMNIST from Hugging Face (flwrlabs/femnist)...
+Loading FEMNIST from Hugging Face (flwrlabs/femnist)...
+Generating train split:   0%|          | 0/814277 [00:00<?, ? examples/s]Generating train split:   0%|          | 100/814277 [00:00<24:30, 553.52 examples/s]Generating train split:   5%|▍         | 38600/814277 [00:00<00:04, 170056.45 examples/s]Generating train split:   9%|▊         | 70200/814277 [00:00<00:03, 226226.26 examples/s]Generating train split:  13%|█▎        | 109400/814277 [00:00<00:02, 285006.89 examples/s]Generating train split:  18%|█▊        | 148400/814277 [00:00<00:02, 319829.96 examples/s]Generating train split:  23%|██▎       | 187800/814277 [00:00<00:01, 343631.35 examples/s]Generating train split:  28%|██▊       | 227500/814277 [00:00<00:01, 360187.57 examples/s]Generating train split:  34%|███▍      | 280800/814277 [00:00<00:01, 357712.37 examples/s]Generating train split:  41%|████      | 332700/814277 [00:01<00:01, 353233.08 examples/s]Generating train split:  48%|████▊     | 387100/814277 [00:01<00:01, 356233.02 examples/s]Generating train split:  52%|█████▏    | 427200/814277 [00:01<00:01, 367124.09 examples/s]Generating train split:  57%|█████▋    | 465700/814277 [00:01<00:00, 371360.46 examples/s]Generating train split:  62%|██████▏   | 507100/814277 [00:01<00:00, 382705.30 examples/s]Generating train split:  67%|██████▋   | 548600/814277 [00:01<00:00, 391329.95 examples/s]Generating train split:  73%|███████▎  | 591200/814277 [00:01<00:00, 400859.75 examples/s]Generating train split:  78%|███████▊  | 634100/814277 [00:01<00:00, 408670.70 examples/s]Generating train split:  83%|████████▎ | 676900/814277 [00:01<00:00, 414141.53 examples/s]Generating train split:  88%|████████▊ | 719700/814277 [00:02<00:00, 417987.13 examples/s]Generating train split:  94%|█████████▎| 762500/814277 [00:02<00:00, 420576.78 examples/s]Generating train split:  99%|█████████▉| 805200/814277 [00:02<00:00, 422230.70 examples/s]Generating train split: 100%|██████████| 814277/814277 [00:02<00:00, 357633.77 examples/s]
+Grouping data by writer_id... (this may take a while)
+Total writers: 3597
+Assigning approx 35 writers per client for 100 clients...
+Done. Created 100 client datasets.
+
+=== Starting ABL-1 (DCS + Clustering) Simulation (Goal: GA 100.0%) ===
+
+=== Round 1 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 0, 2: 1, 3: 0, 4: 1, 5: 1}
+  Updated 2 cluster models.
+  [Perf] Global GA: 39.07% | Global Loss: 2.6781
+  [Perf] Personalized PA: 49.16% | Personalized Loss: 2.2314 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.88s simulated time
+  [Cumul] Total Data: 9.82 MB | Total Time: 51.88s
+
+=== Round 2 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 1, 1: 1, 2: 1, 3: 0, 4: 0, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 60.98% | Global Loss: 1.4438
+  [Perf] Personalized PA: 69.60% | Personalized Loss: 1.1124 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.85s simulated time
+  [Cumul] Total Data: 19.64 MB | Total Time: 103.74s
+
+=== Round 3 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 1, 1: 1, 2: 1, 3: 0, 4: 0, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 70.60% | Global Loss: 0.9657
+  [Perf] Personalized PA: 79.07% | Personalized Loss: 0.7384 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.85s simulated time
+  [Cumul] Total Data: 29.46 MB | Total Time: 155.59s
+
+=== Round 4 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 0, 2: 0, 3: 1, 4: 0, 5: 1}
+  Updated 2 cluster models.
+  [Perf] Global GA: 71.72% | Global Loss: 0.9190
+  [Perf] Personalized PA: 81.31% | Personalized Loss: 0.6498 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.87s simulated time
+  [Cumul] Total Data: 39.28 MB | Total Time: 207.45s
+
+=== Round 5 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 1, 1: 1, 2: 1, 3: 0, 4: 0, 5: 1}
+  Updated 2 cluster models.
+  [Perf] Global GA: 72.35% | Global Loss: 0.9014
+  [Perf] Personalized PA: 80.52% | Personalized Loss: 0.6442 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.83s simulated time
+  [Cumul] Total Data: 49.10 MB | Total Time: 259.28s
+
+=== Round 6 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 5 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 1, 1: 1, 2: 0, 3: 0, 4: 1}
+  Updated 2 cluster models.
+  [Perf] Global GA: 73.10% | Global Loss: 0.8678
+  [Perf] Personalized PA: 81.10% | Personalized Loss: 0.6036 (5 clients)
+  [Effi] Round Cost: 8380 KB, +43.23s simulated time
+  [Cumul] Total Data: 57.28 MB | Total Time: 302.51s
+
+=== Round 7 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 1, 1: 0, 2: 0, 3: 0, 4: 1, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 74.49% | Global Loss: 0.7837
+  [Perf] Personalized PA: 80.34% | Personalized Loss: 0.5809 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.84s simulated time
+  [Cumul] Total Data: 67.10 MB | Total Time: 354.35s
+
+=== Round 8 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 0, 2: 1, 3: 1, 4: 0, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 76.56% | Global Loss: 0.6891
+  [Perf] Personalized PA: 86.28% | Personalized Loss: 0.4590 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.87s simulated time
+  [Cumul] Total Data: 76.92 MB | Total Time: 406.22s
+
+=== Round 9 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 0, 2: 1, 3: 1, 4: 1, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 76.71% | Global Loss: 0.6820
+  [Perf] Personalized PA: 87.19% | Personalized Loss: 0.4311 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.84s simulated time
+  [Cumul] Total Data: 86.74 MB | Total Time: 458.07s
+
+=== Round 10 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 1, 1: 1, 2: 0, 3: 0, 4: 0, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 78.82% | Global Loss: 0.6105
+  [Perf] Personalized PA: 85.37% | Personalized Loss: 0.4598 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.84s simulated time
+  [Cumul] Total Data: 96.56 MB | Total Time: 509.91s
+
+=== Round 11 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 5 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 0, 2: 1, 3: 1, 4: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 80.79% | Global Loss: 0.5712
+  [Perf] Personalized PA: 87.85% | Personalized Loss: 0.3989 (5 clients)
+  [Effi] Round Cost: 8380 KB, +43.23s simulated time
+  [Cumul] Total Data: 104.75 MB | Total Time: 553.14s
+
+=== Round 12 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 5 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 0, 2: 1, 3: 1, 4: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 80.53% | Global Loss: 0.5731
+  [Perf] Personalized PA: 88.76% | Personalized Loss: 0.3640 (5 clients)
+  [Effi] Round Cost: 8380 KB, +43.20s simulated time
+  [Cumul] Total Data: 112.93 MB | Total Time: 596.35s
+
+=== Round 13 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 0, 2: 1, 3: 1, 4: 0, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 78.08% | Global Loss: 0.6333
+  [Perf] Personalized PA: 87.03% | Personalized Loss: 0.3885 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.88s simulated time
+  [Cumul] Total Data: 122.75 MB | Total Time: 648.22s
+
+=== Round 14 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 0, 2: 1, 3: 1, 4: 0, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 78.08% | Global Loss: 0.6379
+  [Perf] Personalized PA: 86.90% | Personalized Loss: 0.3810 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.87s simulated time
+  [Cumul] Total Data: 132.57 MB | Total Time: 700.09s
+
+=== Round 15 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 0, 2: 1, 3: 1, 4: 0, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 78.20% | Global Loss: 0.6465
+  [Perf] Personalized PA: 87.29% | Personalized Loss: 0.3736 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.87s simulated time
+  [Cumul] Total Data: 142.39 MB | Total Time: 751.96s
+
+=== Round 16 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 0, 2: 1, 3: 1, 4: 0, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 77.93% | Global Loss: 0.6525
+  [Perf] Personalized PA: 87.43% | Personalized Loss: 0.3637 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.89s simulated time
+  [Cumul] Total Data: 152.21 MB | Total Time: 803.85s
+
+=== Round 17 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 5 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 1, 3: 0, 4: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 77.30% | Global Loss: 0.6884
+  [Perf] Personalized PA: 88.54% | Personalized Loss: 0.3412 (5 clients)
+  [Effi] Round Cost: 8380 KB, +43.20s simulated time
+  [Cumul] Total Data: 160.39 MB | Total Time: 847.05s
+
+=== Round 18 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 1, 1: 0, 2: 0, 3: 1, 4: 1, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 77.66% | Global Loss: 0.6734
+  [Perf] Personalized PA: 87.53% | Personalized Loss: 0.3738 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.87s simulated time
+  [Cumul] Total Data: 170.21 MB | Total Time: 898.92s
+
+=== Round 19 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 1, 3: 0, 4: 0, 5: 1}
+  Updated 2 cluster models.
+  [Perf] Global GA: 78.01% | Global Loss: 0.6793
+  [Perf] Personalized PA: 87.68% | Personalized Loss: 0.3769 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.88s simulated time
+  [Cumul] Total Data: 180.03 MB | Total Time: 950.80s
+
+=== Round 20 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 1, 3: 0, 4: 0, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 78.49% | Global Loss: 0.6223
+  [Perf] Personalized PA: 86.44% | Personalized Loss: 0.3835 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.85s simulated time
+  [Cumul] Total Data: 189.85 MB | Total Time: 1002.65s
+
+=== Round 21 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 1, 3: 0, 4: 0, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 78.79% | Global Loss: 0.6138
+  [Perf] Personalized PA: 86.94% | Personalized Loss: 0.3678 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.84s simulated time
+  [Cumul] Total Data: 199.67 MB | Total Time: 1054.49s
+
+=== Round 22 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 1, 3: 0, 4: 0, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 79.24% | Global Loss: 0.5874
+  [Perf] Personalized PA: 87.85% | Personalized Loss: 0.3448 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.86s simulated time
+  [Cumul] Total Data: 209.49 MB | Total Time: 1106.35s
+
+=== Round 23 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 1, 3: 0, 4: 0, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 78.84% | Global Loss: 0.6038
+  [Perf] Personalized PA: 87.76% | Personalized Loss: 0.3453 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.84s simulated time
+  [Cumul] Total Data: 219.31 MB | Total Time: 1158.19s
+
+=== Round 24 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 1, 3: 0, 4: 0, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 78.75% | Global Loss: 0.6098
+  [Perf] Personalized PA: 87.93% | Personalized Loss: 0.3430 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.88s simulated time
+  [Cumul] Total Data: 229.13 MB | Total Time: 1210.07s
+
+=== Round 25 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 5 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 0, 3: 0, 4: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 78.54% | Global Loss: 0.6194
+  [Perf] Personalized PA: 86.81% | Personalized Loss: 0.3628 (5 clients)
+  [Effi] Round Cost: 10056 KB, +51.85s simulated time
+  [Cumul] Total Data: 238.95 MB | Total Time: 1261.92s
+
+=== Round 26 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 1, 3: 0, 4: 0, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 79.06% | Global Loss: 0.6003
+  [Perf] Personalized PA: 88.28% | Personalized Loss: 0.3302 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.83s simulated time
+  [Cumul] Total Data: 248.77 MB | Total Time: 1313.75s
+
+=== Round 27 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 1, 3: 0, 4: 0, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 79.36% | Global Loss: 0.6033
+  [Perf] Personalized PA: 88.71% | Personalized Loss: 0.3188 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.86s simulated time
+  [Cumul] Total Data: 258.59 MB | Total Time: 1365.61s
+
+=== Round 28 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 1, 3: 0, 4: 0, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 78.82% | Global Loss: 0.6205
+  [Perf] Personalized PA: 88.56% | Personalized Loss: 0.3216 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.85s simulated time
+  [Cumul] Total Data: 268.41 MB | Total Time: 1417.46s
+
+=== Round 29 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 5 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 1, 3: 0, 4: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 78.05% | Global Loss: 0.6702
+  [Perf] Personalized PA: 90.39% | Personalized Loss: 0.2918 (5 clients)
+  [Effi] Round Cost: 10056 KB, +51.86s simulated time
+  [Cumul] Total Data: 278.23 MB | Total Time: 1469.32s
+
+=== Round 30 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 1, 3: 0, 4: 0, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 78.51% | Global Loss: 0.6462
+  [Perf] Personalized PA: 88.29% | Personalized Loss: 0.3275 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.89s simulated time
+  [Cumul] Total Data: 288.05 MB | Total Time: 1521.20s
+
+=== Round 31 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 1, 3: 0, 4: 0, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 78.89% | Global Loss: 0.6228
+  [Perf] Personalized PA: 88.95% | Personalized Loss: 0.3062 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.85s simulated time
+  [Cumul] Total Data: 297.87 MB | Total Time: 1573.06s
+
+=== Round 32 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 1, 3: 0, 4: 0, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 79.37% | Global Loss: 0.6106
+  [Perf] Personalized PA: 88.86% | Personalized Loss: 0.3063 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.84s simulated time
+  [Cumul] Total Data: 307.69 MB | Total Time: 1624.90s
+
+=== Round 33 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 1, 3: 0, 4: 0, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 79.18% | Global Loss: 0.6137
+  [Perf] Personalized PA: 89.52% | Personalized Loss: 0.2891 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.88s simulated time
+  [Cumul] Total Data: 317.51 MB | Total Time: 1676.78s
+
+=== Round 34 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 5 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 0, 3: 0, 4: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 79.32% | Global Loss: 0.6084
+  [Perf] Personalized PA: 88.66% | Personalized Loss: 0.3035 (5 clients)
+  [Effi] Round Cost: 8380 KB, +43.24s simulated time
+  [Cumul] Total Data: 325.69 MB | Total Time: 1720.02s
+
+=== Round 35 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 0, 3: 0, 4: 0, 5: 1}
+  Updated 2 cluster models.
+  [Perf] Global GA: 79.77% | Global Loss: 0.6024
+  [Perf] Personalized PA: 90.00% | Personalized Loss: 0.2759 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.86s simulated time
+  [Cumul] Total Data: 335.51 MB | Total Time: 1771.88s
+
+=== Round 36 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 0, 3: 0, 4: 0, 5: 1}
+  Updated 2 cluster models.
+  [Perf] Global GA: 79.05% | Global Loss: 0.6309
+  [Perf] Personalized PA: 89.63% | Personalized Loss: 0.2817 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.87s simulated time
+  [Cumul] Total Data: 345.33 MB | Total Time: 1823.75s
+
+=== Round 37 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 0, 3: 0, 4: 0, 5: 1}
+  Updated 2 cluster models.
+  [Perf] Global GA: 79.05% | Global Loss: 0.6291
+  [Perf] Personalized PA: 89.84% | Personalized Loss: 0.2780 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.87s simulated time
+  [Cumul] Total Data: 355.15 MB | Total Time: 1875.62s
+
+=== Round 38 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 0, 3: 0, 4: 0, 5: 1}
+  Updated 2 cluster models.
+  [Perf] Global GA: 79.24% | Global Loss: 0.6247
+  [Perf] Personalized PA: 90.14% | Personalized Loss: 0.2694 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.88s simulated time
+  [Cumul] Total Data: 364.97 MB | Total Time: 1927.50s
+
+=== Round 39 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 0, 1: 1, 2: 0, 3: 0, 4: 0, 5: 1}
+  Updated 2 cluster models.
+  [Perf] Global GA: 78.83% | Global Loss: 0.6473
+  [Perf] Personalized PA: 89.84% | Personalized Loss: 0.2812 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.84s simulated time
+  [Cumul] Total Data: 374.79 MB | Total Time: 1979.34s
+
+=== Round 40 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 5 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 1, 1: 0, 2: 0, 3: 0, 4: 1}
+  Updated 2 cluster models.
+  [Perf] Global GA: 78.24% | Global Loss: 0.6801
+  [Perf] Personalized PA: 90.59% | Personalized Loss: 0.2707 (5 clients)
+  [Effi] Round Cost: 8380 KB, +43.23s simulated time
+  [Cumul] Total Data: 382.98 MB | Total Time: 2022.57s
+
+=== Round 41 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 1, 1: 0, 2: 0, 3: 0, 4: 1, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 79.27% | Global Loss: 0.6356
+  [Perf] Personalized PA: 90.33% | Personalized Loss: 0.2622 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.84s simulated time
+  [Cumul] Total Data: 392.80 MB | Total Time: 2074.40s
+
+=== Round 42 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 1, 1: 0, 2: 0, 3: 0, 4: 1, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 78.94% | Global Loss: 0.6632
+  [Perf] Personalized PA: 90.01% | Personalized Loss: 0.2719 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.84s simulated time
+  [Cumul] Total Data: 402.62 MB | Total Time: 2126.25s
+
+=== Round 43 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 1, 1: 0, 2: 0, 3: 0, 4: 1, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 78.99% | Global Loss: 0.6545
+  [Perf] Personalized PA: 90.79% | Personalized Loss: 0.2494 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.84s simulated time
+  [Cumul] Total Data: 412.44 MB | Total Time: 2178.09s
+
+=== Round 44 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 5 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 1, 1: 0, 2: 0, 3: 1, 4: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 78.25% | Global Loss: 0.7124
+  [Perf] Personalized PA: 92.23% | Personalized Loss: 0.2239 (5 clients)
+  [Effi] Round Cost: 10056 KB, +51.87s simulated time
+  [Cumul] Total Data: 422.26 MB | Total Time: 2229.96s
+
+=== Round 45 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 1, 1: 0, 2: 0, 3: 0, 4: 1, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 78.81% | Global Loss: 0.6727
+  [Perf] Personalized PA: 90.35% | Personalized Loss: 0.2598 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.83s simulated time
+  [Cumul] Total Data: 432.08 MB | Total Time: 2281.79s
+
+=== Round 46 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 5 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 1, 1: 0, 2: 0, 3: 1, 4: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 78.32% | Global Loss: 0.7275
+  [Perf] Personalized PA: 92.40% | Personalized Loss: 0.2167 (5 clients)
+  [Effi] Round Cost: 8380 KB, +43.21s simulated time
+  [Cumul] Total Data: 440.26 MB | Total Time: 2324.99s
+
+=== Round 47 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 1, 1: 0, 2: 0, 3: 1, 4: 0, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 79.08% | Global Loss: 0.6844
+  [Perf] Personalized PA: 90.56% | Personalized Loss: 0.2570 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.89s simulated time
+  [Cumul] Total Data: 450.08 MB | Total Time: 2376.88s
+
+=== Round 48 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 5 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 1, 1: 0, 2: 0, 3: 0, 4: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 79.05% | Global Loss: 0.6750
+  [Perf] Personalized PA: 89.70% | Personalized Loss: 0.2725 (5 clients)
+  [Effi] Round Cost: 10056 KB, +51.85s simulated time
+  [Cumul] Total Data: 459.90 MB | Total Time: 2428.73s
+
+=== Round 49 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 1, 1: 0, 2: 0, 3: 1, 4: 0, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 79.18% | Global Loss: 0.6809
+  [Perf] Personalized PA: 91.27% | Personalized Loss: 0.2393 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.87s simulated time
+  [Cumul] Total Data: 469.72 MB | Total Time: 2480.61s
+
+=== Round 50 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 updates.
+  Computing model similarity and clustering...
+  Clustered into 2 clusters: {0: 1, 1: 0, 2: 0, 3: 1, 4: 0, 5: 0}
+  Updated 2 cluster models.
+  [Perf] Global GA: 79.40% | Global Loss: 0.6732
+  [Perf] Personalized PA: 91.35% | Personalized Loss: 0.2355 (6 clients)
+  [Effi] Round Cost: 10056 KB, +51.83s simulated time
+  [Cumul] Total Data: 479.54 MB | Total Time: 2532.44s
+
+Results saved to: results/abl1/abl1_summary_20251114_175643.txt

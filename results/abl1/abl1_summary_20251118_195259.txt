@@ -1,0 +1,14 @@
+=== ABL-1 Experiment Summary ===
+Timestamp: 2025-11-18 19:52:59
+Total Rounds: 50
+Number of Clusters: 5
+
+--- Final Performance Metrics ---
+Average Test Accuracy: 84.67%
+Average Loss: 0.4889
+
+--- Efficiency Metrics ---
+Total Communication Cost: 4038.00 MB
+Total Time Cost: 5725.08 seconds
+Average Round Cost: 80.76 MB
+Average Round Time: 114.50 seconds

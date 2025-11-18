@@ -1,0 +1,369 @@
+Progress log: logs/progress/latest.log
+Timestamp log: logs/timestamp/latest.log
+Loading FEMNIST from Hugging Face (flwrlabs/femnist)...
+Grouping data by writer_id... (this may take a while)
+Total writers: 3597
+Assigning approx 35 writers per client for 100 clients...
+Done. Created 100 client datasets.
+✓ Completed: Data loading
+
+=== Starting ABL-1 (DCS + Clustering) Simulation (Goal: Avg Test Acc 100.0%) ===
+
+=== Round 1 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 UAV updates.
+  Round 0: Determining number of clusters...
+  Determined 5 clusters from 28 client models.
+  Initialized 5 cluster models from Round 0.
+  Updated 1/5 global cluster models.
+  [Perf] Avg Test Acc: 36.37% | Avg Loss: 2.7602 (100 clients)
+  [Effi] Round Cost: 60333 KB, +75.08s simulated time
+  [Cumul] Total Data: 58.92 MB | Total Time: 75.08s
+
+=== Round 2 ===
+/home/wnlab/Nexus/NEXUS_COMPUTER_PROJECT/src/utils/model_utils.py:34: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(io.BytesIO(data), map_location="cpu")
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 66.69% | Avg Loss: 1.2555 (100 clients)
+  [Effi] Round Cost: 87145 KB, +120.82s simulated time
+  [Cumul] Total Data: 144.02 MB | Total Time: 195.91s
+
+=== Round 3 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 73.05% | Avg Loss: 0.9295 (100 clients)
+  [Effi] Round Cost: 83793 KB, +120.81s simulated time
+  [Cumul] Total Data: 225.85 MB | Total Time: 316.72s
+
+=== Round 4 ===
+  Received 6 UAV updates.
+  Updated 5/5 global cluster models.
+  [Perf] Avg Test Acc: 76.98% | Avg Loss: 0.7678 (100 clients)
+  [Effi] Round Cost: 84910 KB, +117.01s simulated time
+  [Cumul] Total Data: 308.77 MB | Total Time: 433.73s
+
+=== Round 5 ===
+  Received 6 UAV updates.
+  Updated 5/5 global cluster models.
+  [Perf] Avg Test Acc: 77.91% | Avg Loss: 0.7247 (100 clients)
+  [Effi] Round Cost: 78766 KB, +109.40s simulated time
+  [Cumul] Total Data: 385.69 MB | Total Time: 543.13s
+
+=== Round 6 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 80.29% | Avg Loss: 0.6341 (100 clients)
+  [Effi] Round Cost: 82676 KB, +113.21s simulated time
+  [Cumul] Total Data: 466.43 MB | Total Time: 656.34s
+
+=== Round 7 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 81.00% | Avg Loss: 0.6033 (100 clients)
+  [Effi] Round Cost: 80442 KB, +109.40s simulated time
+  [Cumul] Total Data: 544.98 MB | Total Time: 765.74s
+
+=== Round 8 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 81.22% | Avg Loss: 0.5988 (100 clients)
+  [Effi] Round Cost: 78766 KB, +109.40s simulated time
+  [Cumul] Total Data: 621.90 MB | Total Time: 875.15s
+
+=== Round 9 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 81.45% | Avg Loss: 0.5855 (100 clients)
+  [Effi] Round Cost: 78766 KB, +109.39s simulated time
+  [Cumul] Total Data: 698.82 MB | Total Time: 984.53s
+
+=== Round 10 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 81.90% | Avg Loss: 0.5731 (100 clients)
+  [Effi] Round Cost: 82676 KB, +113.22s simulated time
+  [Cumul] Total Data: 779.56 MB | Total Time: 1097.75s
+
+=== Round 11 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 81.96% | Avg Loss: 0.5750 (100 clients)
+  [Effi] Round Cost: 84910 KB, +117.02s simulated time
+  [Cumul] Total Data: 862.48 MB | Total Time: 1214.77s
+
+=== Round 12 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 81.82% | Avg Loss: 0.5785 (100 clients)
+  [Effi] Round Cost: 83234 KB, +117.01s simulated time
+  [Cumul] Total Data: 943.77 MB | Total Time: 1331.78s
+
+=== Round 13 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 82.73% | Avg Loss: 0.5422 (100 clients)
+  [Effi] Round Cost: 81000 KB, +113.21s simulated time
+  [Cumul] Total Data: 1022.87 MB | Total Time: 1444.99s
+
+=== Round 14 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 82.80% | Avg Loss: 0.5276 (100 clients)
+  [Effi] Round Cost: 84910 KB, +117.03s simulated time
+  [Cumul] Total Data: 1105.79 MB | Total Time: 1562.02s
+
+=== Round 15 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 83.27% | Avg Loss: 0.5138 (100 clients)
+  [Effi] Round Cost: 83234 KB, +117.00s simulated time
+  [Cumul] Total Data: 1187.07 MB | Total Time: 1679.03s
+
+=== Round 16 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 83.73% | Avg Loss: 0.5025 (100 clients)
+  [Effi] Round Cost: 84910 KB, +117.03s simulated time
+  [Cumul] Total Data: 1269.99 MB | Total Time: 1796.05s
+
+=== Round 17 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 83.44% | Avg Loss: 0.5107 (100 clients)
+  [Effi] Round Cost: 84910 KB, +117.04s simulated time
+  [Cumul] Total Data: 1352.91 MB | Total Time: 1913.09s
+
+=== Round 18 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 83.89% | Avg Loss: 0.4929 (100 clients)
+  [Effi] Round Cost: 83234 KB, +117.03s simulated time
+  [Cumul] Total Data: 1434.20 MB | Total Time: 2030.12s
+
+=== Round 19 ===
+  Received 5 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 83.80% | Avg Loss: 0.4924 (100 clients)
+  [Effi] Round Cost: 78207 KB, +105.53s simulated time
+  [Cumul] Total Data: 1510.57 MB | Total Time: 2135.64s
+
+=== Round 20 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 84.06% | Avg Loss: 0.4859 (100 clients)
+  [Effi] Round Cost: 84910 KB, +117.03s simulated time
+  [Cumul] Total Data: 1593.49 MB | Total Time: 2252.67s
+
+=== Round 21 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 84.19% | Avg Loss: 0.4824 (100 clients)
+  [Effi] Round Cost: 84910 KB, +117.01s simulated time
+  [Cumul] Total Data: 1676.41 MB | Total Time: 2369.68s
+
+=== Round 22 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 84.06% | Avg Loss: 0.4879 (100 clients)
+  [Effi] Round Cost: 84910 KB, +117.03s simulated time
+  [Cumul] Total Data: 1759.33 MB | Total Time: 2486.70s
+
+=== Round 23 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 84.05% | Avg Loss: 0.4902 (100 clients)
+  [Effi] Round Cost: 79324 KB, +113.19s simulated time
+  [Cumul] Total Data: 1836.80 MB | Total Time: 2599.90s
+
+=== Round 24 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 84.02% | Avg Loss: 0.4861 (100 clients)
+  [Effi] Round Cost: 84910 KB, +117.02s simulated time
+  [Cumul] Total Data: 1919.72 MB | Total Time: 2716.92s
+
+=== Round 25 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 83.99% | Avg Loss: 0.4953 (100 clients)
+  [Effi] Round Cost: 84910 KB, +117.03s simulated time
+  [Cumul] Total Data: 2002.64 MB | Total Time: 2833.94s
+
+=== Round 26 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 84.50% | Avg Loss: 0.4765 (100 clients)
+  [Effi] Round Cost: 84910 KB, +117.04s simulated time
+  [Cumul] Total Data: 2085.56 MB | Total Time: 2950.99s
+
+=== Round 27 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 84.22% | Avg Loss: 0.4856 (100 clients)
+  [Effi] Round Cost: 84910 KB, +117.01s simulated time
+  [Cumul] Total Data: 2168.48 MB | Total Time: 3068.00s
+
+=== Round 28 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 84.14% | Avg Loss: 0.4940 (100 clients)
+  [Effi] Round Cost: 84910 KB, +116.99s simulated time
+  [Cumul] Total Data: 2251.40 MB | Total Time: 3184.99s
+
+=== Round 29 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 84.30% | Avg Loss: 0.4871 (100 clients)
+  [Effi] Round Cost: 83234 KB, +117.02s simulated time
+  [Cumul] Total Data: 2332.68 MB | Total Time: 3302.00s
+
+=== Round 30 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 84.66% | Avg Loss: 0.4824 (100 clients)
+  [Effi] Round Cost: 81000 KB, +113.22s simulated time
+  [Cumul] Total Data: 2411.78 MB | Total Time: 3415.22s
+
+=== Round 31 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 84.40% | Avg Loss: 0.4862 (100 clients)
+  [Effi] Round Cost: 83234 KB, +117.04s simulated time
+  [Cumul] Total Data: 2493.07 MB | Total Time: 3532.27s
+
+=== Round 32 ===
+  Received 5 UAV updates.
+  Updated 3/5 global cluster models.
+  [Perf] Avg Test Acc: 84.06% | Avg Loss: 0.5083 (100 clients)
+  [Effi] Round Cost: 78207 KB, +105.54s simulated time
+  [Cumul] Total Data: 2569.44 MB | Total Time: 3637.81s
+
+=== Round 33 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 84.45% | Avg Loss: 0.4802 (100 clients)
+  [Effi] Round Cost: 81000 KB, +113.21s simulated time
+  [Cumul] Total Data: 2648.54 MB | Total Time: 3751.01s
+
+=== Round 34 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 84.19% | Avg Loss: 0.5021 (100 clients)
+  [Effi] Round Cost: 84910 KB, +117.04s simulated time
+  [Cumul] Total Data: 2731.46 MB | Total Time: 3868.05s
+
+=== Round 35 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 84.82% | Avg Loss: 0.4741 (100 clients)
+  [Effi] Round Cost: 83234 KB, +117.01s simulated time
+  [Cumul] Total Data: 2812.75 MB | Total Time: 3985.05s
+
+=== Round 36 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 84.44% | Avg Loss: 0.4802 (100 clients)
+  [Effi] Round Cost: 84910 KB, +117.03s simulated time
+  [Cumul] Total Data: 2895.67 MB | Total Time: 4102.09s
+
+=== Round 37 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 84.64% | Avg Loss: 0.4767 (100 clients)
+  [Effi] Round Cost: 84910 KB, +117.03s simulated time
+  [Cumul] Total Data: 2978.59 MB | Total Time: 4219.12s
+
+=== Round 38 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 84.43% | Avg Loss: 0.4878 (100 clients)
+  [Effi] Round Cost: 84910 KB, +117.02s simulated time
+  [Cumul] Total Data: 3061.51 MB | Total Time: 4336.14s
+
+=== Round 39 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 84.74% | Avg Loss: 0.4772 (100 clients)
+  [Effi] Round Cost: 84910 KB, +117.03s simulated time
+  [Cumul] Total Data: 3144.43 MB | Total Time: 4453.17s
+
+=== Round 40 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 84.36% | Avg Loss: 0.4904 (100 clients)
+  [Effi] Round Cost: 84910 KB, +117.02s simulated time
+  [Cumul] Total Data: 3227.35 MB | Total Time: 4570.19s
+
+=== Round 41 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 84.71% | Avg Loss: 0.4767 (100 clients)
+  [Effi] Round Cost: 84910 KB, +117.01s simulated time
+  [Cumul] Total Data: 3310.27 MB | Total Time: 4687.20s
+
+=== Round 42 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 84.70% | Avg Loss: 0.4847 (100 clients)
+  [Effi] Round Cost: 84910 KB, +117.03s simulated time
+  [Cumul] Total Data: 3393.19 MB | Total Time: 4804.23s
+
+=== Round 43 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 84.69% | Avg Loss: 0.4762 (100 clients)
+  [Effi] Round Cost: 83234 KB, +117.02s simulated time
+  [Cumul] Total Data: 3474.47 MB | Total Time: 4921.25s
+
+=== Round 44 ===
+  Received 5 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 84.49% | Avg Loss: 0.4966 (100 clients)
+  [Effi] Round Cost: 78207 KB, +105.52s simulated time
+  [Cumul] Total Data: 3550.85 MB | Total Time: 5026.77s
+
+=== Round 45 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 85.11% | Avg Loss: 0.4677 (100 clients)
+  [Effi] Round Cost: 81000 KB, +113.20s simulated time
+  [Cumul] Total Data: 3629.95 MB | Total Time: 5139.97s
+
+=== Round 46 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 84.67% | Avg Loss: 0.4857 (100 clients)
+  [Effi] Round Cost: 83234 KB, +117.03s simulated time
+  [Cumul] Total Data: 3711.23 MB | Total Time: 5257.00s
+
+=== Round 47 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 84.76% | Avg Loss: 0.4750 (100 clients)
+  [Effi] Round Cost: 83234 KB, +117.01s simulated time
+  [Cumul] Total Data: 3792.52 MB | Total Time: 5374.01s
+
+=== Round 48 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 84.64% | Avg Loss: 0.4787 (100 clients)
+  [Effi] Round Cost: 83234 KB, +117.04s simulated time
+  [Cumul] Total Data: 3873.80 MB | Total Time: 5491.04s
+
+=== Round 49 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 84.84% | Avg Loss: 0.4825 (100 clients)
+  [Effi] Round Cost: 84910 KB, +117.01s simulated time
+  [Cumul] Total Data: 3956.72 MB | Total Time: 5608.05s
+
+=== Round 50 ===
+  Received 6 UAV updates.
+  Updated 4/5 global cluster models.
+  [Perf] Avg Test Acc: 84.67% | Avg Loss: 0.4889 (100 clients)
+  [Effi] Round Cost: 83234 KB, +117.03s simulated time
+  [Cumul] Total Data: 4038.00 MB | Total Time: 5725.08s
+
+Results saved to: results/abl1/abl1_summary_20251118_195259.txt
