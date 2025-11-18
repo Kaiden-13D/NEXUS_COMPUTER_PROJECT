@@ -58,6 +58,8 @@ class FLClient:
         try:
             # compute_data_significance safely handles empty / unusual datasets
             self.data_significance = float(self.compute_data_significance())
+            if self.id in ["client_0", "client_1", "client_2", "client_3", "client_4"]:
+                print(f"Client {self.id} data_significance: {self.data_significance:.4f}")
         except Exception:
             # keep default 0.0 on failure; avoid raising during client creation
             self.data_significance = float(getattr(self, "data_significance", 0.0))
