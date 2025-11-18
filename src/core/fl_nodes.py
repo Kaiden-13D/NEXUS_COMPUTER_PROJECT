@@ -1,15 +1,15 @@
 """
 Federated learning nodes: clients, UAVs, satellite aggregator
 """
-import asyncio
 import random
 import time
 import json
 import base64
 from dataclasses import dataclass, field
 from typing import List, Optional, Dict, Tuple
-from collections import defaultdict
-
+from collections import defaultdict, Counter
+import math
+import asyncio
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -20,6 +20,7 @@ from .network import Link
 from .aggregation import fedavg
 from ..utils.model_utils import bytes_to_state_dict, get_state_dict_bytes
 from ..config.default_config import Config
+from collections import defaultdict, Counter
 
 
 @dataclass
@@ -43,11 +44,23 @@ class FLClient:
     # DCS state information (for simulation, normalized to 0~1)
     comm_quality: float = field(default_factory=lambda: random.random())
     comp_capability: float = field(default_factory=lambda: random.random())
-    data_significance: float = field(default_factory=lambda: random.random())
+    data_significance: float = field(default=0.0)  # computed once at init
     contribution: float = field(default_factory=lambda: random.random())
     
     # Cluster assignment (managed by UAV)
     cluster_id: Optional[int] = None
+
+    def __post_init__(self):
+        """
+        Compute data_significance once after the dataclass is initialized so we avoid
+        expensive repeated dataset scans every selection round.
+        """
+        try:
+            # compute_data_significance safely handles empty / unusual datasets
+            self.data_significance = float(self.compute_data_significance())
+        except Exception:
+            # keep default 0.0 on failure; avoid raising during client creation
+            self.data_significance = float(getattr(self, "data_significance", 0.0))
     
     def calculate_dcs_score(self) -> float:
         """
@@ -62,6 +75,80 @@ class FLClient:
                 Config.BETA * self.comp_capability +
                 Config.GAMMA * self.data_significance +
                 Config.DELTA * self.contribution)
+    
+    def compute_data_significance(self, method: str = "entropy_size", size_weight: float = 0.3,
+                                  max_label_samples: int = 1000) -> float:
+        """
+        Compute a [0,1] data_significance score for this client.
+
+        Methods:
+          - "entropy_size": normalized label-entropy combined with normalized dataset size.
+          - "size": only normalized dataset size.
+          - "entropy": only normalized label entropy.
+
+        max_label_samples caps how many labels are inspected (prevent expensive scans).
+        """
+        labels = []
+
+        try:
+            # Try to access underlying dataset quickly (handles FEMNISTDataset wrapper)
+            ds = getattr(self.train_loader, "dataset", None)
+            underlying = getattr(ds, "dataset", ds)
+
+            # 1) HuggingFace Dataset path (column 'character' used by FEMNIST)
+            if underlying is not None and hasattr(underlying, "column_names") and "character" in getattr(underlying, "column_names", []):
+                # HF Dataset supports column slice; ensure we limit samples
+                raw_labels = underlying["character"]
+                labels = list(raw_labels[:max_label_samples])
+
+            # 2) Common .targets attribute (torch datasets)
+            elif underlying is not None and hasattr(underlying, "targets"):
+                raw = getattr(underlying, "targets")
+                if isinstance(raw, torch.Tensor):
+                    arr = raw.cpu().numpy()
+                    labels = arr.tolist()[:max_label_samples]
+                else:
+                    labels = list(raw)[:max_label_samples]
+
+            # 3) Fallback: sample a limited number of batches from DataLoader
+            else:
+                for i, (_, y) in enumerate(self.train_loader):
+                    # y can be tensor or list/tuple
+                    if isinstance(y, torch.Tensor):
+                        labels.extend(y.cpu().numpy().tolist())
+                    else:
+                        labels.extend(list(y))
+                    if len(labels) >= max_label_samples or i >= 50:
+                        break
+                labels = labels[:max_label_samples]
+
+        except Exception:
+            # On any failure, keep labels empty (score -> 0.0). Avoid raising inside selection.
+            labels = []
+
+        total = len(labels)
+        if total == 0:
+            return 0.0
+
+        # label distribution and entropy
+        cnt = Counter(labels)
+        probs = [v / total for v in cnt.values()]
+        entropy = -sum(p * math.log(p + 1e-12) for p in probs)
+        k = max(2, len(cnt))
+        norm_entropy = entropy / math.log(k)
+
+        cap = getattr(Config, "MAX_CLIENT_DATA_SIZE", 1000)
+        norm_size = min(1.0, total / float(cap))
+
+        if method == "size":
+            return norm_size
+        if method == "entropy":
+            return norm_entropy
+
+        size_weight = float(size_weight)
+        entropy_weight = 1.0 - size_weight
+        score = entropy_weight * norm_entropy + size_weight * norm_size
+        return float(max(0.0, min(1.0, score)))
     
     def train(self, global_model: nn.Module) -> dict:
         """
@@ -136,6 +223,11 @@ class UAV:
             List of selected clients
         """
         num_to_select = max(1, int(len(self.assigned_clients) * sample_ratio))
+        
+        # Recompute data_significance before scoring (cheap once per round)
+        for c in self.assigned_clients:
+            # choose method and size_weight as you prefer; defaults work well
+            c.data_significance = c.compute_data_significance(method="entropy_size", size_weight=0.3)
         
         # Calculate latest score for each client
         client_scores = [
@@ -288,7 +380,7 @@ class SatAgg:
                             del cluster_info["state_dict_b64"]
                     self.buffer.append(payload_data)
                 except Exception as e:
-                    print(f"Error parsing UAV payload: {e}")
+                    print(f"Error parsing UAV cluster models payload: {e}")
             else:
                 # Backward compatibility: old format
                 if isinstance(pkt, Packet):

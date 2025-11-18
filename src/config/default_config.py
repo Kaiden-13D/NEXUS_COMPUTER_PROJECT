@@ -18,14 +18,14 @@ class Config:
     NUM_CLIENTS = 100
     
     # Training settings
-    ROUNDS = 50
+    ROUNDS = 45
     LOCAL_EPOCHS = 1
     BATCH_SIZE = 32
-    LR = 0.008
+    LR = 0.01
     MOMENTUM = 0.9
     
     # Client selection
-    SAMPLE_FRAC = 0.3  # 30% of clients participate per round
+    SAMPLE_FRAC = 0.6  # 30% of clients participate per round
     
     # Target accuracy
     TARGET_ACC = 90.0  # Target Global Accuracy (%) - for baseline experiments
@@ -33,7 +33,7 @@ class Config:
     
     # Clustering settings
     NUM_CLUSTERS = 3  # Fixed number of clusters (determined in round 0, then fixed)
-    AUTO_DETERMINE_CLUSTERS = True  # If True, auto-determine in round 0, else use NUM_CLUSTERS
+    AUTO_DETERMINE_CLUSTERS = False  # If True, auto-determine in round 0, else use NUM_CLUSTERS
     
     # Network bandwidth (bps)
     CLIENT_UPLINK_BW = 200_000
