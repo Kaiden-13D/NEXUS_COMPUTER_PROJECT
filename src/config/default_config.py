@@ -21,7 +21,7 @@ class Config:
     ROUNDS = 50
     LOCAL_EPOCHS = 1
     BATCH_SIZE = 32
-    LR = 0.01
+    LR = 0.008
     MOMENTUM = 0.9
     
     # Client selection
@@ -40,8 +40,8 @@ class Config:
     UAV_SAT_BW = 600_000
     
     # DCS weights (equal distribution)
-    ALPHA = 0.25  # Communication quality
-    BETA = 0.25   # Computational capability
-    GAMMA = 0.25  # Data significance
-    DELTA = 0.25  # Contribution
+    ALPHA = 0.1  # Communication quality
+    BETA = 0.1   # Computational capability
+    GAMMA = 0.4  # Data significance
+    DELTA = 0.4  # Contribution
 
