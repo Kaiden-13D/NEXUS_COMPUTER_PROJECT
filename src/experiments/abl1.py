@@ -113,16 +113,31 @@ async def main():
         for uav in uavs:
             uav.reset_round_buffer()
         
-        # [ABL-1 Core] DCS per UAV
+        # [ABL-1 Core] DCS per cluster per UAV (for synergy with clustering)
         selected_total = []
         for uav in uavs:
-            # Each UAV selects clients using DCS in its zone
-            selected_in_zone = uav.select_clients_dcs(Config.SAMPLE_FRAC)
+            # Each UAV selects clients using DCS per cluster in its zone
+            # This ensures cluster balance and selects quality clients from each cluster
+            if r == 0 or sat.num_clusters is None:
+                # Round 0: Use regular DCS (clusters not determined yet)
+                selected_in_zone = uav.select_clients_dcs(Config.DCS_SAMPLE_FRAC)
+            else:
+                # Round >= 1: Use cluster-aware DCS with adaptive selection and quality threshold
+                # Small clusters: 1 client, Medium: sample_ratio, Large: 2-3 clients
+                # Only select clients with DCS score >= 0.5 (quality threshold)
+                selected_in_zone = uav.select_clients_dcs_per_cluster(
+                    Config.DCS_SAMPLE_FRAC,
+                    min_clients_per_cluster=1,
+                    quality_threshold=0.25,  # Lower threshold to select more high-quality clients for lower loss
+                    max_clients_per_cluster=5  # Increased to 5 for better convergence and lower loss
+                )
             selected_total.extend(selected_in_zone)
         
         if not selected_total:
             print("  No clients selected this round.")
             continue
+        
+        print(f"  Selected {len(selected_total)} clients (BL3: {int(Config.NUM_CLIENTS * Config.SAMPLE_FRAC)})", flush=True)
         
         # Client training and transmission
         async def client_task(c):
@@ -179,6 +194,8 @@ async def main():
                     c.id: len(client_train_ds[client_id_to_idx[c.id]])
                     for c in uav.assigned_clients
                 }
+                if r >= 1:  # Log after round 0
+                    print(f"    {uav.id}: Sending {len(uav_cluster_models)} cluster models (clusters: {sorted(uav_cluster_models.keys())})", flush=True)
                 await uav.send_cluster_models_to_satellite(
                     uav_cluster_models, client_id_to_data_size, cost_meter=COST
                 )
@@ -225,7 +242,10 @@ async def main():
                     
                     if Config.AUTO_DETERMINE_CLUSTERS:
                         # Auto-determine number of clusters
-                        num_clusters = max(2, min(5, len(all_state_dicts) // 3))
+                        # Use NUM_CLUSTERS as default, but allow 2-3 based on client count
+                        num_clusters = max(2, min(3, len(all_state_dicts) // 10))
+                        if num_clusters < Config.NUM_CLUSTERS:
+                            num_clusters = Config.NUM_CLUSTERS
                     else:
                         num_clusters = Config.NUM_CLUSTERS
                     
@@ -297,6 +317,15 @@ async def main():
                 
                 if uav_client_mapping:
                     uav.update_client_cluster_mapping(uav_client_mapping)
+                    
+                    # Log cluster distribution per UAV (for debugging)
+                    if r >= 1:  # Log after round 0
+                        cluster_dist = {}
+                        for client_id, cluster_id in uav_client_mapping.items():
+                            cluster_dist[cluster_id] = cluster_dist.get(cluster_id, 0) + 1
+                        clusters_present = sorted(cluster_dist.keys())
+                        if len(clusters_present) < num_clusters:
+                            print(f"    WARNING: {uav.id} has clients from only {len(clusters_present)}/{num_clusters} clusters: {clusters_present} (distribution: {cluster_dist})", flush=True)
             
             updated_count = sum(1 for cluster_id in range(num_clusters) 
                                if cluster_id in sat.cluster_models and cluster_id in cluster_collections)
@@ -352,8 +381,6 @@ async def main():
         
         print(f"  [Perf] Avg Test Acc: {avg_acc:.2f}% | Avg Loss: {avg_loss:.4f} ({len(client_accuracies)} clients)", flush=True)
         print(f"  [Effi] Round Cost: {r_bytes/1024:.0f} KB, +{r_delay:.2f}s simulated time", flush=True)
-        print(f"  [Cumul] Total Data: {COST.total_cum_bytes/1024/1024:.2f} MB | "
-              f"Total Time: {COST.total_cum_time:.2f}s", flush=True)
         
         # Check target achievement
         if avg_acc >= Config.CLUSTERING_TARGET_ACC:
