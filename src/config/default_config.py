@@ -23,6 +23,7 @@ class Config:
     BATCH_SIZE = 32
     LR = 0.01
     MOMENTUM = 0.9
+    MAX_CLIENT_DATA_SIZE = 120000
     
     # Client selection
     SAMPLE_FRAC = 0.5  # 30% of clients participate per round
@@ -39,9 +40,18 @@ class Config:
     CLIENT_UPLINK_BW = 200_000
     UAV_SAT_BW = 600_000
     
+    # Data Distribution
+    DATA_DISTRIBUTION = "tiered"  # "tiered" or "default"
+    LABEL_NOISE_RATIO = 0.1  # Ratio of labels to flip for "Bad" clients
+    
     # DCS weights (equal distribution)
     ALPHA = 0.1  # Communication quality
     BETA = 0.1   # Computational capability
-    GAMMA = 0.4  # Data significance
-    DELTA = 0.4  # Contribution
+    GAMMA = 0.5  # Data significance
+    DELTA = 0.3  # Contribution
+    
+    # Data Significance Component Weights
+    DS_SIZE_WEIGHT = 0.3
+    DS_ENTROPY_WEIGHT = 0.35
+    DS_COVERAGE_WEIGHT = 0.35
 

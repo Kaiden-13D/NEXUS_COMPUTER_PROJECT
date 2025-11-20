@@ -11,14 +11,24 @@ from torchvision import transforms
 from datasets import load_dataset
 
 from ..utils.progress_logger import get_progress_logger
+from ..config.default_config import Config
 
 
 class FEMNISTDataset(Dataset):
     """FEMNIST dataset wrapper"""
     
-    def __init__(self, dataset, transform=None):
+    def __init__(self, dataset, transform=None, noise_ratio=0.0, num_classes=62):
         self.dataset = dataset
         self.transform = transform
+        self.noise_ratio = noise_ratio
+        self.num_classes = num_classes
+        
+        # Pre-compute noise indices if noise is enabled
+        self.noise_indices = set()
+        if self.noise_ratio > 0:
+            total_samples = len(self.dataset)
+            num_noisy = int(total_samples * self.noise_ratio)
+            self.noise_indices = set(random.sample(range(total_samples), num_noisy))
 
     def __len__(self):
         return len(self.dataset)
@@ -27,6 +37,13 @@ class FEMNISTDataset(Dataset):
         sample = self.dataset[idx]
         image = sample['image']
         label = sample['character']
+        
+        # Apply label noise
+        if idx in self.noise_indices:
+            # Pick a random label different from the true label
+            original_label = label
+            while label == original_label:
+                label = random.randint(0, self.num_classes - 1)
         
         # Convert RGB to grayscale if needed
         if hasattr(image, 'convert') and image.mode != 'L':
@@ -96,8 +113,9 @@ def setup_femnist_by_writer(
     writer_ids = sorted(list(writer_to_indices.keys()))
     print(f"Total writers: {len(writer_ids)}")
     
-    writers_per_client = len(writer_ids) // num_clients
-    print(f"Assigning approx {writers_per_client} writers per client for {num_clients} clients...")
+    # Determine distribution mode
+    dist_mode = getattr(Config, "DATA_DISTRIBUTION", "tiered")
+    print(f"Data distribution mode: {dist_mode}")
     
     # Common transform
     transform = transforms.Compose([
@@ -127,11 +145,53 @@ def setup_femnist_by_writer(
         tqdm_file = None
     
     try:
+        # Tiered distribution settings
+        if dist_mode == "tiered":
+            # Good: 20%, Medium: 50%, Bad: 30%
+            num_good = int(num_clients * 0.2)
+            num_medium = int(num_clients * 0.5)
+            num_bad = num_clients - num_good - num_medium
+            
+            # Calculate writers per client type
+            # Total writers W. Let avg = W / N.
+            # Good: ~2 * avg, Bad: ~0.5 * avg, Medium: ~avg
+            # Constraint: num_good * w_good + num_medium * w_medium + num_bad * w_bad = W
+            
+            avg_writers = len(writer_ids) / num_clients
+            w_good = int(avg_writers * 2.0)
+            w_bad = max(1, int(avg_writers * 0.5))
+            
+            # Adjust medium to fit remaining
+            remaining_writers = len(writer_ids) - (num_good * w_good) - (num_bad * w_bad)
+            w_medium = max(1, remaining_writers // num_medium) if num_medium > 0 else 0
+            
+            # Assign tiers
+            tiers = (["good"] * num_good) + (["medium"] * num_medium) + (["bad"] * num_bad)
+            random.shuffle(tiers)
+            
+            current_writer_idx = 0
+        else:
+            writers_per_client = len(writer_ids) // num_clients
+            tiers = ["default"] * num_clients
+            current_writer_idx = 0
+
         for i in clients_iter:
-            # Calculate writer ID range for current client
-            start_idx = i * writers_per_client
-            end_idx = (i + 1) * writers_per_client if i < num_clients - 1 else len(writer_ids)
-            client_writers = writer_ids[start_idx:end_idx]
+            tier = tiers[i]
+            
+            if dist_mode == "tiered":
+                if tier == "good":
+                    n_writers = w_good
+                elif tier == "bad":
+                    n_writers = w_bad
+                else:
+                    n_writers = w_medium
+            else:
+                n_writers = writers_per_client
+            
+            # Assign writers
+            end_idx = min(current_writer_idx + n_writers, len(writer_ids))
+            client_writers = writer_ids[current_writer_idx:end_idx]
+            current_writer_idx = end_idx
             
             # Collect data indices from assigned writers
             client_indices = []
@@ -153,8 +213,17 @@ def setup_femnist_by_writer(
             train_sub = hf_dataset.select(train_idx)
             test_sub = hf_dataset.select(test_idx)
             
-            client_train_datasets.append(FEMNISTDataset(train_sub, transform=transform))
+            # Apply Label Noise for "Bad" clients
+            if dist_mode == "tiered" and tier == "bad":
+                noise_ratio = getattr(Config, "LABEL_NOISE_RATIO", 0.1)
+                # We need to wrap the dataset to apply noise on-the-fly or modify it
+                # Here we use a wrapper that flips labels
+                client_train_datasets.append(FEMNISTDataset(train_sub, transform=transform, noise_ratio=noise_ratio, num_classes=62))
+            else:
+                client_train_datasets.append(FEMNISTDataset(train_sub, transform=transform))
+            
             client_test_datasets.append(FEMNISTDataset(test_sub, transform=transform))
+            
     finally:
         if 'tqdm_file' in locals() and tqdm_file:
             tqdm_file.close()

@@ -91,11 +91,15 @@ class FLClient:
         max_label_samples caps how many labels are inspected (prevent expensive scans).
         """
         labels = []
+        full_size = 0
 
         try:
             # Try to access underlying dataset quickly (handles FEMNISTDataset wrapper)
             ds = getattr(self.train_loader, "dataset", None)
             underlying = getattr(ds, "dataset", ds)
+            
+            if underlying:
+                full_size = len(underlying)
 
             # 1) HuggingFace Dataset path (column 'character' used by FEMNIST)
             if underlying is not None and hasattr(underlying, "column_names") and "character" in getattr(underlying, "column_names", []):
@@ -114,6 +118,9 @@ class FLClient:
 
             # 3) Fallback: sample a limited number of batches from DataLoader
             else:
+                if not full_size: # If we couldn't get size before, estimate it
+                    full_size = len(self.train_loader) * self.train_loader.batch_size
+
                 for i, (_, y) in enumerate(self.train_loader):
                     # y can be tensor or list/tuple
                     if isinstance(y, torch.Tensor):
@@ -127,29 +134,38 @@ class FLClient:
         except Exception:
             # On any failure, keep labels empty (score -> 0.0). Avoid raising inside selection.
             labels = []
+            full_size = 0
 
-        total = len(labels)
-        if total == 0:
+        if not labels:
             return 0.0
+        
+        total_for_entropy = len(labels)
 
         # label distribution and entropy
         cnt = Counter(labels)
-        probs = [v / total for v in cnt.values()]
+        probs = [v / total_for_entropy for v in cnt.values()]
         entropy = -sum(p * math.log(p + 1e-12) for p in probs)
         k = max(2, len(cnt))
         norm_entropy = entropy / math.log(k)
 
-        cap = getattr(Config, "MAX_CLIENT_DATA_SIZE", 1000)
-        norm_size = min(1.0, total / float(cap))
+        cap = getattr(Config, "MAX_CLIENT_DATA_SIZE", 5000)
+        norm_size = min(1.0, full_size / float(cap))
+        
+        # Class coverage: ratio of unique classes present
+        # FEMNIST has 62 classes
+        total_classes = 62
+        norm_coverage = len(cnt) / total_classes
 
         if method == "size":
             return norm_size
         if method == "entropy":
             return norm_entropy
-
-        size_weight = float(size_weight)
-        entropy_weight = 1.0 - size_weight
-        score = entropy_weight * norm_entropy + size_weight * norm_size
+        
+        # Weighted scoring -> Multiplicative scoring for higher sensitivity
+        # score = norm_size * norm_entropy * norm_coverage
+        # This ensures that if any factor is low, the overall score drops significantly.
+        
+        score = norm_size * norm_entropy * norm_coverage
         return float(max(0.0, min(1.0, score)))
     
     def train(self, global_model: nn.Module) -> dict:
